@@ -46,6 +46,7 @@ public: // <-- HACK
 	SDL_Texture*        mBgTexBack;
 	SDL_Texture*        mNarsheBackground;
 	SDL_Texture*        mNarsheForeground;
+	SDL_Texture*        mDesertBackground;
 	/*
 	___________ BACKGROUNDS __________
 	*/

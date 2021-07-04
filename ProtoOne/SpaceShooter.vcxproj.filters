@@ -79,6 +79,9 @@
     <ClCompile Include="EnemyConstants.cpp">
       <Filter>Constants</Filter>
     </ClCompile>
+    <ClCompile Include="NPC.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h">
@@ -164,6 +167,9 @@
     </ClInclude>
     <ClInclude Include="Sound.h">
       <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="NPC.h">
+      <Filter>Gameplay</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

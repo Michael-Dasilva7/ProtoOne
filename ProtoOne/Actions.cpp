@@ -55,7 +55,7 @@ void aAction_MoveTo::Start() {
 	mStart = mMoveableObject->Center();
 }
 void aAction_MoveTo::Update(float dt) {
-	if (Dist(mStart, mEnd) <= 5) {
+	if (Dist(mStart, mEnd) <= 5.0) {
 		mMoveableObject->SetCenter(mEnd);
 		isDone = true;
 	}
@@ -90,19 +90,19 @@ void aAction_MoveTo::Update(float dt) {
 		*/
 		if (degreeofDirection < 60 && degreeofDirection > 25)
 		{
-			mMoveableObject->moveRight(mStart, dt, true);
+			mMoveableObject->moveRight(mStart, dt, false);
 		}
 		else if (degreeofDirection >= 60 && degreeofDirection <= 100)
 		{
-			mMoveableObject->moveUp(mStart, dt, true);
+			mMoveableObject->moveUp(mStart, dt, false);
 		}
 		else if (degreeofDirection > 100 && degreeofDirection <= 220)
 		{
-			mMoveableObject->moveLeft(mStart, dt, true);
+			mMoveableObject->moveLeft(mStart, dt, false);
 		}
 		else if (degreeofDirection > 220 && degreeofDirection <= 320)
 		{
-			mMoveableObject->moveDown(mStart, dt, true);
+			mMoveableObject->moveDown(mStart, dt, false);
 		}
 
 		//move based on direction:
@@ -110,8 +110,10 @@ void aAction_MoveTo::Update(float dt) {
 	}
 }
 
-//the higher the duration, the quicker fade
-//TODO: allow color changes, and LERP from one color to another
+//the higher the duration, the slower fade
+//TODO: LERP from one color to another
+
+//TODO: add option to fade in our out depending on flag!!!!
 aAction_FadeIn::aAction_FadeIn(int w, int h, float duration, SDL_Renderer* renderer, int r, int g, int b) {
 	mW = w;
 	mH = h;
@@ -119,6 +121,7 @@ aAction_FadeIn::aAction_FadeIn(int w, int h, float duration, SDL_Renderer* rende
 	mR = r;
 	mG = g;
 	mB = b;
+
 	mDecrementer = 1000/duration;
 	mRenderer = renderer;
 }
@@ -191,6 +194,19 @@ void aAction_Delay::Restart() {
 	durationInMilliseconds = mOriginalDuration;
 }
 
+
+/*
+Dialogue documentation:
+	-Add an action and specifiy:
+		x and y location to start the text
+		width and height of the window of text
+		the background image of the text box
+		need the list of texture pointers, retrieved from te resouce manager
+		SDL renderer object
+		a script, which is basically a string with the text to write
+			special characters can be input into this script to perform certain actions like skipping a line(semicolon)
+
+*/
 aAction_Dialogue::aAction_Dialogue(
 	float x,
 	float y,
@@ -201,10 +217,14 @@ aAction_Dialogue::aAction_Dialogue(
 	unordered_map<int, SDL_Rect*>* listOfRects,
 	SDL_Renderer* renderer,
 	const string writtenDialogue,
-	unsigned short int textDelayInMilliseconds
+	unsigned short int textDelayInMilliseconds,
+	unsigned short int delayToProgressDialogueMilliseconds,
+	bool forceSkipDialogueProgression
 	)
 {
-	mDelay = new aAction_Delay(textDelayInMilliseconds);
+	mTextDelayForNextCharacter = new aAction_Delay(textDelayInMilliseconds);
+	mDelayToProgressDialogue = new aAction_Delay(delayToProgressDialogueMilliseconds);
+
 	mTextComplete = false;
 	mRenderer = renderer;
 	mTextBox = texDialogueBox;
@@ -235,8 +255,9 @@ aAction_Dialogue::aAction_Dialogue(
 	mNextStartingDialogueCharacter = 0;
 	mFlashingCounter = 0;
 	isDone = false;
+	mCheckForProgressDelay = false;
 	//split(mWrittenDialogue, mWordTokens, ' ');
-
+	mForceSkipDialogueProgression = forceSkipDialogueProgression;
 }
 
 void aAction_Dialogue::Update(float elapsedTime) {
@@ -386,11 +407,12 @@ void aAction_Dialogue::Update(float elapsedTime) {
 	}
 	//we draw the text above, so set line number to 0 for the next Action call to this Update function.
 	mLineNumber = 0;
-	if (!mDelay->isDone) {
+	if (!mTextDelayForNextCharacter->isDone) {
 		//recursion hehe
-		mDelay->Update(elapsedTime);
+		mTextDelayForNextCharacter->Update(elapsedTime);
 	}
 	else {
+
 		//this is the check for the end of the dialogue. however. we wil need to isntead check for the next "section",	
 		// which is AFTER 4 lines have been drawn. if this occurs then we have a full text box, and i want to:
 
@@ -414,6 +436,8 @@ void aAction_Dialogue::Update(float elapsedTime) {
 				resetDialogue
 				lineNumber = 0;
 		}*/
+
+		//if the next character is past the dialogue text passed into the action, poll for "is done" button
 		if (mCurrentDialogueCharacter + 1 > mWrittenDialogue.length()) {
 			// We are at the end of the provided dialogue
 			//make the polling logic a reusuable method:
@@ -421,13 +445,16 @@ void aAction_Dialogue::Update(float elapsedTime) {
 			SDL_Event e;
 			SDL_PollEvent(&e);
 
-			if (e.key.state = SDL_KEYUP) {
+			if (e.type == SDL_KEYDOWN) {
 				if (e.key.keysym.scancode == SDL_SCANCODE_RETURN) {
-					isDone = true;
-					//SDL_FlushEvent(e.type);
+					mCheckForProgressDelay = true;
+					//e.key.keysym.scancode = NULL;
+					SDL_FlushEvent(e.type);
 				}
 			}
-		
+			else if (mForceSkipDialogueProgression) {
+				mCheckForProgressDelay = true;
+			}
 		}
 		//else if (mAtEndOfTextBox) {
 		//	// We at the end of the text box
@@ -445,12 +472,22 @@ void aAction_Dialogue::Update(float elapsedTime) {
 				//if the next character is off the text box, draw anymore chars on that line.
 				/*if (mCurrentDialogueCharacter + 1 > )*/
 				mCurrentDialogueCharacter += 1;
-				mDelay->Restart();
+				mTextDelayForNextCharacter->Restart();
 			//}
 		}
 
 	}
 
+	if (mCheckForProgressDelay) {
+		if (!mDelayToProgressDialogue->isDone) {
+			mDelayToProgressDialogue->Update(elapsedTime);
+		}
+		else {
+			isDone = true;
+		}
+
+	}
+	
 
 }
 //cout << "character: " << c << " in ascii value is: " << (int)c << " and divisible by 65 it is: " << v  << endl;

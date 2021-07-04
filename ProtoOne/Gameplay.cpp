@@ -56,6 +56,9 @@ void Gameplay::Initialize()
 	mNarsheBackground = ResourceManager::Acquire("media/background/SnowCliff_Back.png", renderer);
 	mNarsheForeground = ResourceManager::Acquire("media/background/SnowCliff_Front.png", renderer);
 	
+	mDesertBackground = ResourceManager::Acquire("media/background/desert/desertX4.png", renderer);
+
+
 	//mBgTex = ResourceManager::Acquire("media/background/darkforest.png", renderer);
 	//mBgTex = LoadTexture("media/background/blah.jpg", renderer);		 
 	//mTextImage = ResourceManager::Acquire("media/DialogueText.png", renderer);
@@ -89,10 +92,9 @@ void Gameplay::LoadLevel()
 
 	SDL_Renderer* renderer = mGame->GetRenderer();
 	//ClearLevel();
-	//
-	// initialize world
-	//
-	SDL_QueryTexture(mNarsheForeground, NULL, NULL, &mWorldWidth, &mWorldHeight);
+	
+	SDL_QueryTexture(mDesertBackground, NULL, NULL, &mWorldWidth, &mWorldHeight);
+	//SDL_QueryTexture(mNarsheForeground, NULL, NULL, &mWorldWidth, &mWorldHeight);
 	mWorldWidth = mWorldWidth;
 	mWorldHeight = mWorldHeight;
 	//std::cout << "World size is " << mWorldWidth  << "x" << mWorldHeight << std::endl;
@@ -127,7 +129,6 @@ void Gameplay::LoadLevel()
 		//
 		// create some enemies
 		//
-	
 		/*for (int i = 0; i < 5; i++) {
 			Enemy* e = new Enemy(mEnemyTex);
 			e->SetSpriteAngleCorrection(DIR_DOWN);
@@ -138,96 +139,61 @@ void Gameplay::LoadLevel()
 			mEnemies.push_back(e);
 		}*/
 	
-	Enemy* e = new Enemy(ResourceManager::Acquire(EnemyConstants::GIGA_GAIA_IDLE, renderer));
-	float x = 1000;
-	float y = 1000;
-	e->SetCenter(x, y);
-	e->SetLayer( 1);
-	e->SetState(ENEMY_HOVER);
-	e->SetSpeedScale(0);
-	mEnemies.push_back(e);
-
-
 	Game* game = GetGame();
 
 	mCamera = new Camera((float)game->GetScreenWidth(),
-		(float)game->GetScreenHeight(),
-		(float)mWorldWidth,
-		(float)mWorldHeight);
+						 (float)game->GetScreenHeight(),
+						 (float)mWorldWidth,
+						 (float)mWorldHeight);
 
 	// make camera follow the player
 	mCamera->SetTarget(mPlayer);
-
 	/*
-	// __START FIRST CUTSCENE___
-	//	talk to the king, get orders.. lightning.. rain
-	//   train whistle
-	// start train sound....
+	LOAD GIGA GAIA OFF SCREEN
 	*/
-   
+	Enemy* e = new Enemy(ResourceManager::Acquire(EnemyConstants::GIGA_GAIA_IDLE, renderer));
+	float x = mCamera->ViewLeft();
+	float y = mCamera->ViewTop();
+	e->SetCenter(x, y);
+	e->SetLayer(1);
+	e->SetState(ENEMY_HOVER);
+	e->SetSpeedScale(0);
+ 
+	/*
+	Load Dragon off screen
+	*/
+	Enemy* ninjaBlue = new Enemy(ResourceManager::Acquire(EnemyConstants::NINJA_BLUE, renderer));
+	ninjaBlue->SetCenter(-500, 200);
+	ninjaBlue->SetLayer(1);
+	ninjaBlue->SetState(ENEMY_HOVER);
+	ninjaBlue->SetSpeedScale(0);
+
+	mEnemies.push_back(e);
+	//HOW DO WE MAKE SCENES HAPPEN ONE AFTER THE OTHER FROM DIFFERENT SCRIPTS?
+			/// I CAN PASS IN A POINTER TO THE OTHER SCRIPT< AND ADD AN ACTION AFTER ONE IS DONE. but this wont work evertime
+			//we need lots of info for certain action that arent there in other ones unless we pass it throgu and that is a 
+			//heavy operation or a pain in the ass
+
+
+    //used to keep track of player location to not call player calsseveryitme 
 	float newplayerX;
 	float newplayerY;
 
 	ResourceManager::initializeTextBoxTextures(renderer);
 	ResourceManager::PopulateCharacterRects();
-	 
-	mGame->mScriptProcessor.AddAction(new aAction_FadeIn(game->GetScreenWidth(), game->GetScreenHeight(), 1000, mGame->GetRenderer(),0,0,0));
-	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE, 45));
-
-	mScriptProcessor_Effects.AddAction(new aAction_FadeIn(game->GetScreenWidth(), game->GetScreenHeight(), 1000, mGame->GetRenderer(), 0, 0, 0));
 	
+	mScriptProcessor_Effects.AddAction(new aAction_FadeIn(game->GetScreenWidth(), game->GetScreenHeight(), 4000, mGame->GetRenderer(), 0, 0, 0));
 
-	//mGame->mScriptProcessor(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE, 45));
-	
-	//start in the bottom right of the map and walk up to the bridge.
-	newplayerY = mPlayer->Top() - 840;
-	newplayerX = mPlayer->Center().x;
+	newplayerY = mPlayer->Top() - 340;
+	newplayerX = mPlayer->Center().x + 55;
 	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 55.0f));
 
-	newplayerX -= 600;
+	newplayerX -= 3500;
 	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 55.0f));
 
-	//TODO4: when walk/run button is released, whatever direction the player is currently facing, determines which idle animation to show. 
-	//       we either want another 1 frame texture, or just display the first frame of the walk animation
-	//TODO5: edit action or create new action to change the amount of time a movement takes. either LERP it, or choose walk or run maybe. 
-	//        OR the best is probably pass in the movement speed of the player!! ez. but need t change back probably for when user gets control. but this cutscene wont have control
-	//     after cutscene a battle should start. and text boxes.
+	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE, 0, 1000, true));
+	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::AFTER_FLASH, 0, 1000, true));
 	
-	//FLASH!
-
-	//or just create a dynamic action that makes everything do everyhting needed in the order! 
-
-	//can add flash after a specific action if i put it into a different script processor
-	//
-	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::AFTER_FLASH, 45));
-
-	//newplayerX -= 400;
-	//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 3.0f));
-	//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX - 70, newplayerY), 3.0f));
-	//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX - 70, newplayerY - 400), 3.0f));
-
-	//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::DRAMA_AT_THE_TOP_OF_THE_CLIFF, 85));
-	//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE, 85));
-
-	//1. WIND HOWLS
-	//2. Screen fades in
-	//3. snow is blowing
-	//4. text box "i am sensing an energy field and wanted to track the signal. seemed to have come from all over
-	//   " its.....
-	//   " its... coming from...above!!
-	//*shooting start across the sky*
-	//CRASH
-	//FLASH
-	//Explosion
-	//i teleport to the location.
-	//find the gem, it glows and floats
-	//i get attacked from a possessed human.
-	//crystal possesses people and gives them power. the crystal is sentient. evil. creshinibon
-	//CODING TRAIN SNOW.
-
-	//NINJA ATTACK AND I FIRE BLAST THEM AWAY AND THE SNOW TEMPORARILY.
-
-	//THEN ANOTHER BOSS NINJA COMES AND ITS THE FIRST BATTLE THAT I CONTROL THE PLAYER.
 }
 
 void Gameplay::ClearLevel()
@@ -285,10 +251,10 @@ void Gameplay::Update(float dt)
 
 	//std::cout << "A state: " << mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_A) << std::endl;
 	//std::cout << "SHIFT state: " << mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_LSHIFT) << std::endl;
-
+	 
 	Vec2 moveVec;
 	//if (mScript->userControlEnabled) {
-	if(mScriptProcessor_CharacterMovements.userControlEnabled) {
+	if(mScriptProcessor_CharacterMovements.userControlEnabled && mGame->mScriptProcessor.userControlEnabled) {
 		//priority order: u,left,right,down
 		if (mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_A)) {
 			//SET IDLE LEFT TEXTURE so we dont have a frozen run animation, and it looks ok when we stop walking/running
@@ -369,7 +335,8 @@ void Gameplay::Update(float dt)
 			mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 800, mGame->GetRenderer(), 255, 255, 230));
 			mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 800, mGame->GetRenderer(), 255, 255, 230));
 			mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 800, mGame->GetRenderer(), 255, 255, 230));
-		 
+			
+
 		}
 		else {
 
@@ -436,6 +403,12 @@ void Gameplay::Update(float dt)
 		//
 		// apply non-penetration constraints
 		//
+		/*
+		REMOVE COMMENTS IF YOU WANT THE PLAYER TO CHECK COLLISION WITH THER ENEMIES. 
+
+		WE NEED THIS LOGIC TO START RANDOM BATTLES! First area after the cutscene will be an open 
+		area that we can rn into battles
+
 		for (auto it1 = mEnemies.begin(); it1 != mEnemies.end(); ++it1) {
 			Enemy* e = *it1;
 
@@ -468,6 +441,7 @@ void Gameplay::Update(float dt)
 				}
 			}
 		}
+		*/
 
 		ClipToWorldBounds(mPlayer);
 		// ***************
@@ -490,7 +464,6 @@ void Gameplay::Update(float dt)
 
 		// update camera
 		mCamera->Update(dt);
-
 		//
 		// update all effects
 		//
@@ -526,30 +499,27 @@ void Gameplay::Update(float dt)
 }
 
 void Gameplay::Draw(float dt)
-{
+{ 
 
-	//depending on the location, we need to display a different background:
 	SDL_Renderer* renderer = mGame->GetRenderer();
 
-	//so each loop cycle is unique to the area. if its narshe area 1, we have a different layer set...
-	
-	//area is probably best as a string. eventually if we have tons of areas we want to make this 
-	//easily scalable.... for now lets hardcode. layer we probably want different game states.
+	//mScriptProcessor_Effects.ProcessActions(dt);
 
-	//battle state. maybe other states depending on the type of gameplay thats going on
- 
 	//LAYER 0 (BACKGROUND)
 	SDL_Rect distantBackground;
-	distantBackground.x = 0;//RoundToInt(mCamera->ViewLeft());
-	distantBackground.y = 0;//RoundToInt(mCamera->ViewTop());
+
+	//distantBackground.x = 0;//RoundToInt(mCamera->ViewLeft());
+	//distantBackground.y = 0 ;//RoundToInt(mCamera->ViewTop());
+	//distantBackground.w = mWorldWidth;
+	//distantBackground.h = mGame->GetScreenHeight();
+	distantBackground.x = RoundToInt(mCamera->ViewLeft());
+	distantBackground.y = RoundToInt(mCamera->ViewTop());
 	distantBackground.w = mGame->GetScreenWidth();
 	distantBackground.h = mGame->GetScreenHeight();
-	SDL_RenderCopy(renderer, mNarsheBackground, &distantBackground, NULL);
-
-
+	SDL_RenderCopy(renderer, mDesertBackground, &distantBackground, NULL);
+	cout << "world width: " << mWorldWidth << endl;
+	
 	//LAYER 1 (Second Background)
-
-
 	for (auto& e : mEnemies) {
 		if (e->Entity::Layer() == 1) {
 			e->Draw(renderer, mCamera);
@@ -562,18 +532,13 @@ void Gameplay::Draw(float dt)
 		}
 	}
 
-	SDL_Rect foregroundRect;
-	foregroundRect.x = RoundToInt(mCamera->ViewLeft());
-	foregroundRect.y = RoundToInt(mCamera->ViewTop());
-	foregroundRect.w = mGame->GetScreenWidth();
-	foregroundRect.h = mGame->GetScreenHeight();
-	cout << "foreground X: " << foregroundRect.x << endl;
-	cout << "foreground Y: " << foregroundRect.y << endl;
+	/*SDL_Rect foregroundRect;
+	foregroundRect.x = 0;
+	foregroundRect.y = 0;
+	SDL_QueryTexture(mNarsheForeground, NULL, NULL, &foregroundRect.w, &foregroundRect.h);
 	SDL_RenderCopy(renderer, mNarsheForeground, &foregroundRect, NULL);
-
+*/
 	//LAYER 2 (Main Level)
-	
-	
 	mPlayer->Draw(renderer, mCamera);
 	
 	for (auto& e : mEnemies) {
@@ -587,70 +552,30 @@ void Gameplay::Draw(float dt)
 			m->Draw(renderer, mCamera);
 		}
 	}
-
-	//add an action to 
-	//TODO: find out why we canot click to go through dialogue now.
+	 
 	// make animation
 	//make giga gaia stay still and appear once i get to the top and slowly make an entrance
 	//add sound/music
-	//attacks./
-
-	//add snow
-	//change missiles to default to layer 2
-
+ 
 	//LAYER 3 (Foreground)
-
+	/*
 	
-
+	Script documentation:
+	  - To have the character move while text is being drawn:
+			- add move action in character movements, then dialoge in dialogue actions
+ 
+	*/
 	//mScript.ProcessActions(dt);
-	//LAyer 4(next foreground)
-
-
-	//LAyer 5 (Effects)
+	//Layer 4(next foreground)
+	mScriptProcessor_CharacterMovements.ProcessActions(dt);
+	
+	//Layer 5 (Effects)
 	mScriptProcessor_Effects.ProcessActions(dt);
 
 	for (auto& e : mEffects) {
 		e->Draw(renderer, mCamera);
 	}
 
-	//std::string x = "MADCODE";
-	//for (char& c : x) {
-	//	//src rect is where in the texture you want to grab
-	//	//dest rect is where on the screen you want to display it
-	//	SDL_Rect textRect; 
-	//	textRect.w = 8;
-	//	textRect.h = 8;
-
-	//	int v1 = (((int)c) % 65);
-	//	if (v1 >= 0 && v1 <= 15) {
-	//		textRect.y = 0;
-	//		textRect.x = v1 * 8;
-	//	}
-
-	//	currentLetterXPos += 8;
-	//	SDL_Rect destRect;
-	//	destRect.w = 8;
-	//	destRect.h = 8;
-	//	destRect.x = currentLetterXPos;
-	//	destRect.y = 0;
-	//	  
-	//	//SDL_RenderCopy will return 0 on success, or -1 on error
-	//	SDL_RenderCopy(renderer, textImage, &textRect, &destRect);
- //
-	//}	 
-
-	//SDL_Rect srcRect;
-	//srcRect.w = 8;
-	//srcRect.h = 8;
-	//srcRect.x = 0;
-	//srcRect.y = 0;
-
-	//SDL_Rect destRect;
-	//destRect.x = 0;
-	//destRect.y = 0;
-	//destRect.w = 15;
-	//destRect.h = 15;
-	//int outcome =  SDL_RenderCopy(renderer, textImage, &srcRect, &destRect);
 
 }
 

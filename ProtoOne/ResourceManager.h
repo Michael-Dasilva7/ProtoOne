@@ -71,8 +71,13 @@ public:
 			}
 			else if (isQuestionMark) {
 				rect->y = 0;
-				rect->x = letterWidth * 11;	
+				rect->x = letterWidth * 11;
 			}
+			else if (isPeriod) {
+				rect->y = letterHeight * 3;
+				rect->x = letterWidth * 5;
+			}
+
 			else if (index >= 48 && index <= 57) {
 				//NUMBERS
 				mapping = index % 48;

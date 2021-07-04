@@ -148,20 +148,21 @@ public:
 	int mStartingDialogueCharacter;
 	int mNextStartingDialogueCharacter;
 
-
-
 	short int mLineNumber;
 
 	bool mAtEndOfTextBox;
 	bool mTextComplete;
 	
 	bool mForceSkipLine;
+	bool mForceSkipDialogueProgression;
+	bool mCheckForProgressDelay;
 
 	int mFlashingCounter;
 
 	std::vector<std::string> mWordTokens;
 
-	aAction_Delay* mDelay;
+	aAction_Delay* mTextDelayForNextCharacter;
+	aAction_Delay* mDelayToProgressDialogue;
 
 	SDL_Texture* characterList[1];
 
@@ -176,7 +177,9 @@ public:
 					unordered_map<int, SDL_Rect*>* listOfRects,
 					SDL_Renderer* renderer,
 					string writtenDialogue,
-					unsigned short int textDelayInMilliseconds
+					unsigned short int textDelayInMilliseconds,
+					unsigned short int delayToProgressDialogueMilliseconds = 0,//optional
+					bool forceSkipDialogueProgression = false //optional
 					);
 
 	//fixed location for now(later we can pass in a x.y if we need to
@@ -186,6 +189,3 @@ public:
 	void CreateRectList() {}
 
 };
-
-
-

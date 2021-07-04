@@ -15,5 +15,9 @@ public:
 	const static std::string EnemyConstants::GIGA_GAIA_IDLE;
 	const static std::string EnemyConstants::GIGA_GAIA_SURPRISE; 
 
+	const static std::string EnemyConstants::GIGA_GAIA_HANDBLAST;
 
+	const static std::string EnemyConstants::NINJA_RED;
+	const static std::string EnemyConstants::NINJA_BLUE;
+	const static std::string EnemyConstants::NINJA_GREEN;
 };
