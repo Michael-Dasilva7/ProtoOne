@@ -114,8 +114,10 @@ void Gameplay::LoadLevel()
 		//mPlayer->SetSpriteAngleCorrection(DIR_UP);
 	*/
 
+	//set the player in the world, then set the camera on the player
 	mPlayer = new Player(ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, mGameRenderer), 4, 1, true);
-	mPlayer->SetCenter(mWorldWidth - 420, mWorldHeight);
+	mPlayer->SetCenter(mWorldWidth - 420, mWorldHeight-10);
+	
 	mPlayerTex = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
 	mPlayer->mWalkDownTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_DOWN, renderer);
 	mPlayer->mWalkUpTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
@@ -184,37 +186,35 @@ void Gameplay::LoadLevel()
 	
 	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(game->GetScreenWidth(), game->GetScreenHeight(), 4000, mGame->GetRenderer(), 0, 0, 0));
 
-	newplayerX = mPlayer->Center().x -10.0f;
-	newplayerY = mPlayer->Top() - 10.0f;
+	newplayerX = mPlayer->Center().x-5;
+	newplayerY = mPlayer->Top() - 100.0f;
+	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 0.2f));
 
-	std::cout << "player x: " << newplayerX << std::endl;
-	std::cout << "player y: " << newplayerY << std::endl;
-	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 5.0f));
+	newplayerX -= 15;
+	newplayerY -= 15;
+	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 0.1f));
 
-	/*newplayerX -= 10.0f;
-	newplayerY += 20.0f;
+	newplayerX -= 20.0;
+	newplayerY += 50.0f;
+	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 1.0f));
 
-	std::cout << "player x: " << newplayerX << std::endl;
-	std::cout << "player y: " << newplayerY << std::endl;
-	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 5.0f));
-
-	newplayerX += 20.0f;
+	newplayerX -=500.0f;
 	newplayerY -= 10.0f;
 
 	std::cout << "player x: " << newplayerX << std::endl;
 	std::cout << "player y: " << newplayerY << std::endl;
-	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 5.0f));
+	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 1.0f));
 
 	newplayerX -= 10.0f;
 	newplayerY += 20.0f;
 
 	std::cout << "player x: " << newplayerX << std::endl;
 	std::cout << "player y: " << newplayerY << std::endl;
-	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 5.0f));
+	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 1.0f));
 
-	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE, 0, 1000, true));
-	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::AFTER_FLASH, 0, 1000, true));
-	*/
+	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE, 0, 5000, true));
+	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::AFTER_FLASH, 0, 5000, true));
+	
 }
 
 void Gameplay::ClearLevel()
@@ -361,9 +361,9 @@ void Gameplay::Update(float dt)
 		else {
 
 		}
-		mPlayer->SetCenter(mPlayer->Center() + 20 * mPlayer->mMoveSpeedScale * dt * moveVec);
 	}
-		
+
+	mPlayer->SetCenter(mPlayer->Center() + 20 * mPlayer->mMoveSpeedScale * dt * moveVec);
 		// update enemies
 		for (auto& e : mEnemies) {
 			e->Update(dt);

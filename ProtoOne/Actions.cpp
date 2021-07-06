@@ -49,27 +49,22 @@ void aScriptProcessor::ProcessActions(float fElapsedTime) {
 aAction_MoveTo::aAction_MoveTo(Entity* object, Vec2 end, float duration) {
 	mMoveableObject = object;
 	mEnd = end;
-	mStart = object->Center();
+	
 	mTimeSoFar = 0.0f;
 	mDuration = max(duration, 0.001f);//prevent divide by zero later and to cap durations
 	mVel = 2.0f;
 	mDir = end - mStart;
 	mDir.Normalize();
 	
-	cout << "start x"<< mStart.x << endl;
-	cout << "start y" << mStart.y << endl;
-
-	cout << "mEnd x" << mEnd.x << endl;
-	cout << "mEnd y" << mEnd.y << endl;
-
-	cout << "dir x" << mDir.x  << endl;
-	cout << "dir y" << mDir.y << endl;
 }
 
 void aAction_MoveTo::Start() {
+	mStart = mMoveableObject->Center();
+
+
 	//check direction. if its up, move up. if its down , move down....etc...
-	//float degreeofDirection = Rad2Deg(atan2(dirToEnd.y, dirToEnd.x));
-	//degreeofDirection = abs(degreeofDirection);
+	float degreeofDirection = Rad2Deg(atan2(mDir.y, mDir.x));
+	degreeofDirection = abs(degreeofDirection);
 	//x +   >
 	//x -   <
 	//y +   V
@@ -87,47 +82,45 @@ void aAction_MoveTo::Start() {
 
 	////distance
 	////
-	//	if (degreeofDirection < 60 && degreeofDirection > 25)
-	//	{
-	//		mMoveableObject->moveRight(mStart, 0, false);
-	//	}
-	//	else if (degreeofDirection >= 60 && degreeofDirection <= 100)
-	//	{
-	//		mMoveableObject->moveUp(mStart, 0, false);
-	//	}
-	//	else if (degreeofDirection > 100 && degreeofDirection <= 220)
-	//	{
-	//		mMoveableObject->moveLeft(mStart, 0, false);
-	//	}
-	//	else if (degreeofDirection > 220 && degreeofDirection <= 320)
-	//	{
-	//		mMoveableObject->moveDown(mStart, 0, false);
-	//	}
+		if (degreeofDirection < 60 && degreeofDirection > 25)
+		{
+			//set direction and change player or entity to move based on direction and update velocity
+			//mMoveableObject->moveRight(mStart, 0, false);
+		}
+		else if (degreeofDirection >= 60 && degreeofDirection <= 100)
+		{
+			//mMoveableObject->moveUp(mStart, 0, false);
+		}
+		else if (degreeofDirection > 100 && degreeofDirection <= 220)
+		{
+			//mMoveableObject->moveLeft(mStart, 0, false);
+		}
+		else if (degreeofDirection > 220 && degreeofDirection <= 320)
+		{
+			//mMoveableObject->moveDown(mStart, 0, false);
+		}
 
 
 }
 void aAction_MoveTo::Update(float dt) {
 	//cout << Dist(mMoveableObject->Center(), mEnd) << endl;
+	mTimeSoFar += dt;
 	float t = mTimeSoFar / mDuration;
 	if (t > 1.0f) t = 1.0f;
-
-
+	//cout << "t: " << t << endl;
 	//mMoveableObject->SetCenter(mMoveableObject->Center() + mDir * mVel);
-	mMoveableObject->SetCenter((mEnd - mStart) * t + mStart);
 
-
-	if (Dist(mMoveableObject->Center(), mEnd) <= 20.0) {
+	if (mTimeSoFar >= mDuration) {
 		mMoveableObject->SetCenter(mEnd);
 		isDone = true;
 	}
 	else {
-		//speed = distance  / time	
-			//mTime 
+		mMoveableObject->SetCenter((mEnd - mStart) * t + mStart);
 		mMoveableObject->addTimeToAnimation(dt);
-		mMoveableObject->SetCenter(mMoveableObject->Center() + mDir * mVel);
+		//speed = distance  / time	
+		//mTime 
+		//mMoveableObject->SetCenter(mMoveableObject->Center() + mDir * mVel);
 	}
-
-
 }
 
 //the higher the duration, the slower fade
