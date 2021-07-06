@@ -46,68 +46,88 @@ void aScriptProcessor::ProcessActions(float fElapsedTime) {
 !!!SPRITE MOVEMENT FOR CUTSCENE!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 */
-aAction_MoveTo::aAction_MoveTo(Player* object, Vec2 end, float duration) {
+aAction_MoveTo::aAction_MoveTo(Entity* object, Vec2 end, float duration) {
 	mMoveableObject = object;
 	mEnd = end;
+	mStart = object->Center();
+	mTimeSoFar = 0.0f;
+	mDuration = max(duration, 0.001f);//prevent divide by zero later and to cap durations
+	mVel = 2.0f;
+	mDir = end - mStart;
+	mDir.Normalize();
+	
+	cout << "start x"<< mStart.x << endl;
+	cout << "start y" << mStart.y << endl;
+
+	cout << "mEnd x" << mEnd.x << endl;
+	cout << "mEnd y" << mEnd.y << endl;
+
+	cout << "dir x" << mDir.x  << endl;
+	cout << "dir y" << mDir.y << endl;
 }
 
 void aAction_MoveTo::Start() {
-	mStart = mMoveableObject->Center();
+	//check direction. if its up, move up. if its down , move down....etc...
+	//float degreeofDirection = Rad2Deg(atan2(dirToEnd.y, dirToEnd.x));
+	//degreeofDirection = abs(degreeofDirection);
+	//x +   >
+	//x -   <
+	//y +   V
+	//Y -   ^
+	//*/
+	////cout << "degree of direction: " << degreeofDirection << endl;
+	////cout << "End X: " << mEnd.x << endl;
+	////cout << "End Y: " << mEnd.y << endl;
+
+	//0    >
+	//90   ^
+	//180  <
+	//260  V
+
+
+	////distance
+	////
+	//	if (degreeofDirection < 60 && degreeofDirection > 25)
+	//	{
+	//		mMoveableObject->moveRight(mStart, 0, false);
+	//	}
+	//	else if (degreeofDirection >= 60 && degreeofDirection <= 100)
+	//	{
+	//		mMoveableObject->moveUp(mStart, 0, false);
+	//	}
+	//	else if (degreeofDirection > 100 && degreeofDirection <= 220)
+	//	{
+	//		mMoveableObject->moveLeft(mStart, 0, false);
+	//	}
+	//	else if (degreeofDirection > 220 && degreeofDirection <= 320)
+	//	{
+	//		mMoveableObject->moveDown(mStart, 0, false);
+	//	}
+
+
 }
 void aAction_MoveTo::Update(float dt) {
-	if (Dist(mStart, mEnd) <= 5.0) {
+	//cout << Dist(mMoveableObject->Center(), mEnd) << endl;
+	float t = mTimeSoFar / mDuration;
+	if (t > 1.0f) t = 1.0f;
+
+
+	//mMoveableObject->SetCenter(mMoveableObject->Center() + mDir * mVel);
+	mMoveableObject->SetCenter((mEnd - mStart) * t + mStart);
+
+
+	if (Dist(mMoveableObject->Center(), mEnd) <= 20.0) {
 		mMoveableObject->SetCenter(mEnd);
 		isDone = true;
 	}
 	else {
-		//check direction. if its up, move up. if its down , move down....etc...
-		Vec2 dirToEnd = mEnd - mStart;
-
-		float degreeofDirection = Rad2Deg(atan2(dirToEnd.y, dirToEnd.x));
-		degreeofDirection = abs(degreeofDirection);
-
-		/*
-
-		x +   >
-		x -   <
-		y +   V
-		Y -   ^
-
-		*/
-
-		//cout << "degree of direction: " << degreeofDirection << endl;
-
-		//cout << "End X: " << mEnd.x << endl;
-		//cout << "End Y: " << mEnd.y << endl;
-
-		/*
-
-		0    >
-		90   ^
-		180  <
-		260  V
-
-		*/
-		if (degreeofDirection < 60 && degreeofDirection > 25)
-		{
-			mMoveableObject->moveRight(mStart, dt, false);
-		}
-		else if (degreeofDirection >= 60 && degreeofDirection <= 100)
-		{
-			mMoveableObject->moveUp(mStart, dt, false);
-		}
-		else if (degreeofDirection > 100 && degreeofDirection <= 220)
-		{
-			mMoveableObject->moveLeft(mStart, dt, false);
-		}
-		else if (degreeofDirection > 220 && degreeofDirection <= 320)
-		{
-			mMoveableObject->moveDown(mStart, dt, false);
-		}
-
-		//move based on direction:
-		mMoveableObject->SetCenter(mStart);
+		//speed = distance  / time	
+			//mTime 
+		mMoveableObject->addTimeToAnimation(dt);
+		mMoveableObject->SetCenter(mMoveableObject->Center() + mDir * mVel);
 	}
+
+
 }
 
 //the higher the duration, the slower fade

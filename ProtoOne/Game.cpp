@@ -100,8 +100,8 @@ bool Game::Initialize()
 	//
 	mKeys = SDL_GetKeyboardState(NULL);
 
-	SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
-	//SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_RESIZABLE);
+	//SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_RESIZABLE);
 
 	/*
 	*  \sa SDL_RenderGetLogicalSize()

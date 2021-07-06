@@ -182,18 +182,39 @@ void Gameplay::LoadLevel()
 	ResourceManager::initializeTextBoxTextures(renderer);
 	ResourceManager::PopulateCharacterRects();
 	
-	mScriptProcessor_Effects.AddAction(new aAction_FadeIn(game->GetScreenWidth(), game->GetScreenHeight(), 4000, mGame->GetRenderer(), 0, 0, 0));
+	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(game->GetScreenWidth(), game->GetScreenHeight(), 4000, mGame->GetRenderer(), 0, 0, 0));
 
-	newplayerY = mPlayer->Top() - 340;
-	newplayerX = mPlayer->Center().x + 55;
-	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 55.0f));
+	newplayerX = mPlayer->Center().x -10.0f;
+	newplayerY = mPlayer->Top() - 10.0f;
 
-	newplayerX -= 3500;
-	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 55.0f));
+	std::cout << "player x: " << newplayerX << std::endl;
+	std::cout << "player y: " << newplayerY << std::endl;
+	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 5.0f));
+
+	/*newplayerX -= 10.0f;
+	newplayerY += 20.0f;
+
+	std::cout << "player x: " << newplayerX << std::endl;
+	std::cout << "player y: " << newplayerY << std::endl;
+	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 5.0f));
+
+	newplayerX += 20.0f;
+	newplayerY -= 10.0f;
+
+	std::cout << "player x: " << newplayerX << std::endl;
+	std::cout << "player y: " << newplayerY << std::endl;
+	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 5.0f));
+
+	newplayerX -= 10.0f;
+	newplayerY += 20.0f;
+
+	std::cout << "player x: " << newplayerX << std::endl;
+	std::cout << "player y: " << newplayerY << std::endl;
+	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 5.0f));
 
 	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE, 0, 1000, true));
 	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::AFTER_FLASH, 0, 1000, true));
-	
+	*/
 }
 
 void Gameplay::ClearLevel()
@@ -226,7 +247,6 @@ void Gameplay::Update(float dt)
 	//std::cout << "World Height: " << mWorldHeight << std::endl;
 	const Uint8* keys = mGame->GetKeys();
 	//const Uint8* keyState = mGame->GetGameplayState();	
-
 
 	//mScript.ProcessActions(dt);
 
@@ -341,10 +361,9 @@ void Gameplay::Update(float dt)
 		else {
 
 		}
-
-	}
 		mPlayer->SetCenter(mPlayer->Center() + 20 * mPlayer->mMoveSpeedScale * dt * moveVec);
-
+	}
+		
 		// update enemies
 		for (auto& e : mEnemies) {
 			e->Update(dt);
@@ -517,7 +536,7 @@ void Gameplay::Draw(float dt)
 	distantBackground.w = mGame->GetScreenWidth();
 	distantBackground.h = mGame->GetScreenHeight();
 	SDL_RenderCopy(renderer, mDesertBackground, &distantBackground, NULL);
-	cout << "world width: " << mWorldWidth << endl;
+	//cout << "world width: " << mWorldWidth << endl;
 	
 	//LAYER 1 (Second Background)
 	for (auto& e : mEnemies) {

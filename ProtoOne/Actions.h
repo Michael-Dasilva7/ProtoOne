@@ -62,15 +62,19 @@ class aAction_MoveTo : public Action
 {
 
 public:
-	aAction_MoveTo(Player* object, Vec2 end, float duration);
+	aAction_MoveTo(Entity* object, Vec2 end, float duration);
 	void Start() override;
 	void Update(float fElapsedTime) override;	
 
+	float mVel;
+	Vec2  mDir;
+
 private:
-	Player*  mMoveableObject;
+	Entity*  mMoveableObject;
 	Vec2	 mStart;
 	Vec2	 mEnd;
-
+	float    mTimeSoFar;
+	float    mDuration;
 };
 
 class aAction_FadeIn : public Action
