@@ -9,22 +9,6 @@ using namespace std;
 #include "Player.h"
 
 
-//class Delay {
-//private:
-//	unsigned short int mDurationInMilliseconds;
-//	bool isDone;
-//public:
-//	//same as my current ethod just copy it
-//	Delay(int durationInMilliseconds) {
-//		mDurationInMilliseconds = durationInMilliseconds;
-//		isDone = false;
-//	}
-//
-//};
-//An interface for an Action
-//Examples: 
-// 1. Display a Lightning effect
-// 2. Move a player to a specified location
 class Action {
 
 public:
@@ -81,35 +65,24 @@ class aAction_FadeIn : public Action
 {
 
 public:
-	// Its basically a black rectange overlaying the screen that gets increasingly opaque
-	// MIGHT need a screensize but probably can grab it from wherever the action is (i.e. game load)
-	// increment value is determined by the duration. 
 	aAction_FadeIn(int w, int h, float duration, SDL_Renderer* renderer, int r, int g, int b);
 	void Start() override;
 	void Update(float fElapsedTime) override;
 
-	//MAKE A LIST OF RECTANGLES WITH DIFFERNET OPAQUES / COLORS. so you can have a flashing rectangle behind a red one. for spells maybe.
-
-	//also can use this fade in to fade in from black.
-
-	//will need to have two implementations of the processor. one for each layer and call it at the right point in time.
-
 private:
-	SDL_Rect   mFadeRect;
-	float    mDecrementer;
-	float    mOpacity;
+	SDL_Rect			mFadeRect;
+	float				mDecrementer;
+	float				mOpacity;
 
-	float    exponent;
-	SDL_Renderer* mRenderer;
+	float				exponent;
+	SDL_Renderer*		mRenderer;
 	
-	//int16_t	 x;
-	//int16_t	 y;
-	int16_t  mW;
-	int16_t  mH;
+	int16_t				mW;
+	int16_t				mH;
 
-	int16_t  mR;
-	int16_t  mG;
-	int16_t  mB;
+	int16_t				mR;
+	int16_t				mG;
+	int16_t				mB;
 };
 
 class aAction_Delay : public Action {
@@ -186,9 +159,6 @@ public:
 					bool forceSkipDialogueProgression = false //optional
 					);
 
-	//fixed location for now(later we can pass in a x.y if we need to
-	//need to figure out how to tell if a button is pressed and go to the next "page" of text. also need to figure this out how am i gonna page the text?
-	
 	void Update(float elapsedTime) override;
 	void CreateRectList() {}
 

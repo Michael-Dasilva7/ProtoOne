@@ -35,6 +35,7 @@ public:
 	SDL_Texture* 					GetCurrentTexture();
 
 	void							SetCurrentTexture(SDL_Texture* tex);
+	void							Reset();
 };
 
 #endif

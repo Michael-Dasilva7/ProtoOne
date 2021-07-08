@@ -26,7 +26,10 @@ protected:
 
 	ColorChange* 			mColorChange;
 	unsigned short int      mLayer;
+	
+
 public:
+	Vec2					mVelocity;
 	//forward declaring class Animation to prevent circular dependency.
 	// therefore i need to declare animation as a pointer because its just a header
 	// and we know there will be a class as animation included in the cpp and will be there in the declaration
@@ -83,11 +86,12 @@ public:
 	virtual void		    Update(float dt)    = 0;
 
 	virtual void			Draw(SDL_Renderer* renderer, Camera* camera, SDL_RendererFlip flipType = SDL_FLIP_NONE) const;
-	//mCurrentAnimation = new Animation(tex,numCells)
+
 	virtual void			setAnimation(SDL_Texture* tex, int numCells, float duration, bool loopable, SDL_RendererFlip flip = SDL_FLIP_NONE);
 	virtual void			setAnimationTexture(SDL_Texture* tex);
 
 	virtual void	        addTimeToAnimation(float dt);
+
 
 };
 

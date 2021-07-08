@@ -164,3 +164,7 @@ SDL_Texture* Animation::GetCurrentTexture() {
 void Animation::SetCurrentTexture(SDL_Texture* tex) {
 	mTex = tex;
 }
+
+void Animation::Reset() {
+	mTime = 0.0f;
+}

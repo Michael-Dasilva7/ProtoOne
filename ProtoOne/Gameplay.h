@@ -25,6 +25,7 @@ class Gameplay : public GameState
 {
 public: // <-- HACK
 	Player*				mPlayer;
+	Player*				mPlayer2;
 
     std::list<Missile*> mMissiles;
 
@@ -54,7 +55,8 @@ public: // <-- HACK
     SDL_Texture*        mExplosionTex;
 	SDL_Texture*        mTextImage;
 	SDL_Texture*		mTextBoxFF6;	
-	SDL_Texture*		dialogueText;
+	SDL_Texture*		
+		Text;
 	 
 	SDL_Rect*		    mCharacters[22];
 	//whats the current total count of characters

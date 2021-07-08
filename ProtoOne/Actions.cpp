@@ -46,96 +46,91 @@ void aScriptProcessor::ProcessActions(float fElapsedTime) {
 !!!SPRITE MOVEMENT FOR CUTSCENE!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 */
+
+//int *ptr[MAX];
+//
+//for (int i = 0; i < MAX; i++) {
+//	ptr[i] = &var[i]; // assign the address of integer.
+//}
 aAction_MoveTo::aAction_MoveTo(Entity* object, Vec2 end, float duration) {
-	mMoveableObject = object;
+  mMoveableObject = object;
 	mEnd = end;
-	
+
 	mTimeSoFar = 0.0f;
 	mDuration = max(duration, 0.001f);//prevent divide by zero later and to cap durations
 	mVel = 2.0f;
-	mDir = end - mStart;
-	mDir.Normalize();
-	
+	//mDir = end - mStart;
+	//mDir.Normalize();
+	//mDir *= 1; 
 }
 
 void aAction_MoveTo::Start() {
+
 	mStart = mMoveableObject->Center();
+	////check direction. if its up, move up. if its down , move down....etc...
+	//float degreeofDirection = Rad2Deg(atan2(mDir.y, mDir.x));
+	//degreeofDirection = abs(degreeofDirection);
 
+	////x +   >
+	////x -   <
+	////y +   V
+	////Y -   ^
 
-	//check direction. if its up, move up. if its down , move down....etc...
-	float degreeofDirection = Rad2Deg(atan2(mDir.y, mDir.x));
-	degreeofDirection = abs(degreeofDirection);
-	//x +   >
-	//x -   <
-	//y +   V
-	//Y -   ^
-	//*/
-	////cout << "degree of direction: " << degreeofDirection << endl;
-	////cout << "End X: " << mEnd.x << endl;
-	////cout << "End Y: " << mEnd.y << endl;
+	////0    >
+	////90   ^
+	////180  <
+	////260  V
 
-	//0    >
-	//90   ^
-	//180  <
-	//260  V
-
-
-	////distance
-	////
-		if (degreeofDirection < 60 && degreeofDirection > 25)
-		{
-			//set direction and change player or entity to move based on direction and update velocity
-			//mMoveableObject->moveRight(mStart, 0, false);
-		}
-		else if (degreeofDirection >= 60 && degreeofDirection <= 100)
-		{
-			//mMoveableObject->moveUp(mStart, 0, false);
-		}
-		else if (degreeofDirection > 100 && degreeofDirection <= 220)
-		{
-			//mMoveableObject->moveLeft(mStart, 0, false);
-		}
-		else if (degreeofDirection > 220 && degreeofDirection <= 320)
-		{
-			//mMoveableObject->moveDown(mStart, 0, false);
-		}
-
+	//if (degreeofDirection < 60 && degreeofDirection > 25)
+	//{
+	//	//set direction and change player or entity to move based on direction and update velocity
+	//	//mMoveableObject->mVel;
+	//}
+	//else if (degreeofDirection >= 60 && degreeofDirection <= 100)
+	//{
+	//	//mMoveableObject->moveUp(mStart, 0, false);
+	//}
+	//else if (degreeofDirection > 100 && degreeofDirection <= 220)
+	//{
+	//	//mMoveableObject->moveLeft(mStart, 0, false);
+	//}
+	//else if (degreeofDirection > 220 && degreeofDirection <= 320)
+	//{
+	//	//mMoveableObject->moveDown(mStart, 0, false);
+	//}
 
 }
 void aAction_MoveTo::Update(float dt) {
-	//cout << Dist(mMoveableObject->Center(), mEnd) << endl;
 	mTimeSoFar += dt;
 	float t = mTimeSoFar / mDuration;
 	if (t > 1.0f) t = 1.0f;
-	//cout << "t: " << t << endl;
+	
+	mMoveableObject->SetCenter((mEnd - mStart) * t + mStart);
+	mMoveableObject->mVelocity.x = (mEnd.x - mStart.x) / mDuration;
+	mMoveableObject->mVelocity.y = (mEnd.y - mStart.y) / mDuration;
+	mMoveableObject->addTimeToAnimation(dt);
 	//mMoveableObject->SetCenter(mMoveableObject->Center() + mDir * mVel);
-
 	if (mTimeSoFar >= mDuration) {
 		mMoveableObject->SetCenter(mEnd);
+		mMoveableObject->mVelocity.x = 0;
+		mMoveableObject->mVelocity.y = 0;
 		isDone = true;
 	}
-	else {
-		mMoveableObject->SetCenter((mEnd - mStart) * t + mStart);
-		mMoveableObject->addTimeToAnimation(dt);
-		//speed = distance  / time	
-		//mTime 
-		//mMoveableObject->SetCenter(mMoveableObject->Center() + mDir * mVel);
-	}
+
+
 }
 
 //the higher the duration, the slower fade
-//TODO: LERP from one color to another
-
 //TODO: add option to fade in our out depending on flag!!!!
 aAction_FadeIn::aAction_FadeIn(int w, int h, float duration, SDL_Renderer* renderer, int r, int g, int b) {
 	mW = w;
 	mH = h;
-	
+
 	mR = r;
 	mG = g;
 	mB = b;
 
-	mDecrementer = 1000/duration;
+	mDecrementer = 1000 / duration;
 	mRenderer = renderer;
 }
 
@@ -172,7 +167,7 @@ void aAction_FadeIn::Update(float fElapsedTime) {
 		//green: 0,0,0
 		//orange: 0,0,0
 		//Red: 0,0,0
- 
+
 	//i need to convert the position in the texture, to the
 	SDL_SetRenderDrawBlendMode(mRenderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(mRenderer, mR, mG, mB, mOpacity);
@@ -233,7 +228,7 @@ aAction_Dialogue::aAction_Dialogue(
 	unsigned short int textDelayInMilliseconds,
 	unsigned short int delayToProgressDialogueMilliseconds,
 	bool forceSkipDialogueProgression
-	)
+)
 {
 	mTextDelayForNextCharacter = new aAction_Delay(textDelayInMilliseconds);
 	mDelayToProgressDialogue = new aAction_Delay(delayToProgressDialogueMilliseconds);
@@ -298,9 +293,9 @@ void aAction_Dialogue::Update(float elapsedTime) {
 		textRect.w = letterWidth;
 		textRect.h = letterHeight;
 		*/
-	//this maps the ascii value 
-					//by casting the char to int, it gives the ascii value. these ascii values line up 
-					//to the locations of the characters in the texture when you multiply the ascii value by the width.	
+		//this maps the ascii value 
+						//by casting the char to int, it gives the ascii value. these ascii values line up 
+						//to the locations of the characters in the texture when you multiply the ascii value by the width.	
 	mDialogueX = mXOffsetFromTextBox;
 	int maxStoppingXPointFordialogue = mDestRectForTextBox.w - 100;
 	// So this for loop is just 0 to mCurrentDialogueCharacter because we have to re-draw a certain set of characters, 
@@ -309,7 +304,7 @@ void aAction_Dialogue::Update(float elapsedTime) {
 
 	//so now mStartingDialogueCharacter should be 
 	//can we still leave this as is? can we loop through each word, then each cahr
-	
+
 	//loop through each word and print the character of each
 	//through each word..
 
@@ -351,27 +346,27 @@ void aAction_Dialogue::Update(float elapsedTime) {
 		//if its not, draw it. so i can draw as is, line by line but instead i can see if instead th
 
 		//mWordTokens
-		
+
 
 		int v = (int)mWrittenDialogue[x];
 		// Add checks for "special" characters 
 		//FOR EXAMPLE:
 		//   1.  if ; character, then force a key press to advance
 		//   2. if / character, then decrease the delay time.
-		
+
 		//semicolon:
 		if (v == 59) {
 			mForceSkipLine = true;
 		}
-		
+
 		const auto i = mMappingToCharacterTexture->find(v);
-		
-	// Split1
-	//  i need to split the string into words
-	// then i can count the number 
-	// of letters of each word. then see if it will 
-	// be written across the edge of the textbox. and if so. 
-	// go to the next line!!!
+
+		// Split1
+		//  i need to split the string into words
+		// then i can count the number 
+		// of letters of each word. then see if it will 
+		// be written across the edge of the textbox. and if so. 
+		// go to the next line!!!
 
 		if (i != mMappingToCharacterTexture->end() || mForceSkipLine)
 		{
@@ -399,13 +394,13 @@ void aAction_Dialogue::Update(float elapsedTime) {
 					// SDL_RenderCopy will return 0 on success, or -1 on error
 					SDL_RenderCopy(mRenderer, mDialogue, i->second, &destRect);
 					//add to the global texture render list.
-					
+
 				}
 				mDialogueX += mNextXPosIncrement;
 			}
 			// Set boundaries to make sure text does not go outside of the width/height of the textbox:
 			if (mDialogueX > (maxStoppingXPointFordialogue) || mForceSkipLine) {
-				
+
 				dialogueY += 56;//56 is the text height with some padding so there is space between lines. TODO: NEED TO MAKE THIS MEMBER VARIABLE
 				mDialogueX = mXOffsetFromTextBox;
 				mLineNumber += 1;
@@ -484,8 +479,8 @@ void aAction_Dialogue::Update(float elapsedTime) {
 			//if (!mAtEndOfTextBox) {
 				//if the next character is off the text box, draw anymore chars on that line.
 				/*if (mCurrentDialogueCharacter + 1 > )*/
-				mCurrentDialogueCharacter += 1;
-				mTextDelayForNextCharacter->Restart();
+			mCurrentDialogueCharacter += 1;
+			mTextDelayForNextCharacter->Restart();
 			//}
 		}
 
@@ -500,7 +495,7 @@ void aAction_Dialogue::Update(float elapsedTime) {
 		}
 
 	}
-	
+
 
 }
 //cout << "character: " << c << " in ascii value is: " << (int)c << " and divisible by 65 it is: " << v  << endl;

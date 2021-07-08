@@ -9,39 +9,40 @@
 
 class Player : public Entity
 {
+
+protected:
     float                   mMoveSpeed;
 
 
+
 public:
-	enum PlayerDirection {
-		
-		UP_RUN,
-		DOWN_RUN,
-		LEFT_RUN,
-		RIGHT_RUN,
-		UP_WALK,
-		DOWN_WALK,
-		LEFT_WALK,
-		RIGHT_WALK
-		
+	enum mDirection {
+		UP,
+		DOWN,
+		LEFT,
+		RIGHT
 	};
-	enum PlayerState {
+
+	enum mState {
 		IDLE,
 		DAMAGED,
 		ATTACKING,
-		MOVING
+		RUNNING,
+		WALKING,
+		STANDING
 	};
-
 	Player(SDL_Texture* tex);
 
 	Player(SDL_Texture* tex, int numCells, float duration, bool loopable);	//player w/ animation
 
-	PlayerDirection         mDirection;
+	void					SetState(mState newState);
+	bool					CheckAndSetDirection(mDirection dir);
 
-	PlayerState				mCurrentState;
-	PlayerState				mPreviousState;
+	mDirection				mDirection;
 
-	//if you're a player you have these textures. so good!
+	mState					mCurrentState;
+	mState					mPreviousState;
+	 
 	SDL_Texture*			mWalkLeftTexture;
 	SDL_Texture*			mWalkUpTexture;
 	SDL_Texture*			mWalkDownTexture;
@@ -81,11 +82,7 @@ public:
 
 	void					Damaged(int damageAmount);
 
-	void					SetState(PlayerState newState);
-
 	void					PlayerDamaged(float damageAmount);//eventually want to calculate damage based on weaknesses, attacker vs defender
-
-	bool				    checkAndSetDirection(Player::PlayerDirection dir);
 	//void					setAnimation(PlayerState state, PlayerDirection dir);
 };
 

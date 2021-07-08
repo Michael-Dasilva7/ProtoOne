@@ -16,12 +16,9 @@ Entity::Entity(SDL_Texture* tex)
 {
 	mColorChange = new ColorChange(tex, 255);
 	SDL_QueryTexture(tex, NULL, NULL, &mTexWidth, &mTexHeight);
-
     // default radius is average of half width and half height
     //mRadius = 0.5f * (0.5f * mTexWidth + 0.5f * mTexHeight);
     mRadius = 0.25f * (mTexWidth + mTexHeight);
-	//mCurrentAnimation(tex, 0, 0, false);
-
 };
 
 //Entity With Animation
@@ -80,9 +77,9 @@ void Entity::Draw(SDL_Renderer* renderer, Camera* camera,  SDL_RendererFlip flip
 
 void Entity::setAnimation(SDL_Texture* tex, int numCells, float duration, bool loopable, SDL_RendererFlip flipType)
 { 
-	//Animation(SDL_Texture* tex, int numCells, float duration, bool loopable, SDL_RendererFlip flipType = SDL_FLIP_NONE);		
 	//TODO:
-	//will need to change this when i work with different sprites acting upon each other. we want the width of the sprite to be smaller than the image!!!!!!!!!	
+	//will need to change this when i work with different sprites acting upon each other. 
+	//we want the width of the sprite to be smaller than the image!!!!!!!!!	
 
 	int texWidth = 0, texHeight = 0;
 	SDL_QueryTexture(tex, NULL, NULL, &texWidth, &texHeight);
@@ -94,6 +91,8 @@ void Entity::setAnimation(SDL_Texture* tex, int numCells, float duration, bool l
 	mCurrentAnimation->mDuration = duration;	
 	mCurrentAnimation->mIsLoopable = loopable;
 	mColorChange->SetTexture(tex);
+
+
 }
 
 void Entity::setAnimationTexture(SDL_Texture* tex) {
