@@ -93,7 +93,7 @@ public: // <-- HACK
 	bool				mDialogueMode;
 
 public:
-                        Gameplay(Game* game);
+                        Gameplay(Game* game, Sound* sound);
                         ~Gameplay();
 
     bool                IsActive() const        { return mIsActive; }

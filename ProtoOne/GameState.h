@@ -2,7 +2,7 @@
 #define GAME_STATE_H_
 
 #include <SDL.h>
-
+#include "Sound.h"
 // forward declaration of Game class (can't include Game.h here!)
 class Game;
 
@@ -10,10 +10,10 @@ class GameState
 {
 protected:
     Game*               mGame;
-
+	Sound*				mSound;
 public:
-                        GameState(Game* game)
-                            : mGame(game)
+                        GameState(Game* game, Sound* sound)
+                            : mGame(game), mSound(sound)
                         { }
 
     virtual             ~GameState() {}

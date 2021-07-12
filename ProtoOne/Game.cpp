@@ -1,12 +1,9 @@
 #include "Game.h"
-
-
 #include "Gameplay.h"
 #include "MainMenu.h"
-
+#include "Sound.h"
 #include <SDL_image.h>
 #include <iostream>
-
 Game::Game()
 //1024
 	: mScreenWidth(1920)
@@ -17,7 +14,8 @@ Game::Game()
 	, mShouldQuit(false)
     , mGameplayState(NULL)
     , mMainMenuState(NULL)
-    , mCurrentState(NULL)
+	, mCurrentState(NULL)
+	, mSound(NULL)
 {
 }
 
@@ -84,7 +82,7 @@ bool Game::Initialize()
 	mWindow = SDL_CreateWindow("Hello, SDL2!",
 								SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 								mScreenWidth, mScreenHeight,
-								SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+								SDL_WINDOW_SHOWN);
 	if (!mWindow) {
 		std::cerr << "*** Failed to create window: " << SDL_GetError() << std::endl;
 		return false;
@@ -101,7 +99,7 @@ bool Game::Initialize()
 	mKeys = SDL_GetKeyboardState(NULL);
 
 	//SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
-	SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_RESIZABLE);
+	SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 
 	/*
 	*  \sa SDL_RenderGetLogicalSize()
@@ -121,18 +119,23 @@ bool Game::Initialize()
 		return false;
 	}
 
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"); 
-
-
-    
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0"); 
+	//
+	//initialize the sounds
+	//
+	mSound = new Sound();
+	mSound->Init();
 	//
     // create all game states
     //
-    mGameplayState = new Gameplay(this);
+    mGameplayState = new Gameplay(this, mSound);
     mGameplayState->Initialize();
 
-    mMainMenuState = new MainMenu(this);
+    mMainMenuState = new MainMenu(this, mSound);
     mMainMenuState->Initialize();
+
+	//we cant initialize EVERYTHING now...not enough ram. will need to initiialize future levels at the
+	//time they are used. for example, battles, and different areas and groups of areas
 
     // set initial state
     mCurrentState = mMainMenuState;

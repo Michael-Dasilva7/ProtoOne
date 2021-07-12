@@ -7,7 +7,6 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
-
 aScriptProcessor::aScriptProcessor() {
 	userControlEnabled = true;
 }
@@ -53,7 +52,7 @@ void aScriptProcessor::ProcessActions(float fElapsedTime) {
 //	ptr[i] = &var[i]; // assign the address of integer.
 //}
 aAction_MoveTo::aAction_MoveTo(Entity* object, Vec2 end, float duration) {
-  mMoveableObject = object;
+	mMoveableObject = object;
 	mEnd = end;
 
 	mTimeSoFar = 0.0f;
@@ -104,7 +103,7 @@ void aAction_MoveTo::Update(float dt) {
 	mTimeSoFar += dt;
 	float t = mTimeSoFar / mDuration;
 	if (t > 1.0f) t = 1.0f;
-	
+
 	mMoveableObject->SetCenter((mEnd - mStart) * t + mStart);
 	mMoveableObject->mVelocity.x = (mEnd.x - mStart.x) / mDuration;
 	mMoveableObject->mVelocity.y = (mEnd.y - mStart.y) / mDuration;
@@ -439,15 +438,9 @@ void aAction_Dialogue::Update(float elapsedTime) {
 
 		//3. set the next start/end loop accordinly based on the next section of text
 
-		/*	mLineNumberif(lineNumber ) {
-			ClearText
-				resetDialogue
-				lineNumber = 0;
-		}*/
-
 		//if the next character is past the dialogue text passed into the action, poll for "is done" button
 		if (mCurrentDialogueCharacter + 1 > mWrittenDialogue.length()) {
-			// We are at the end of the provided dialogue
+			//We are now at the end of the provided dialogue
 			//make the polling logic a reusuable method:
 			//The below buttons are valid "progression" confirmation buttons
 			SDL_Event e;
@@ -464,24 +457,10 @@ void aAction_Dialogue::Update(float elapsedTime) {
 				mCheckForProgressDelay = true;
 			}
 		}
-		//else if (mAtEndOfTextBox) {
-		//	// We at the end of the text box
-		//	SDL_Event e;
-		//	SDL_PollEvent(&e);
-		//	if (e.key.keysym.scancode == SDL_SCANCODE_RETURN) {
-		//		mLineNumber = 1;
-		//		mStartingDialogueCharacter = mNextStartingDialogueCharacter;
-		//		mAtEndOfTextBox = false;
-		//	}
 
-		//}
 		else {
-			//if (!mAtEndOfTextBox) {
-				//if the next character is off the text box, draw anymore chars on that line.
-				/*if (mCurrentDialogueCharacter + 1 > )*/
 			mCurrentDialogueCharacter += 1;
 			mTextDelayForNextCharacter->Restart();
-			//}
 		}
 
 	}

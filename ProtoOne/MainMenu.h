@@ -15,9 +15,9 @@ class MainMenu : public GameState
     Button*             mBtnNew;
     Button*             mBtnResume;
     Button*             mBtnExit;
-
+	Sound* sound;
 public:
-                        MainMenu(Game* game);
+                        MainMenu(Game* game, Sound* sound);
                         ~MainMenu();
 
     void                Initialize() override;

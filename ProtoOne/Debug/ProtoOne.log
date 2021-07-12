@@ -1,0 +1,4 @@
+﻿  Gameplay.cpp
+c:\protoone\protoone\gameplay.cpp(122): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(135): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  ProtoOne.vcxproj -> C:\ProtoOne\ProtoOne\Debug\ProtoOne.exe

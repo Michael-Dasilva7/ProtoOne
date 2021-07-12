@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Button.cpp">
+      <Filter>Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="MainMenu.cpp">
+      <Filter>Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Gameplay.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Missile.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Battle.cpp">
+      <Filter>Battle</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Base\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorChange.cpp">
+      <Filter>Base\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEvents.cpp">
+      <Filter>Base\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GlobalsAreBad.cpp">
+      <Filter>Base\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Base\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Math.cpp">
+      <Filter>Base\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Base\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Util.cpp">
+      <Filter>Base\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Base\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Actions.cpp">
+      <Filter>Base\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerConstants.cpp">
+      <Filter>Constants</Filter>
+    </ClCompile>
+    <ClCompile Include="StoryScriptConstants.cpp">
+      <Filter>Constants</Filter>
+    </ClCompile>
+    <ClCompile Include="LayerManager.h">
+      <Filter>Base\Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Layer.h">
+      <Filter>Base\Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyConstants.cpp">
+      <Filter>Constants</Filter>
+    </ClCompile>
+    <ClCompile Include="NPC.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Source.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundConstants.cpp">
+      <Filter>Constants</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Button.h">
+      <Filter>Menus</Filter>
+    </ClInclude>
+    <ClInclude Include="MainMenu.h">
+      <Filter>Menus</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameplay.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Missile.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Battle.h">
+      <Filter>Battle</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowClone.h">
+      <Filter>Attacks</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyConstants.h">
+      <Filter>Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="Util.h">
+      <Filter>Base\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Base\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorChange.h">
+      <Filter>Base\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Base\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Base\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalsAreBad.h">
+      <Filter>Base\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Base\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Base\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Actions.h">
+      <Filter>Base\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyboardHandler.h">
+      <Filter>Base\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Base\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerConstants.h">
+      <Filter>Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="Weather.h">
+      <Filter>Base\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogue.h">
+      <Filter>Base\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StoryScriptConstants.h">
+      <Filter>Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="Sound.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="NPC.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundConstants.h">
+      <Filter>Constants</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundManager.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Gameplay">
+      <UniqueIdentifier>{59360e5a-49ac-4e2c-bf29-cf31b58e6104}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Menus">
+      <UniqueIdentifier>{de2dc336-aec8-4e55-b36b-85b3cfe64239}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base">
+      <UniqueIdentifier>{6b220ce4-2115-4821-8929-84ca57e0f2c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Battle">
+      <UniqueIdentifier>{a42370c6-dc82-4bac-9239-b1e81c875497}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Constants">
+      <UniqueIdentifier>{55383184-2e16-40b8-8b57-4c2d0de80814}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Attacks">
+      <UniqueIdentifier>{639f1468-a5bc-4bd4-a7e4-eaaf1ccb43c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Header Files">
+      <UniqueIdentifier>{a259b42c-7e09-490e-80ce-bf71faa347d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Source Files">
+      <UniqueIdentifier>{aab40a83-178e-45bc-a843-48d73ec75887}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sound">
+      <UniqueIdentifier>{a77b7e9b-2875-4158-a15c-5e738483ed7e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

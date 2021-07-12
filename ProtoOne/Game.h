@@ -2,11 +2,13 @@
 #define GAME_H_
 
 #include <SDL.h>
-
+ 
+#undef main
 #include "Gameplay.h"
 #include "MainMenu.h"
 #include "Actions.h"
 #include "LayerManager.h"
+#include "Sound.h"
 class Game
 {
 	int					mScreenWidth;
@@ -20,11 +22,10 @@ class Game
 
     Gameplay*           mGameplayState;
     MainMenu*           mMainMenuState;
-
     GameState*          mCurrentState;
 
 	LayerManager*       mLayerManager;
-	//ResourceManager*   mResourceManager;
+	Sound*				mSound;
 
 public:
 						Game();

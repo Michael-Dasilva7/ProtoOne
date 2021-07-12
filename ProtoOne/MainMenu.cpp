@@ -2,11 +2,11 @@
 #include "Gameplay.h"
 #include "Texture.h"
 #include "Game.h"
-
+#include "Sound.h"
 #include <iostream>
-
-MainMenu::MainMenu(Game* game)
-    : GameState(game)
+#include "SoundConstants.h"
+MainMenu::MainMenu(Game* game, Sound* sound)
+    : GameState(game, sound)
     , mBtnNewTex(NULL)
     , mBtnResumeTex(NULL)
     , mBtnExitTex(NULL)
@@ -38,6 +38,8 @@ void MainMenu::Initialize()
     mBtnResume->SetCenter(cx, cy - 100);
     mBtnNew->SetCenter(cx, cy);
     mBtnExit->SetCenter(cx, cy + 100);
+
+	mSound->playMusicFadeIn(SoundConstants::M_MP3_SO_TEMPERATE, 1, 1000);
 }
 
 void MainMenu::Shutdown()
@@ -107,7 +109,7 @@ void MainMenu::OnKeyDown(const SDL_KeyboardEvent& kbe)
 void MainMenu::OnMouseDown(const SDL_MouseButtonEvent& mbe)
 {
     if (mbe.button == SDL_BUTTON_LEFT) {
-
+		//mSound->playFalling();
         if (mGame->GetGameplayState()->IsActive()) {
             if (mBtnResume->Contains(mbe.x, mbe.y)) {
                 mGame->EnterGameplay();

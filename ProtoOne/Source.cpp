@@ -1,81 +1,82 @@
+
 #include "Sound.h"
-#include <SDL.h>
-#include <SDL_mixer.h>
-#include <stdio.h>
+#include "SoundConstants.h"
+#include "SoundManager.h"
 
 Sound::Sound()
 {
-	//call init before playing sounds
+	//since we are using shared pointers for music and SFX, do we need FREE MUS AND FREE CHUNK  to garage collect sounds and music???
 }
 
 bool Sound::Init()
 {
 	// Looking for music? Take a look at my library here:
+	mCurrentVolume = 2;
 
-
-	mCurrentVolume = 0;
 	bool success = true;
 	//Initialize SDL_mixer
-	if (Mix_OpenAudio(44100, AUDIO_S16SYS, 1, 2048) < 0)
+	if (Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 2048) < 0)
 	{
 		printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
 		success = false;
 	}
-	mLazer = Mix_LoadWAV("media/lazer1.wav");
-	if (mLazer == NULL)
-	{
-		printf("Failed to load lazer SDL_mixer Error: %s\n", Mix_GetError());
-		success = false;
-	}
-	mExplosion = Mix_LoadWAV("media/explode.wav");
-	if (mExplosion == NULL)
-	{
-		printf("Failed to load explosion! SDL_mixer Error: %s\n", Mix_GetError());
-		success = false;
-	}
+ 
 	return success;
 }
-void Sound::playLazer()
-{
-	Mix_PlayChannel(1, mLazer, 0);
-}
-void Sound::playExplosion()
-{
-	Mix_PlayChannel(-1, mExplosion, 0);
-}
-void Sound::playTime()
-{
 
-	music = Mix_LoadMUS("media/time.mp3");
-	Mix_FadeInMusic(music, -1, 4000);
-}
-void Sound::playAxelayTheme()
+/* Play an audio chunk on a specific channel.
+   If the specified channel is -1, play on the first free channel.
+   If 'loops' is greater than zero, loop the sound that many times.
+   If 'loops' is -1, loop inifinitely (~65000 times).
+   Returns which channel was used to play the sound.
+*/
+void Sound::playMusicFadeIn(string name, int loops, int fadeInMS)
 {
-	music = Mix_LoadMUS("media/time.mp3");
-	Mix_FadeInMusic(music, -1, 4000);
-//	Mix_PlayMusic(music, -1);
+	Mix_FadeInMusic(SoundManager::AcquireMus(SoundConstants::FOLDER_MUS.c_str() + name), loops, fadeInMS);
 }
+
+/* Play an audio chunk on a specific channel.
+	   If the specified channel is -1, play on the first free channel.
+	   If 'loops' is greater than zero, loop the sound that many times.
+	   If 'loops' is -1, loop inifinitely (~65000 times).
+	   Returns which channel was used to play the sound.
+*/
+void Sound::PlaySFX(string name, int channel, int loops) {
+
+	Mix_PlayChannel(-1, SoundManager::Acquire(SoundConstants::FOLDER_SFX.c_str() + name), 0);
+}
+
+
+//void Sound::PlaySoundEffect(int channel) {
+//	//mChannelOneSFX = Mix_LoadWAV("media/SFX/BAFallingDown.wav");
+//}
+
+//void Sound::LoadChannelOne() {
+//	
+//	//mFalling = Mix_LoadWAV("media/SFX/BAFallingDown.wav");
+//}
 
 void Sound::increaseVolume()
 {
 	Mix_Volume(-1,mCurrentVolume++);
 }
-void Sound::stopMusic()
-{
-	Mix_FreeMusic(music);
-	music = NULL;
-}
+//void Sound::stopMusic()
+//{
+//	Mix_FreeMusic(music);
+//	music = NULL;
+//}
+
 void Sound::shutdown()
 {
-	Mix_FreeChunk(mLazer);
-	mLazer = NULL;//to be safe
-	Mix_FreeChunk(mExplosion);
-	mExplosion = NULL;//to be safe
-	Mix_FreeChunk(med);
-	med = NULL;//to be safe
-	Mix_FreeChunk(low);
-	low = NULL;//to be safe
-
+	//Mix_FreeChunk(mLazer);
+	//mLazer = NULL;//to be safe
+	//Mix_FreeChunk(mExplosion);
+	//mExplosion = NULL;//to be safe
+	//Mix_FreeChunk(med);
+	//med = NULL;//to be safe
+	//Mix_FreeChunk(low);
+	//low = NULL;//to be safe
+	
 	while (Mix_Init(0))
 	{
 		Mix_Quit();

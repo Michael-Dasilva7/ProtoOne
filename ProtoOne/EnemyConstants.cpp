@@ -3,7 +3,7 @@
 #include "EnemyConstants.h"
 
 //char* dir = "./media";
-const std::string EnemyConstants::GIGA_GAIA_IDLE = "./media/gigaGaiaIdle.png"; 
+const std::string EnemyConstants::GIGA_GAIA_IDLE = "./media/cutscenes/intro/gigaGaiaIdle.png"; 
 const std::string EnemyConstants::GIGA_GAIA_SURPRISE = "./media/cutscenes/intro/bahamut.gif";
 const std::string EnemyConstants::GIGA_GAIA_HANDBLAST = "./media/cutscenes/intro/HandBlast.png";
 

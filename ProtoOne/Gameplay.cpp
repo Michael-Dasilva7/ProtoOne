@@ -3,13 +3,14 @@
 #include "Util.h"
 #include "GlobalsAreBad.h" 
 #include "ResourceManager.h"
+#include "SoundConstants.h"
 #include "StoryScriptConstants.h"
 #include "Actions.h"
 #include <iostream>
 #include <algorithm>
 
-Gameplay::Gameplay(Game* game)
-	: GameState(game)
+Gameplay::Gameplay(Game* game, Sound* sound)
+	: GameState(game, sound)
 	, mPlayer(NULL)
 	, mMissiles()
 	, mPlayerTex(NULL)
@@ -19,10 +20,9 @@ Gameplay::Gameplay(Game* game)
 	, mIsActive(false)
 	, mCamera(NULL)
 	, mGameplayKeyboardHandler()
-	, mDialogueMode(false)
-	//,mResourceManager(mGame->GetResourceManager())
+	, mDialogueMode(false) 
 	, mGameRenderer(mGame->GetRenderer())
-	//, mScript(&mGame->mScriptProcessor)
+
 {
 }
 
@@ -55,9 +55,7 @@ void Gameplay::Initialize()
 
 	mNarsheBackground = ResourceManager::Acquire("media/background/SnowCliff_Back.png", renderer);
 	mNarsheForeground = ResourceManager::Acquire("media/background/SnowCliff_Front.png", renderer);
-
 	mDesertBackground = ResourceManager::Acquire("media/background/desert/desertX4.png", renderer);
-
 
 	//mBgTex = ResourceManager::Acquire("media/background/darkforest.png", renderer);
 	//mBgTex = LoadTexture("media/background/blah.jpg", renderer);		 
@@ -74,15 +72,20 @@ void Gameplay::Shutdown()
 {
 	ClearLevel();
 
-	// delete the textures
 	SDL_DestroyTexture(mPlayerTex);
 	SDL_DestroyTexture(mShotTex);
 	SDL_DestroyTexture(mNarsheForeground);
 	SDL_DestroyTexture(mNarsheBackground);
 	SDL_DestroyTexture(mEnemyTex);
 	SDL_DestroyTexture(mExplosionTex);
+	SDL_DestroyTexture(mTextBoxFF6);
+	SDL_DestroyTexture(mDesertBackground);
+	SDL_DestroyTexture(mBgTexBack);
+	SDL_DestroyTexture(mExplosionTex);
+	SDL_DestroyTexture(mTextImage);
+	SDL_DestroyTexture(Text);
+	
 
-	//textureManager destroyActiveTextures :)
 
 }
 
@@ -92,7 +95,7 @@ void Gameplay::LoadLevel()
 
 	SDL_Renderer* renderer = mGame->GetRenderer();
 	//ClearLevel();
-
+	
 	SDL_QueryTexture(mDesertBackground, NULL, NULL, &mWorldWidth, &mWorldHeight);
 	//SDL_QueryTexture(mNarsheForeground, NULL, NULL, &mWorldWidth, &mWorldHeight);
 	mWorldWidth = mWorldWidth;
@@ -163,12 +166,16 @@ void Gameplay::LoadLevel()
 
 	// make camera follow the player
 	mCamera->SetTarget(mPlayer);
+
+	/////////////////
+	///INTRO BEGIN///
+	/////////////////
 	/*
 	LOAD GIGA GAIA OFF SCREEN
 	*/
 	Enemy* e = new Enemy(ResourceManager::Acquire(EnemyConstants::GIGA_GAIA_IDLE, renderer));
 	float x = mCamera->ViewLeft();
-	float y = mCamera->ViewTop();
+	float y = mCamera->ViewBottom()-300;
 	e->SetCenter(x, y);
 	e->SetLayer(1);
 	e->SetState(ENEMY_HOVER);
@@ -178,19 +185,13 @@ void Gameplay::LoadLevel()
 	Load Dragon off screen
 	*/
 	Enemy* ninjaBlue = new Enemy(ResourceManager::Acquire(EnemyConstants::NINJA_BLUE, renderer));
-	ninjaBlue->SetCenter(-500, 200);
+	ninjaBlue->SetCenter(500, 200);
 	ninjaBlue->SetLayer(1);
 	ninjaBlue->SetState(ENEMY_HOVER);
 	ninjaBlue->SetSpeedScale(0);
 
 	mEnemies.push_back(e);
-	//HOW DO WE MAKE SCENES HAPPEN ONE AFTER THE OTHER FROM DIFFERENT SCRIPTS?
-			/// I CAN PASS IN A POINTER TO THE OTHER SCRIPT< AND ADD AN ACTION AFTER ONE IS DONE. but this wont work evertime
-			//we need lots of info for certain action that arent there in other ones unless we pass it throgu and that is a 
-			//heavy operation or a pain in the ass
 
-
-	//used to keep track of player location to not call player calsseveryitme 
 	float newplayerX;
 	float newplayerY;
 
@@ -205,25 +206,30 @@ void Gameplay::LoadLevel()
 	newplayerX = mPlayer->Center().x;
 	newplayerY = mPlayer->Center().y + 500.0f;
 
+
+	mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 4000, mGame->GetRenderer(), 0, 0, 0));
+	//easrthquake, charge, cast spell, flash of lightning. bot3 lightning hits bof character
+	//ahem, sorry, he was in the wrong game....i will be the narrator of this plot and it is just
+	// a short showcase of what this engine allows :) and provides you with creative liberties
+
+	//summon an esper!
+
+	//talk to giga gaia. block an attack from his hand. 
 	//have the two characters move down to the same position
-	mScriptProcessor_Effects.AddAction(new aAction_MoveTo(mPlayer2, Vec2(newplayerX-20, newplayerY), 5.0f));
-	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 6.0f));
+	mScriptProcessor_Effects.AddAction(new aAction_MoveTo(mPlayer2, Vec2(newplayerX - 20, newplayerY), 2.0f));
+	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 2.0f));
 	//list of entities  with a list of durations and a list of locations 
-	mScriptProcessor_CharacterMovements.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::AFTER_FLASH, 45));
+	//mScriptProcessor_CharacterMovements.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::AFTER_FLASH, 45));
 	//once they press enter, she should wink and smile
 
-	mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 200, 10, 0));
-	mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 200, 10, 200));
-	mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 200, 200, 0));
+	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 100, mGame->GetRenderer(), 200, 10, 0));
+	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 100, mGame->GetRenderer(), 200, 10, 200));
+	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 100, mGame->GetRenderer(), 200, 200, 0));
 
 	//then we will say more and walk and introduce another character
-	mScriptProcessor_CharacterMovements.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, "This is a prototype RPG Engine that I worked; tirelessly on...; It is almost at a presentable point now!", 45));
-	mScriptProcessor_CharacterMovements.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, "I hope you enjoy it!", 45));
-
-	//Okay okay, I forgot to introduce my friend over here....
+	//mScriptProcessor_CharacterMovements.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, "This is a prototype RPG Engine that I worked; tirelessly on...; It is almost at a presentable point now!", 45));
+	//mScriptProcessor_CharacterMovements.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, "I hope you enjoy it!", 45));
 	//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::AFTER_FLASH, 45));
-
-
 
 	newplayerX += 100.0f;
 	newplayerY += 100.0f;
@@ -233,6 +239,11 @@ void Gameplay::LoadLevel()
 	newplayerY += 100.0f;
 	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 2.5f));
 
+	mSound->playMusicFadeIn(SoundConstants::M_MP3_MOONLIT_CITY, -1, 1000);
+	
+	/////////////////
+	///INTRO End/////
+	/////////////////
 	
 }
 
@@ -353,324 +364,329 @@ void Gameplay::Update(float dt)
 		mPlayer->Update(dt);
 	}
 
-		//mPlayer->SetCenter(mPlayer->Center() + 20 * mPlayer->mMoveSpeedScale * dt * moveVec);
-			// update enemies
-		for (auto& e : mEnemies) {
-			e->Update(dt);
+	//mPlayer->SetCenter(mPlayer->Center() + 20 * mPlayer->mMoveSpeedScale * dt * moveVec);
+		// update enemies
+	for (auto& e : mEnemies) {
+		e->Update(dt);
+	}
+
+	//
+	// update missiles
+	//
+
+	//These can be used for mini games :)
+	// go into a bar and throw bottles or something lol.
+
+	for (auto it = mMissiles.begin(); it != mMissiles.end(); ) {
+		Missile* m = *it;
+		m->Update(dt);
+		// check for collisions with player
+		if (m->GetShooter() != mPlayer) {
+			if (Dist(m->Center(), mPlayer->Center()) < m->Radius() + mPlayer->Radius()) {
+				m->SetHealth(0);
+				mPlayer->Damaged(10);
+				AddEffect(new Effect(mExplosionTex, 16, 1.0f, m->Center()));
+				// ignore collisions with player, for now
+			}
 		}
+		//make this check for bools with entities on whether we can interact with each other or not!! :)
+		//i.e.  
 
-		//
-		// update missiles
-		//
-
-		//These can be used for mini games :)
-		// go into a bar and throw bottles or something lol.
-
-		for (auto it = mMissiles.begin(); it != mMissiles.end(); ) {
-			Missile* m = *it;
-			m->Update(dt);
-			// check for collisions with player
-			if (m->GetShooter() != mPlayer) {
-				if (Dist(m->Center(), mPlayer->Center()) < m->Radius() + mPlayer->Radius()) {
-					m->SetHealth(0);
-					mPlayer->Damaged(10);
-					AddEffect(new Effect(mExplosionTex, 16, 1.0f, m->Center()));
-					// ignore collisions with player, for now
+		// check for collisions with enemies
+		//BATTLE!
+		for (auto e : mEnemies) {
+			if (e->IsAlive() && m->GetShooter() != e && Dist(m->Center(), e->Center()) < m->Radius() + e->Radius()) {
+				e->OnMissileImpact(m);
+				m->SetHealth(0);
+				AddEffect(new Effect(mExplosionTex, 16, 1.0f, m->Center()));
+				if (e->IsDead()) {
+					AddEffect(new Effect(mExplosionTex, 16, 1.0f, e->Center()));
 				}
 			}
-			//make this check for bools with entities on whether we can interact with each other or not!! :)
-			//i.e.  
-
-			// check for collisions with enemies
-			//BATTLE!
-			for (auto e : mEnemies) {
-				if (e->IsAlive() && m->GetShooter() != e && Dist(m->Center(), e->Center()) < m->Radius() + e->Radius()) {
-					e->OnMissileImpact(m);
-					m->SetHealth(0);
-					AddEffect(new Effect(mExplosionTex, 16, 1.0f, m->Center()));
-					if (e->IsDead()) {
-						AddEffect(new Effect(mExplosionTex, 16, 1.0f, e->Center()));
-					}
-				}
-			}
-
-			//Check for c
-			// remove missiles that leave world bounds or collide with stuff
-			if (m->Health() <= 0 || m->Bottom() < 0 || m->Top() > mWorldHeight || m->Right() < 0 || m->Left() > mWorldWidth) {
-				//delete *it;
-				mMorgue.push_back(m);
-				it = mMissiles.erase(it);
-			}
-			else {
-				++it;
-			}
 		}
 
-		// remove killed enemies
-		for (auto it = mEnemies.begin(); it != mEnemies.end(); ) {
-			if ((*it)->IsDead()) {
-				mMorgue.push_back(*it);
-				it = mEnemies.erase(it);
-			}
-			else {
-				++it;
-			}
+		//Check for c
+		// remove missiles that leave world bounds or collide with stuff
+		if (m->Health() <= 0 || m->Bottom() < 0 || m->Top() > mWorldHeight || m->Right() < 0 || m->Left() > mWorldWidth) {
+			//delete *it;
+			mMorgue.push_back(m);
+			it = mMissiles.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+
+	// remove killed enemies
+	for (auto it = mEnemies.begin(); it != mEnemies.end(); ) {
+		if ((*it)->IsDead()) {
+			mMorgue.push_back(*it);
+			it = mEnemies.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+
+	//
+	// apply non-penetration constraints
+	//
+	/*
+	REMOVE COMMENTS IF YOU WANT THE PLAYER TO CHECK COLLISION WITH THER ENEMIES.
+
+	WE NEED THIS LOGIC TO START RANDOM BATTLES! First area after the cutscene will be an open
+	area that we can rn into battles
+
+	for (auto it1 = mEnemies.begin(); it1 != mEnemies.end(); ++it1) {
+		Enemy* e = *it1;
+
+		// check for collisions with player
+		//closest enemy and player is the lowest value of all radius added together.
+		float minSep = e->Radius() + mPlayer->Radius();
+		float d = Dist(e->Center(), mPlayer->Center());
+		if (d < minSep) {
+			float depth = minSep - d;
+			Vec2 fromPlayer = e->Center() - mPlayer->Center();
+			fromPlayer.Normalize();
+			Vec2 pos = e->Center() + depth * fromPlayer;
+			e->SetCenter(pos);
 		}
 
-		//
-		// apply non-penetration constraints
-		//
-		/*
-		REMOVE COMMENTS IF YOU WANT THE PLAYER TO CHECK COLLISION WITH THER ENEMIES.
-
-		WE NEED THIS LOGIC TO START RANDOM BATTLES! First area after the cutscene will be an open
-		area that we can rn into battles
-
-		for (auto it1 = mEnemies.begin(); it1 != mEnemies.end(); ++it1) {
-			Enemy* e = *it1;
-
-			// check for collisions with player
-			//closest enemy and player is the lowest value of all radius added together.
-			float minSep = e->Radius() + mPlayer->Radius();
-			float d = Dist(e->Center(), mPlayer->Center());
+		// check for collisions with other enemies
+		auto it2 = it1;
+		for (++it2; it2 != mEnemies.end(); ++it2) {
+			Enemy* e2 = *it2;
+			float minSep = e->Radius() + e2->Radius();
+			float d = Dist(e->Center(), e2->Center());
 			if (d < minSep) {
 				float depth = minSep - d;
-				Vec2 fromPlayer = e->Center() - mPlayer->Center();
-				fromPlayer.Normalize();
-				Vec2 pos = e->Center() + depth * fromPlayer;
-				e->SetCenter(pos);
-			}
-
-			// check for collisions with other enemies
-			auto it2 = it1;
-			for (++it2; it2 != mEnemies.end(); ++it2) {
-				Enemy* e2 = *it2;
-				float minSep = e->Radius() + e2->Radius();
-				float d = Dist(e->Center(), e2->Center());
-				if (d < minSep) {
-					float depth = minSep - d;
-					Vec2 axis = e->Center() - e2->Center();     // collision axis
-					axis.Normalize();
-					Vec2 pos1 = e->Center() + 0.5f * depth * axis;
-					Vec2 pos2 = e2->Center() - 0.5f * depth * axis;
-					e->SetCenter(pos1);
-					e2->SetCenter(pos2);
-				}
+				Vec2 axis = e->Center() - e2->Center();     // collision axis
+				axis.Normalize();
+				Vec2 pos1 = e->Center() + 0.5f * depth * axis;
+				Vec2 pos2 = e2->Center() - 0.5f * depth * axis;
+				e->SetCenter(pos1);
+				e2->SetCenter(pos2);
 			}
 		}
-		*/
+	}
+	*/
 
-		ClipToWorldBounds(mPlayer);
-		// ***************
-		// **  CLIPPING **
-		// ***************
-		for (auto e : mEnemies) {
-			ClipToWorldBounds(e);
-		}
-
-		// **********************
-		// ******  CAMERA  ******
-		// **********************
-
-		int mx, my;
-		SDL_GetMouseState(&mx, &my);
-		//Vec2 mousePos = mCamera->ScreenToWorld(mx, my);
-		//Vec2 toMouse = mousePos - mPlayer->Center();
-		//Vec2 camPos = mPlayer->Center() + 0.3f * toMouse;
-		//mCamera->LookAt(camPos);
-
-		// update camera
-		mCamera->Update(dt);
-		//
-		// update all effects
-		//
-		for (auto it = mEffects.begin(); it != mEffects.end(); ) {
-			Effect* e = *it;
-			e->Update(dt);
-			if (e->IsDone()) {
-				delete e;
-				it = mEffects.erase(it);
-			}
-			else {
-				++it;
-			}
-		}
-
-		//
-		// clear the entity morgue
-		//
-		for (auto it = mMorgue.begin(); it != mMorgue.end(); ) {
-			Entity* ent = *it;
-			if (ent->mRefCount <= 0) {
-				delete ent;
-				it = mMorgue.erase(it);
-			}
-			else {
-				++it;
-			}
-		}
-
-		mIsActive = true;
-
-
+	ClipToWorldBounds(mPlayer);
+	// ***************
+	// **  CLIPPING **
+	// ***************
+	for (auto e : mEnemies) {
+		ClipToWorldBounds(e);
 	}
 
-	void Gameplay::Draw(float dt)
-	{
+	// **********************
+	// ******  CAMERA  ******
+	// **********************
 
-		SDL_Renderer* renderer = mGame->GetRenderer();
+	int mx, my;
+	SDL_GetMouseState(&mx, &my);
+	//Vec2 mousePos = mCamera->ScreenToWorld(mx, my);
+	//Vec2 toMouse = mousePos - mPlayer->Center();
+	//Vec2 camPos = mPlayer->Center() + 0.3f * toMouse;
+	//mCamera->LookAt(camPos);
 
-		//mScriptProcessor_Effects.ProcessActions(dt);
-
-		//LAYER 0 (BACKGROUND)
-		SDL_Rect distantBackground;
-
-		//distantBackground.x = 0;//RoundToInt(mCamera->ViewLeft());
-		//distantBackground.y = 0 ;//RoundToInt(mCamera->ViewTop());
-		//distantBackground.w = mWorldWidth;
-		//distantBackground.h = mGame->GetScreenHeight();
-		distantBackground.x = RoundToInt(mCamera->ViewLeft());
-		distantBackground.y = RoundToInt(mCamera->ViewTop());
-		distantBackground.w = mGame->GetScreenWidth();
-		distantBackground.h = mGame->GetScreenHeight();
-		SDL_RenderCopy(renderer, mDesertBackground, &distantBackground, NULL);
-		//cout << "world width: " << mWorldWidth << endl;
-
-		//LAYER 1 (Second Background)
-		for (auto& e : mEnemies) {
-			if (e->Entity::Layer() == 1) {
-				e->Draw(renderer, mCamera);
-			}
+	// update camera
+	mCamera->Update(dt);
+	//
+	// update all effects
+	//
+	for (auto it = mEffects.begin(); it != mEffects.end(); ) {
+		Effect* e = *it;
+		e->Update(dt);
+		if (e->IsDone()) {
+			delete e;
+			it = mEffects.erase(it);
 		}
-
-		for (auto& m : mMissiles) {
-			if (m->Entity::Layer() == 1) {
-				m->Draw(renderer, mCamera);
-			}
+		else {
+			++it;
 		}
+	}
 
-		/*SDL_Rect foregroundRect;
-		foregroundRect.x = 0;
-		foregroundRect.y = 0;
-		SDL_QueryTexture(mNarsheForeground, NULL, NULL, &foregroundRect.w, &foregroundRect.h);
-		SDL_RenderCopy(renderer, mNarsheForeground, &foregroundRect, NULL);
-	*/
-	//LAYER 2 (Main Level)
-		mPlayer->Draw(renderer, mCamera);
-		mPlayer2->Draw(renderer, mCamera);
-
-		for (auto& e : mEnemies) {
-			if (e->Entity::Layer() == 2) {
-				e->Draw(renderer, mCamera);
-			}
+	//
+	// clear the entity morgue
+	//
+	for (auto it = mMorgue.begin(); it != mMorgue.end(); ) {
+		Entity* ent = *it;
+		if (ent->mRefCount <= 0) {
+			delete ent;
+			it = mMorgue.erase(it);
 		}
-
-		for (auto& m : mMissiles) {
-			if (m->Entity::Layer() == 2) {
-				m->Draw(renderer, mCamera);
-			}
+		else {
+			++it;
 		}
+	}
 
-		// make animation
-		//make giga gaia stay still and appear once i get to the top and slowly make an entrance
-		//add sound/music
+	mIsActive = true;
 
-		//LAYER 3 (Foreground)
-		/*
 
-		Script documentation:
-		  - To have the character move while text is being drawn:
-				- add move action in character movements, then dialoge in dialogue actions
+}
 
-		*/
-		//mScript.ProcessActions(dt);
-		//Layer 4(next foreground)
-		mScriptProcessor_CharacterMovements.ProcessActions(dt);
+void Gameplay::Draw(float dt)
+{
 
-		//Layer 5 (Effects)
-		mScriptProcessor_Effects.ProcessActions(dt);
+	SDL_Renderer* renderer = mGame->GetRenderer();
 
-		for (auto& e : mEffects) {
+	//mScriptProcessor_Effects.ProcessActions(dt);
+
+	//LAYER 0 (BACKGROUND)
+	SDL_Rect distantBackground;
+
+	//distantBackground.x = 0;//RoundToInt(mCamera->ViewLeft());
+	//distantBackground.y = 0 ;//RoundToInt(mCamera->ViewTop());
+	//distantBackground.w = mWorldWidth;
+	//distantBackground.h = mGame->GetScreenHeight();
+	distantBackground.x = RoundToInt(mCamera->ViewLeft());
+	distantBackground.y = RoundToInt(mCamera->ViewTop());
+	distantBackground.w = mGame->GetScreenWidth();
+	distantBackground.h = mGame->GetScreenHeight();
+	SDL_RenderCopy(renderer, mDesertBackground, &distantBackground, NULL);
+	//cout << "world width: " << mWorldWidth << endl;
+
+	//LAYER 1 (Second Background)
+	for (auto& e : mEnemies) {
+		if (e->Entity::Layer() == 1) {
 			e->Draw(renderer, mCamera);
 		}
-
-
 	}
 
-	void Gameplay::OnKeyDown(const SDL_KeyboardEvent& kbe)
-	{
-
-		/*
-			Generally, scancodes are the true values emitted by the keyboard (hardware)
-			to the OS while keycode is what the OS/library maps it to based on the chosen layout.
-			The layout decides the mapping between scancode to some virtual key code.
-			It is part of the operating system's settings. Here, by layout, I mean the functional layout;
-			there're also mechanical and visual layouts. Read more about keyboard layouts in Wikipedia.
-			The concept of scan code and virtual key is explained better with illustration in MSDN.
-
-			However, SDL uses scancode to mean something different: the scancode of the key in the
-			US QWERTY keyboard whose location is the same as the one in question.
-
-			It's the device-independant way of denoting a key based on its location.
-
-			This is buried in an unusual location in SDL's manual: https://wiki.libsdl.org/MigrationGuide
-
-		*/
-
-		if (!mDialogueMode) {
-			switch (kbe.keysym.scancode) {
-
-			case SDL_SCANCODE_ESCAPE:
-				std::cout << "User pressed Escape" << std::endl;
-				//mGame->mShouldQuit = true;  // set quit flag
-				mGame->EnterMainMenu();
-				break;
-
-			case SDL_SCANCODE_P:
-				std::cout << mMissiles.size() << " missiles" << std::endl;
-				break;
-
-			case SDL_SCANCODE_V:
-				g_EnableDebugVisualization ^= true;
-				//mPlayer->mShowLocalAxes = !mPlayer->mShowLocalAxes;
-				break;
-
-			case SDL_SCANCODE_T:
-				g_NoTarget ^= true;
-				break;
-
-			case SDL_SCANCODE_LSHIFT:
-				mGameplayKeyboardHandler.btnPressed(SDL_SCANCODE_LSHIFT);
-				break;
-
-			case SDL_SCANCODE_A:
-				mGameplayKeyboardHandler.btnPressed(SDL_SCANCODE_A);
-				break;
-			case SDL_SCANCODE_S:
-				mGameplayKeyboardHandler.btnPressed(SDL_SCANCODE_S);
-				break;
-			case SDL_SCANCODE_D:
-				mGameplayKeyboardHandler.btnPressed(SDL_SCANCODE_D);
-				break;
-			case SDL_SCANCODE_W:
-				mGameplayKeyboardHandler.btnPressed(SDL_SCANCODE_W);
-				break;
-
-
-			}
+	for (auto& m : mMissiles) {
+		if (m->Entity::Layer() == 1) {
+			m->Draw(renderer, mCamera);
 		}
+	}
 
+	/*SDL_Rect foregroundRect;
+	foregroundRect.x = 0;
+	foregroundRect.y = 0;
+	SDL_QueryTexture(mNarsheForeground, NULL, NULL, &foregroundRect.w, &foregroundRect.h);
+	SDL_RenderCopy(renderer, mNarsheForeground, &foregroundRect, NULL);
+*/
+//LAYER 2 (Main Level)
+	mPlayer->Draw(renderer, mCamera);
+	mPlayer2->Draw(renderer, mCamera);
+
+	for (auto& e : mEnemies) {
+		if (e->Entity::Layer() == 2) {
+			e->Draw(renderer, mCamera);
+		}
+	}
+
+	for (auto& m : mMissiles) {
+		if (m->Entity::Layer() == 2) {
+			m->Draw(renderer, mCamera);
+		}
+	}
+
+	// make animation
+	//make giga gaia stay still and appear once i get to the top and slowly make an entrance
+	//add sound/music
+
+	//LAYER 3 (Foreground)
+	/*
+
+	Script documentation:
+	  - To have the character move while text is being drawn:
+			- add move action in character movements, then dialoge in dialogue actions
+
+	*/
+	//mScript.ProcessActions(dt);
+	//Layer 4(next foreground)
+	mScriptProcessor_CharacterMovements.ProcessActions(dt);
+
+	//Layer 5 (Effects)
+	mScriptProcessor_Effects.ProcessActions(dt);
+
+	for (auto& e : mEffects) {
+		e->Draw(renderer, mCamera);
 	}
 
 
-	void Gameplay::OnKeyUp(const SDL_KeyboardEvent& kbe)
-	{
-		mGameplayKeyboardHandler.btnReleased(kbe.keysym.scancode);
+}
+
+void Gameplay::OnKeyDown(const SDL_KeyboardEvent& kbe)
+{
+
+	/*
+		Generally, scancodes are the true values emitted by the keyboard (hardware)
+		to the OS while keycode is what the OS/library maps it to based on the chosen layout.
+		The layout decides the mapping between scancode to some virtual key code.
+		It is part of the operating system's settings. Here, by layout, I mean the functional layout;
+		there're also mechanical and visual layouts. Read more about keyboard layouts in Wikipedia.
+		The concept of scan code and virtual key is explained better with illustration in MSDN.
+
+		However, SDL uses scancode to mean something different: the scancode of the key in the
+		US QWERTY keyboard whose location is the same as the one in question.
+
+		It's the device-independant way of denoting a key based on its location.
+
+		This is buried in an unusual location in SDL's manual: https://wiki.libsdl.org/MigrationGuide
+
+	*/
+
+	if (!mDialogueMode) {
+		switch (kbe.keysym.scancode) {
+
+		case SDL_SCANCODE_ESCAPE:
+			std::cout << "User pressed Escape" << std::endl;
+			//mGame->mShouldQuit = true;  // set quit flag
+			mGame->EnterMainMenu();
+			break;
+
+		case SDL_SCANCODE_P:
+			std::cout << mMissiles.size() << " missiles" << std::endl;
+			break;
+
+		case SDL_SCANCODE_V:
+			g_EnableDebugVisualization ^= true;
+			//mPlayer->mShowLocalAxes = !mPlayer->mShowLocalAxes;
+			break;
+
+		case SDL_SCANCODE_T:
+			g_NoTarget ^= true;
+			
+			break;
+		case SDL_SCANCODE_SPACE:
+			 mSound->PlaySFX( SoundConstants::S_WAV_FALLING ,1,1);
+
+			break;
+		case SDL_SCANCODE_LSHIFT:
+			mGameplayKeyboardHandler.btnPressed(SDL_SCANCODE_LSHIFT);
+			break;
+
+		case SDL_SCANCODE_A:
+			mGameplayKeyboardHandler.btnPressed(SDL_SCANCODE_A);
+			break;
+		case SDL_SCANCODE_S:
+			mGameplayKeyboardHandler.btnPressed(SDL_SCANCODE_S);
+			break;
+		case SDL_SCANCODE_D:
+			mGameplayKeyboardHandler.btnPressed(SDL_SCANCODE_D);
+			break;
+		case SDL_SCANCODE_W:
+			mGameplayKeyboardHandler.btnPressed(SDL_SCANCODE_W);
+			break;
+
+
+		}
 	}
 
+}
 
-	void Gameplay::OnMouseDown(const SDL_MouseButtonEvent& mbe)
-	{
+
+void Gameplay::OnKeyUp(const SDL_KeyboardEvent& kbe)
+{
+	mGameplayKeyboardHandler.btnReleased(kbe.keysym.scancode);
+}
+
+
+void Gameplay::OnMouseDown(const SDL_MouseButtonEvent& mbe)
+{
+	if (mScriptProcessor_CharacterMovements.userControlEnabled && mGame->mScriptProcessor.userControlEnabled) {
 		if (mbe.button == SDL_BUTTON_LEFT) {
 			// shoot
 			std::cout << "Creating missile" << std::endl;
@@ -684,20 +700,21 @@ void Gameplay::Update(float dt)
 			mMissiles.push_back(m);
 		}
 	}
+}
 
-	//
-	void Gameplay::ClipToWorldBounds(Entity* ent)
-	{
-		if (ent->Left() < 0) {
-			ent->SetLeft(0);
-		}
-		else if (mPlayer->Right() > mWorldWidth) {
-			ent->SetRight((float)mWorldWidth);
-		}
-		if (mPlayer->Top() < 0) {
-			ent->SetTop(0);
-		}
-		else if (mPlayer->Bottom() > mWorldHeight) {
-			ent->SetBottom((float)mWorldHeight);
-		}
+//
+void Gameplay::ClipToWorldBounds(Entity* ent)
+{
+	if (ent->Left() < 0) {
+		ent->SetLeft(0);
 	}
+	else if (mPlayer->Right() > mWorldWidth) {
+		ent->SetRight((float)mWorldWidth);
+	}
+	if (mPlayer->Top() < 0) {
+		ent->SetTop(0);
+	}
+	else if (mPlayer->Bottom() > mWorldHeight) {
+		ent->SetBottom((float)mWorldHeight);
+	}
+}

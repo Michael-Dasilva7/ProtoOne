@@ -1,0 +1,49 @@
+﻿  Actions.cpp
+c:\protoone\protoone\actions.cpp(172): warning C4244: 'argument': conversion from 'float' to 'Uint8', possible loss of data
+c:\protoone\protoone\actions.cpp(172): warning C4244: 'argument': conversion from 'int16_t' to 'Uint8', possible loss of data
+c:\protoone\protoone\actions.cpp(178): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\protoone\protoone\actions.cpp(196): warning C4244: '-=': conversion from 'float' to 'unsigned short', possible loss of data
+c:\protoone\protoone\actions.cpp(242): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\actions.cpp(243): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\actions.cpp(249): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\actions.cpp(250): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\actions.cpp(282): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\actions.cpp(379): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+  Animation.cpp
+  Battle.cpp
+  Button.cpp
+  Camera.cpp
+  ColorChange.cpp
+  Enemy.cpp
+  EnemyConstants.cpp
+  Entity.cpp
+  Effect.cpp
+  Game.cpp
+  GameEvents.cpp
+  Gameplay.cpp
+c:\protoone\protoone\gameplay.cpp(122): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(135): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  GlobalsAreBad.cpp
+  Layer.h
+  LayerManager.h
+  MainMenu.cpp
+  Math.cpp
+  Missile.cpp
+  NPC.cpp
+  Generating Code...
+  Compiling...
+  Player.cpp
+c:\protoone\protoone\player.cpp(73): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\protoone\protoone\player.cpp(76): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\protoone\protoone\player.cpp(79): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\protoone\protoone\player.cpp(82): warning C4305: 'argument': truncation from 'double' to 'float'
+  Main.cpp
+  PlayerConstants.cpp
+  SoundConstants.cpp
+  SoundManager.cpp
+  Source.cpp
+  StoryScriptConstants.cpp
+  Texture.cpp
+  Util.cpp
+  Generating Code...
+msvcprtd.lib(MSVCP140D.dll) : fatal error LNK1112: module machine type 'x86' conflicts with target machine type 'x64'

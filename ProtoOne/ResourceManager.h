@@ -2,7 +2,6 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
-
 class ResourceManager {
 
 public:	

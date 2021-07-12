@@ -66,8 +66,8 @@ public:
 		return rtnVal;
 	};
 
-	void btnPressed(const Uint8 key) {std::cout << mKeyStates(key)<< " button Pressed." << std::endl; mKeyStates[key] = PRESSED; };
-	void btnReleased(const Uint8 key) { std::cout << mKeyStates(key) << " button Released." << std::endl;	mKeyStates[key] = RELEASED; };	
+	void btnPressed(const Uint8 key) { mKeyStates[key] = PRESSED; };
+	void btnReleased(const Uint8 key) {	mKeyStates[key] = RELEASED; };	
 
 };
 
