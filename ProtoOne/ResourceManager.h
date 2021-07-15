@@ -1,3 +1,6 @@
+#ifndef RESOURCEMANAGER_H_
+#define RESOURCEMANAGER_H_
+
 #include "Texture.h"
 #include <string>
 #include <memory>
@@ -254,3 +257,5 @@ std::unordered_map<int, SDL_Rect*>  ResourceManager::characterTexturePtrs;
 	SDL_Texture*  getUndineUp() {
 	return mMoveUpTexture;
 }*/
+
+#endif

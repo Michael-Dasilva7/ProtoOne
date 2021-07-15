@@ -41,22 +41,33 @@ public: // <-- HACK
 
 
 	/*
-	___________ BACKGROUNDS __________
+	___________ START BACKGROUNDS __________
 	*/
 	SDL_Texture*        mBgTexFront;
 	SDL_Texture*        mBgTexBack;
 	SDL_Texture*        mNarsheBackground;
 	SDL_Texture*        mNarsheForeground;
 	SDL_Texture*        mDesertBackground;
+	SDL_Texture*        mFigaroCastle;
 	/*
-	___________ BACKGROUNDS __________
+	___________ END BACKGROUNDS __________
 	*/
+
+	/*
+	___________ START FIGARO EFFECTS __________
+	*/
+
+	Effect*        mFigaroWindMill;
+	SDL_Texture*   mWindMillTex;
+	/*
+	___________ END FIGARO EFFECTS __________
+	*/
+
 
     SDL_Texture*        mExplosionTex;
 	SDL_Texture*        mTextImage;
 	SDL_Texture*		mTextBoxFF6;	
-	SDL_Texture*		
-		Text;
+	SDL_Texture*		Text;
 	 
 	SDL_Rect*		    mCharacters[22];
 	//whats the current total count of characters

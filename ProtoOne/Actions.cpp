@@ -7,6 +7,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
+
 aScriptProcessor::aScriptProcessor() {
 	userControlEnabled = true;
 }
@@ -20,7 +21,7 @@ void aScriptProcessor::ProcessActions(float fElapsedTime) {
 	//if (m_listActions.empty()) {
 	//	userControlEnabled = true;
 	//}
-	userControlEnabled = m_listActions.empty();
+	userControlEnabled =  m_listActions.empty();
 
 	if (!m_listActions.empty()) {
 		if (!m_listActions.front()->isDone) {
@@ -39,6 +40,37 @@ void aScriptProcessor::ProcessActions(float fElapsedTime) {
 
 	}
 }
+aAction_ChangeAnimation::aAction_ChangeAnimation(Entity* object, SDL_Texture* t[], int delayInMilliseconds) {
+	//if we want to change the textre
+	mEntity = object;
+	object->setAnimationTexture(t[0]);
+	mDelayAfterFirstAnimation = new aAction_Delay(delayInMilliseconds);
+	
+	//aScriptProcessor::userControlEnabled = false;
+}
+void aAction_ChangeAnimation::Start() {
+
+}
+void aAction_ChangeAnimation::Update(float dt) {
+	//color change
+	if (!mDelayAfterFirstAnimation->isDone) {
+		mDelayAfterFirstAnimation->Update(dt);
+		mEntity->addTimeToAnimation(dt);
+
+	}
+	else {
+		//change animation
+		//mEntity->setAnimationTexture(t[1]);
+		isDone = true;
+		//if (!mDelayToProgressDialogue->isDone) {
+		//	mDelayToProgressDialogue->Update(elapsedTime);
+		//}
+		//else {
+		//	isDone = true;
+		//}
+		 
+	}
+}
 
 /*
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -51,18 +83,17 @@ void aScriptProcessor::ProcessActions(float fElapsedTime) {
 //for (int i = 0; i < MAX; i++) {
 //	ptr[i] = &var[i]; // assign the address of integer.
 //}
-aAction_MoveTo::aAction_MoveTo(Entity* object, Vec2 end, float duration) {
+aAction_MoveTo::aAction_MoveTo(Entity* object, Vec2 end, float duration, bool animate) {
+	mAnimate = animate;
 	mMoveableObject = object;
+	mMoveableObject->mInCutscene = true;
 	mEnd = end;
-
 	mTimeSoFar = 0.0f;
 	mDuration = max(duration, 0.001f);//prevent divide by zero later and to cap durations
 	mVel = 2.0f;
-	//mDir = end - mStart;
-	//mDir.Normalize();
-	//mDir *= 1; 
-}
 
+}
+ 
 void aAction_MoveTo::Start() {
 
 	mStart = mMoveableObject->Center();
@@ -74,12 +105,10 @@ void aAction_MoveTo::Start() {
 	////x -   <
 	////y +   V
 	////Y -   ^
-
 	////0    >
 	////90   ^
 	////180  <
 	////260  V
-
 	//if (degreeofDirection < 60 && degreeofDirection > 25)
 	//{
 	//	//set direction and change player or entity to move based on direction and update velocity
@@ -107,15 +136,18 @@ void aAction_MoveTo::Update(float dt) {
 	mMoveableObject->SetCenter((mEnd - mStart) * t + mStart);
 	mMoveableObject->mVelocity.x = (mEnd.x - mStart.x) / mDuration;
 	mMoveableObject->mVelocity.y = (mEnd.y - mStart.y) / mDuration;
-	mMoveableObject->addTimeToAnimation(dt);
+	if (mAnimate) {
+		mMoveableObject->addTimeToAnimation(dt);
+	}
+	
 	//mMoveableObject->SetCenter(mMoveableObject->Center() + mDir * mVel);
 	if (mTimeSoFar >= mDuration) {
 		mMoveableObject->SetCenter(mEnd);
 		mMoveableObject->mVelocity.x = 0;
 		mMoveableObject->mVelocity.y = 0;
 		isDone = true;
+		mMoveableObject->mInCutscene = false;
 	}
-
 
 }
 
@@ -225,10 +257,12 @@ aAction_Dialogue::aAction_Dialogue(
 	SDL_Renderer* renderer,
 	const string writtenDialogue,
 	unsigned short int textDelayInMilliseconds,
+	SDL_Event e,
 	unsigned short int delayToProgressDialogueMilliseconds,
-	bool forceSkipDialogueProgression
+	bool forceSkipDialogueProgression	
 )
 {
+	mE = e;
 	mTextDelayForNextCharacter = new aAction_Delay(textDelayInMilliseconds);
 	mDelayToProgressDialogue = new aAction_Delay(delayToProgressDialogueMilliseconds);
 
@@ -443,14 +477,14 @@ void aAction_Dialogue::Update(float elapsedTime) {
 			//We are now at the end of the provided dialogue
 			//make the polling logic a reusuable method:
 			//The below buttons are valid "progression" confirmation buttons
-			SDL_Event e;
-			SDL_PollEvent(&e);
-
-			if (e.type == SDL_KEYDOWN) {
-				if (e.key.keysym.scancode == SDL_SCANCODE_RETURN) {
+			
+			SDL_PollEvent(&mE);
+			
+			if (mE.type == SDL_KEYDOWN) {
+				if (mE.key.keysym.scancode == SDL_SCANCODE_RETURN) {
 					mCheckForProgressDelay = true;
 					//e.key.keysym.scancode = NULL;
-					SDL_FlushEvent(e.type);
+					SDL_FlushEvent(mE.type);
 				}
 			}
 			else if (mForceSkipDialogueProgression) {

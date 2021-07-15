@@ -22,4 +22,11 @@ public:
 	const static std::string PlayerConstants::ANIM_TEX_UNDINE_RUN_RIGHT;
 	const static std::string PlayerConstants::ANIM_TEX_UNDINE_RUN_DOWN;
 
+
+	const static std::string PlayerConstants::ANIM_TEX_UNDINE_HIT;
+	const static std::string PlayerConstants::ANIM_TEX_UNDINE_HURT;
+	const static std::string PlayerConstants::ANIM_TEX_UNDINE_DEAD;
+
+	const static std::string PlayerConstants::ANIM_TEX_UNDINE_CHANT;
+
 };

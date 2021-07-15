@@ -42,6 +42,7 @@ public:
     MainMenu*           GetMainMenuState() const    { return mMainMenuState; }
 	//ResourceManager*    GetResourceManager() const  { return mResourceManager; }
 
+	SDL_Event			mE;
 
     void                EnterMainMenu();
     void                EnterGameplay();

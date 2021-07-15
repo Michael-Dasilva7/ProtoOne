@@ -4,30 +4,30 @@
 
 void Game::ProcessEvents()
 {
-    SDL_Event e;
-	while (SDL_PollEvent(&e)) {
-		switch (e.type) {
+    
+	while (SDL_PollEvent(&mE)) {
+		switch (mE.type) {
 		case SDL_QUIT:
 			OnQuit();
 			break;
 		case SDL_KEYDOWN:
-			OnKeyDown(e.key);
+			OnKeyDown(mE.key);
 			break;
 		case SDL_KEYUP:
-			OnKeyUp(e.key);
+			OnKeyUp(mE.key);
 			break;
 		case SDL_MOUSEBUTTONDOWN:
-			OnMouseDown(e.button);
+			OnMouseDown(mE.button);
 			break;
 		case SDL_MOUSEBUTTONUP:
-			OnMouseUp(e.button);
+			OnMouseUp(mE.button);
 			break;
 		case SDL_MOUSEMOTION:
-			OnMouseMotion(e.motion);
+			OnMouseMotion(mE.motion);
 			break;
 		case SDL_WINDOWEVENT:
-			if (e.window.event == SDL_WINDOWEVENT_RESIZED) {
-				OnWindowResized(e.window.data1, e.window.data2);
+			if (mE.window.event == SDL_WINDOWEVENT_RESIZED) {
+				OnWindowResized(mE.window.data1, mE.window.data2);
 			}
 			break;
 		default:

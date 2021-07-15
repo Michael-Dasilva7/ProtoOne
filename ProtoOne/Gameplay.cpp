@@ -56,6 +56,9 @@ void Gameplay::Initialize()
 	mNarsheBackground = ResourceManager::Acquire("media/background/SnowCliff_Back.png", renderer);
 	mNarsheForeground = ResourceManager::Acquire("media/background/SnowCliff_Front.png", renderer);
 	mDesertBackground = ResourceManager::Acquire("media/background/desert/desertX4.png", renderer);
+	mFigaroCastle = ResourceManager::Acquire("media/background/desert/figaroCastleX4.png", renderer);
+
+
 
 	//mBgTex = ResourceManager::Acquire("media/background/darkforest.png", renderer);
 	//mBgTex = LoadTexture("media/background/blah.jpg", renderer);		 
@@ -84,7 +87,7 @@ void Gameplay::Shutdown()
 	SDL_DestroyTexture(mExplosionTex);
 	SDL_DestroyTexture(mTextImage);
 	SDL_DestroyTexture(Text);
-	
+	SDL_DestroyTexture(mFigaroCastle);
 
 
 }
@@ -96,7 +99,9 @@ void Gameplay::LoadLevel()
 	SDL_Renderer* renderer = mGame->GetRenderer();
 	//ClearLevel();
 	
-	SDL_QueryTexture(mDesertBackground, NULL, NULL, &mWorldWidth, &mWorldHeight);
+	//whatever the size of the background is the size of the world....
+	SDL_QueryTexture(mFigaroCastle, NULL, NULL, &mWorldWidth, &mWorldHeight);
+ 
 	//SDL_QueryTexture(mNarsheForeground, NULL, NULL, &mWorldWidth, &mWorldHeight);
 	mWorldWidth = mWorldWidth;
 	mWorldHeight = mWorldHeight;
@@ -131,7 +136,7 @@ void Gameplay::LoadLevel()
 	mPlayer->mRunLeftTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_LEFT, renderer);
 	mPlayer->mRunRightTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_RIGHT, renderer);
 
-	mPlayer2 = new Player(ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, mGameRenderer), 4, 1, true);
+	mPlayer2 = new Player(ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_DOWN, mGameRenderer), 4, 1, true);
 	mPlayer2->SetCenter(mWorldWidth - 870, 0);
 
 	mPlayerTex = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
@@ -157,8 +162,58 @@ void Gameplay::LoadLevel()
 		mEnemies.push_back(e);
 	}*/
 
-	Game* game = GetGame();
 
+	/*
+		//background
+		//effects
+		//collisions
+		//NPCs
+			dialogue
+		//Event indicators / cutscene starters
+		enemies
+		treasure chests
+		signs
+		save points
+		Load Figaro
+	*/	
+	//if Figaro then
+	// load map
+	// name
+	// map class will have location of everyhing kind of like tiles
+	
+	//****************
+	//LOAD MAP EFFECTS
+	//****************
+	//mWindMillTex =
+	//will need a translate to differnet resolution sizes...
+	mWindMillTex  = ResourceManager::Acquire("./media/background/desert/figaroWindMillsX4.png", renderer);
+
+	//make the background 3 images that animate...make the background a class that animates
+	// animate...its quicker than adding 50 effects....
+
+	//UPDATE EFFECTS TO ADD OPAQUE RENDER. 
+	// OR AT LEAST CREATE A SPELL ACTION THAT CHANGES THE OPAQUENESS of textures. 
+	//it will take create an effect that doesnt loop
+		//texture
+		//position start
+		//position end.
+
+	//MAKE CHANGING AREAS
+
+	//MAKE AN INTRO LIKE OCTOPATH
+
+	//
+
+	//addd a battle system and when you touch enemies it goes to a battle state...
+
+	//then the player has stats and does dmg and have items and a status menu
+
+	
+	AddEffect(new Effect(mWindMillTex, 3, 2, true, Vec2(2752, 575)));
+	AddEffect(new Effect(mWindMillTex, 3, 2, true, Vec2(2700, 926)));
+ 
+	Game* game = GetGame();
+	
 	mCamera = new Camera((float)game->GetScreenWidth(),
 		(float)game->GetScreenHeight(),
 		(float)mWorldWidth,
@@ -171,12 +226,12 @@ void Gameplay::LoadLevel()
 	///INTRO BEGIN///
 	/////////////////
 	/*
-	LOAD GIGA GAIA OFF SCREEN
+	LOAD GIGA GAIA
 	*/
 	Enemy* e = new Enemy(ResourceManager::Acquire(EnemyConstants::GIGA_GAIA_IDLE, renderer));
 	float x = mCamera->ViewLeft();
-	float y = mCamera->ViewBottom()-300;
-	e->SetCenter(x, y);
+	float y = mCamera->ViewBottom();
+	e->SetCenter(x+100, y+300);
 	e->SetLayer(1);
 	e->SetState(ENEMY_HOVER);
 	e->SetSpeedScale(0);
@@ -184,13 +239,21 @@ void Gameplay::LoadLevel()
 	/*
 	Load Dragon off screen
 	*/
-	Enemy* ninjaBlue = new Enemy(ResourceManager::Acquire(EnemyConstants::NINJA_BLUE, renderer));
-	ninjaBlue->SetCenter(500, 200);
-	ninjaBlue->SetLayer(1);
-	ninjaBlue->SetState(ENEMY_HOVER);
-	ninjaBlue->SetSpeedScale(0);
+	//Enemy* ninjaBlue = new Enemy(ResourceManager::Acquire(EnemyConstants::NINJA_BLUE, renderer));
+	//ninjaBlue->SetCenter(500, 500);
+	//ninjaBlue->SetLayer(1);
+	//ninjaBlue->SetState(ENEMY_HOVER);
+	//ninjaBlue->SetSpeedScale(0);
 
-	mEnemies.push_back(e);
+	//Enemy* ninjaBlue2 = new Enemy(ResourceManager::Acquire(EnemyConstants::NINJA_BLUE, renderer));
+	//ninjaBlue2->SetCenter(500, 700);
+	//ninjaBlue2->SetLayer(1);
+	//ninjaBlue2->SetState(ENEMY_HOVER);
+	//ninjaBlue2->SetSpeedScale(0);
+
+	mEnemies.push_back(e);/*
+	mEnemies.push_back(ninjaBlue);
+	mEnemies.push_back(ninjaBlue2);*/
 
 	float newplayerX;
 	float newplayerY;
@@ -206,18 +269,29 @@ void Gameplay::LoadLevel()
 	newplayerX = mPlayer->Center().x;
 	newplayerY = mPlayer->Center().y + 500.0f;
 
+	mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 2000, mGame->GetRenderer(), 0, 0, 0));
+	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_2, 45, mGame->mE));
+	mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX + 100, newplayerY), 2.0f));
+	SDL_Texture* t[] = {
+		ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_HIT,renderer),
+		ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_HURT, renderer)
+	};
+	mScriptProcessor_CharacterMovements.AddAction(new aAction_ChangeAnimation(mPlayer, t, 3000));
+	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(e, Vec2(e->Center().x, e->Center().y - 500), 1.5f, false));
 
-	mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 4000, mGame->GetRenderer(), 0, 0, 0));
 	//easrthquake, charge, cast spell, flash of lightning. bot3 lightning hits bof character
 	//ahem, sorry, he was in the wrong game....i will be the narrator of this plot and it is just
 	// a short showcase of what this engine allows :) and provides you with creative liberties
-
 	//summon an esper!
-
 	//talk to giga gaia. block an attack from his hand. 
 	//have the two characters move down to the same position
-	mScriptProcessor_Effects.AddAction(new aAction_MoveTo(mPlayer2, Vec2(newplayerX - 20, newplayerY), 2.0f));
-	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 2.0f));
+
+	//mScriptProcessor_Effects.AddAction(new aAction_MoveTo(mPlayer2, Vec2(newplayerX - 20, newplayerY), 2.0f));
+	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 2.0f));
+	//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_2, 45));
+	//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_2, 45, mGame->mE));
+
+
 	//list of entities  with a list of durations and a list of locations 
 	//mScriptProcessor_CharacterMovements.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::AFTER_FLASH, 45));
 	//once they press enter, she should wink and smile
@@ -229,21 +303,19 @@ void Gameplay::LoadLevel()
 	//then we will say more and walk and introduce another character
 	//mScriptProcessor_CharacterMovements.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, "This is a prototype RPG Engine that I worked; tirelessly on...; It is almost at a presentable point now!", 45));
 	//mScriptProcessor_CharacterMovements.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, "I hope you enjoy it!", 45));
-	//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::AFTER_FLASH, 45));
 
-	newplayerX += 100.0f;
-	newplayerY += 100.0f;
-	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer2, Vec2(newplayerX, newplayerY), 2.5f));
+//ENEMY ACTIONS
+	//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(ninjaBlue,Vec2(100,100), 2.5f,false) );
 
-	newplayerX += 100.0f;
-	newplayerY += 100.0f;
-	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 2.5f));
+	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 2.5f));
+	//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, Vec2(0, newplayerY), 6.0f));
 
-	mSound->playMusicFadeIn(SoundConstants::M_MP3_MOONLIT_CITY, -1, 1000);
+//MUSIC!
+	//mSound->playMusicFadeIn(SoundConstants::M_MP3_WA_ADELHYDE_CASTLE, -1, 1000);
 	
-	/////////////////
-	///INTRO End/////
-	/////////////////
+	
+
+ 
 	
 }
 
@@ -304,7 +376,6 @@ void Gameplay::Update(float dt)
 	if (mScriptProcessor_CharacterMovements.userControlEnabled && mGame->mScriptProcessor.userControlEnabled) {
 
 		if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_LSHIFT)) {
-			mPlayer->mMoveSpeedScale = PlayerConstants::RUN_SPEED_MODIFYER;
 			mPlayer->SetState(mPlayer->RUNNING);
 		}
 		else {
@@ -337,18 +408,17 @@ void Gameplay::Update(float dt)
 			mGameplayKeyboardHandler.setIdleKeyState(SDL_SCANCODE_D);
 		}
 
-
 		if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_W)) {
 			mPlayer->mVelocity.y = -2;
 		}
-		else if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_A)) {
+		 if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_A)) {
 			mPlayer->mVelocity.x = -2;
 
 		}
-		else if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_S)) {
+		 if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_S)) {
 			mPlayer->mVelocity.y = 2;
 		}
-		else if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_D)) {
+		 if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_D)) {
 			mPlayer->mVelocity.x = 2;
 		}
 
@@ -359,6 +429,7 @@ void Gameplay::Update(float dt)
 			int width = mGame->GetScreenWidth();
 			int height = mGame->GetScreenHeight();
 			mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 255, 255, 230));
+			mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_SPACE);
 		}
 
 		mPlayer->Update(dt);
@@ -385,7 +456,7 @@ void Gameplay::Update(float dt)
 			if (Dist(m->Center(), mPlayer->Center()) < m->Radius() + mPlayer->Radius()) {
 				m->SetHealth(0);
 				mPlayer->Damaged(10);
-				AddEffect(new Effect(mExplosionTex, 16, 1.0f, m->Center()));
+				AddEffect(new Effect(mExplosionTex, 16, 1.0f, false, m->Center()));
 				// ignore collisions with player, for now
 			}
 		}
@@ -398,9 +469,9 @@ void Gameplay::Update(float dt)
 			if (e->IsAlive() && m->GetShooter() != e && Dist(m->Center(), e->Center()) < m->Radius() + e->Radius()) {
 				e->OnMissileImpact(m);
 				m->SetHealth(0);
-				AddEffect(new Effect(mExplosionTex, 16, 1.0f, m->Center()));
+				AddEffect(new Effect(mExplosionTex, 16, 1.0f, false, m->Center()));
 				if (e->IsDead()) {
-					AddEffect(new Effect(mExplosionTex, 16, 1.0f, e->Center()));
+					AddEffect(new Effect(mExplosionTex, 16, 1.0f, false, e->Center()));
 				}
 			}
 		}
@@ -431,11 +502,11 @@ void Gameplay::Update(float dt)
 	//
 	// apply non-penetration constraints
 	//
-	/*
-	REMOVE COMMENTS IF YOU WANT THE PLAYER TO CHECK COLLISION WITH THER ENEMIES.
 
-	WE NEED THIS LOGIC TO START RANDOM BATTLES! First area after the cutscene will be an open
-	area that we can rn into battles
+	//REMOVE COMMENTS IF YOU WANT THE PLAYER TO CHECK COLLISION WITH THER ENEMIES.
+
+	//WE NEED THIS LOGIC TO START RANDOM BATTLES! First area after the cutscene will be an open
+	//area that we can rn into battles
 
 	for (auto it1 = mEnemies.begin(); it1 != mEnemies.end(); ++it1) {
 		Enemy* e = *it1;
@@ -469,7 +540,7 @@ void Gameplay::Update(float dt)
 			}
 		}
 	}
-	*/
+	
 
 	ClipToWorldBounds(mPlayer);
 	// ***************
@@ -499,6 +570,7 @@ void Gameplay::Update(float dt)
 		Effect* e = *it;
 		e->Update(dt);
 		if (e->IsDone()) {
+		
 			delete e;
 			it = mEffects.erase(it);
 		}
@@ -523,16 +595,16 @@ void Gameplay::Update(float dt)
 
 	mIsActive = true;
 
+	//if area
+
 
 }
 
 void Gameplay::Draw(float dt)
 {
-
 	SDL_Renderer* renderer = mGame->GetRenderer();
 
-	//mScriptProcessor_Effects.ProcessActions(dt);
-
+	//mScriptProcessor_EffectsProcessActions(dt);
 	//LAYER 0 (BACKGROUND)
 	SDL_Rect distantBackground;
 
@@ -544,8 +616,13 @@ void Gameplay::Draw(float dt)
 	distantBackground.y = RoundToInt(mCamera->ViewTop());
 	distantBackground.w = mGame->GetScreenWidth();
 	distantBackground.h = mGame->GetScreenHeight();
-	SDL_RenderCopy(renderer, mDesertBackground, &distantBackground, NULL);
+	SDL_RenderCopy(renderer, mFigaroCastle, &distantBackground, NULL);
 	//cout << "world width: " << mWorldWidth << endl;
+
+
+	for (auto& e : mEffects) {
+		e->Draw(renderer, mCamera);
+	}
 
 	//LAYER 1 (Second Background)
 	for (auto& e : mEnemies) {
@@ -601,10 +678,10 @@ void Gameplay::Draw(float dt)
 	//Layer 5 (Effects)
 	mScriptProcessor_Effects.ProcessActions(dt);
 
-	for (auto& e : mEffects) {
-		e->Draw(renderer, mCamera);
-	}
 
+	/*for (auto& e : mEffects) {
+		e->Draw(renderer, mCamera);
+	}*/
 
 }
 

@@ -61,7 +61,7 @@ bool Game::Run()
 bool Game::Initialize()
 {
     std::cout << "Initializing game" << std::endl;
-
+	
 	//
 	// initialize SDL
 	//
@@ -99,7 +99,7 @@ bool Game::Initialize()
 	mKeys = SDL_GetKeyboardState(NULL);
 
 	//SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
-	SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	//SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 
 	/*
 	*  \sa SDL_RenderGetLogicalSize()

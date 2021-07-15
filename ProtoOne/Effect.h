@@ -11,7 +11,7 @@ class Effect
     Vec2                        mCenterPos; // position of sprite center in world coordinates
 
 public:
-                                Effect(SDL_Texture* tex, int numCells, float duration, const Vec2& pos);
+                                Effect(SDL_Texture* tex, int numCells, float duration, bool loopable, const Vec2& pos);
 
     void                        Update(float dt)    { mAnim.AddTime(dt); }
 

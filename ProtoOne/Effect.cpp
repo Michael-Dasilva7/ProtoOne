@@ -1,7 +1,7 @@
 #include "Effect.h"
 
-Effect::Effect(SDL_Texture* tex, int numCells, float duration, const Vec2& pos)
-    : mAnim(tex, numCells, duration, false)
+Effect::Effect(SDL_Texture* tex, int numCells, float duration,bool loopable, const Vec2& pos)
+    : mAnim(tex, numCells, duration, loopable)
     , mCenterPos(pos)
 {
 }

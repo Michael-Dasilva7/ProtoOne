@@ -39,7 +39,7 @@ void MainMenu::Initialize()
     mBtnNew->SetCenter(cx, cy);
     mBtnExit->SetCenter(cx, cy + 100);
 
-	mSound->playMusicFadeIn(SoundConstants::M_MP3_SO_TEMPERATE, 1, 1000);
+	//mSound->playMusicFadeIn(SoundConstants::M_MP3_SO_TEMPERATE, 1, 1000);
 }
 
 void MainMenu::Shutdown()

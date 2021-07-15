@@ -7,8 +7,7 @@ using namespace std;
 #include <list>
 #include <unordered_map>
 #include "Player.h"
-
-
+#include "Animation.h"
 class Action {
 
 public:
@@ -42,16 +41,22 @@ public:
 
 };
 
+
+
+
+
 class aAction_MoveTo : public Action
 {
 
 public:
-	aAction_MoveTo(Entity* object, Vec2 end, float duration);
+	aAction_MoveTo(Entity* object, Vec2 end, float duration, bool animate = true);
+ 
 	void Start() override;
 	void Update(float fElapsedTime) override;	
 
 	float mVel;
 	Vec2  mDir;
+	bool  mAnimate;
 
 private:
 	Entity*  mMoveableObject;
@@ -59,6 +64,7 @@ private:
 	Vec2	 mEnd;
 	float    mTimeSoFar;
 	float    mDuration;
+	
 };
 
 class aAction_FadeIn : public Action
@@ -95,6 +101,21 @@ public:
 	aAction_Delay(unsigned short int durationInMilliseconds);
 	void Restart();	
 	void Update(float elapsedTime) override;            
+};
+
+
+class aAction_ChangeAnimation : public Action
+{
+
+public:
+	aAction_ChangeAnimation(Entity* object, SDL_Texture* t[], int delayInMilliseconds);
+	void Start() override;
+	void Update(float fElapsedTime) override;
+
+	Entity*  mEntity;
+	aAction_Delay* mDelayAfterFirstAnimation;
+	SDL_Texture* mTextures[];
+
 };
 
 class aAction_Dialogue : public Action {
@@ -135,7 +156,7 @@ public:
 	bool mCheckForProgressDelay;
 
 	int mFlashingCounter;
-
+	SDL_Event mE;
 	std::vector<std::string> mWordTokens;
 
 	aAction_Delay* mTextDelayForNextCharacter;
@@ -155,8 +176,10 @@ public:
 					SDL_Renderer* renderer,
 					string writtenDialogue,
 					unsigned short int textDelayInMilliseconds,
+					SDL_Event e,
 					unsigned short int delayToProgressDialogueMilliseconds = 0,//optional
 					bool forceSkipDialogueProgression = false //optional
+					
 					);
 
 	void Update(float elapsedTime) override;

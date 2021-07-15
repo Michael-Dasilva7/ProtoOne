@@ -19,6 +19,7 @@ Entity::Entity(SDL_Texture* tex)
     // default radius is average of half width and half height
     //mRadius = 0.5f * (0.5f * mTexWidth + 0.5f * mTexHeight);
     mRadius = 0.25f * (mTexWidth + mTexHeight);
+	mInCutscene = false;
 };
 
 //Entity With Animation
@@ -41,7 +42,7 @@ Entity::Entity(SDL_Texture* tex, int numCells, float duration, bool loopable)
 	//dedouple this later so we can have any type of animation later.
 	mCurrentAnimation = new Animation(tex, numCells, duration, loopable);
 	//setAnimation();
-
+	mInCutscene = false;
 };
 
 Entity::~Entity()

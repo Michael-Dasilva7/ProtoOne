@@ -29,6 +29,7 @@ protected:
 	
 
 public:
+	bool					mInCutscene;
 	Vec2					mVelocity;
 	//forward declaring class Animation to prevent circular dependency.
 	// therefore i need to declare animation as a pointer because its just a header

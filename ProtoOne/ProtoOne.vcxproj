@@ -177,6 +177,7 @@
     <ClCompile Include="GameEvents.cpp" />
     <ClCompile Include="Gameplay.cpp" />
     <ClCompile Include="GlobalsAreBad.cpp" />
+    <ClCompile Include="GrassLandsGamePlay.cpp" />
     <ClCompile Include="Layer.h" />
     <ClCompile Include="LayerManager.h" />
     <ClCompile Include="MainMenu.cpp" />
@@ -194,6 +195,7 @@
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GrassLandsGamePlay.h" />
     <ClInclude Include="NPC.h" />
     <ClInclude Include="Actions.h" />
     <ClInclude Include="Animation.h" />
