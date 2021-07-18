@@ -44,6 +44,8 @@ public:
     int                         WorldToScreenYD(float wy, float depth) const;
 
     Vec2                        ScreenToWorld(int scrx, int scry) const;
+
+	Vec2                        WorldToScreenVec(float wx, float wy) const;
     SDL_Point                   WorldToScreen(float wx, float wy) const;
 
     Vec2                        ScreenToWorld(const SDL_Point& scrpos) const;
@@ -106,6 +108,15 @@ inline SDL_Point Camera::WorldToScreen(float wx, float wy) const
     scrpos.y = WorldToScreenY(wy);
     return scrpos;
 }
+
+inline Vec2 Camera::WorldToScreenVec(float wx, float wy) const
+{
+	Vec2 scrpos;
+	scrpos.x = WorldToScreenX(wx);
+	scrpos.y = WorldToScreenY(wy);
+	return scrpos;
+}
+
 
 inline Vec2 Camera::ScreenToWorld(const SDL_Point& scrpos) const
 {

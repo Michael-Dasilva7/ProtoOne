@@ -13,7 +13,7 @@ class NPC
 public:
 	NPC(SDL_Texture* tex, int numCells, float duration, const Vec2& pos);
 
-	void                        Update(float dt) { mAnim.AddTime(dt); }
+	void                        Update(float dt);
 
 	bool                        IsDone() const { return mAnim.IsDone(); }
 

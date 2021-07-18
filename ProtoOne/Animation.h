@@ -14,15 +14,19 @@ class Animation
     float							mTime;              // current time position (in seconds)	
 
 public:	
-									Animation(SDL_Texture* tex, int numCells, float duration, bool loopable, SDL_RendererFlip flipType = SDL_FLIP_NONE);
+									Animation(SDL_Texture* tex, int numCells, float duration, bool loopable, SDL_RendererFlip flipType = SDL_FLIP_NONE, bool isBackground = false);
+									
 									~Animation();
+	
 	SDL_RendererFlip				mFlipType;
 	int								mCellWidth;
 	int								mCellHeight;
 	int								mNumCells;
 	float							mDuration;          // in seconds
 	bool							mIsLoopable;
-    
+
+	bool							mIsBackground;		//used to change how camera acts. we want it to be stationary if a background and not change based on camera
+
 	void							AddTime(float dt);
 
     bool							IsDone() const      { return mTime >= mDuration; }

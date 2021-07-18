@@ -1,7 +1,7 @@
 #include "Animation.h" 
 #include <cmath>
 
-Animation::Animation(SDL_Texture* tex, int numCells, float duration, bool loopable, SDL_RendererFlip flipType)
+Animation::Animation(SDL_Texture* tex, int numCells, float duration, bool loopable, SDL_RendererFlip flipType, bool isBackground)
     : mTex(tex)
     , mNumCells(numCells)
     , mDuration(duration)
@@ -19,6 +19,7 @@ Animation::Animation(SDL_Texture* tex, int numCells, float duration, bool loopab
     mCellWidth = texWidth / numCells;
     mCellHeight = texHeight;
 	mFlipType = flipType;
+	mIsBackground = isBackground;
 }
 
 Animation::~Animation()
@@ -85,8 +86,8 @@ void Animation::Draw(SDL_Renderer* renderer, const Vec2& pos, Camera* camera) co
 		0.625 * 4 = 2.5
 		2.5 casted to an int is 2(it's truncated)
 
-		still second frame! the math works! :) (trust me its tested). man who thought of this simple effective trick?!
-		only problem is, 
+		still second frame! the math works! :) (trust me its tested). man, who thought of this simple effective trick?!
+		only problem is,....
 
 		*/
         cellIndex = (int)(mTime / mDuration * mNumCells);
@@ -102,10 +103,31 @@ void Animation::Draw(SDL_Renderer* renderer, const Vec2& pos, Camera* camera) co
     SDL_Rect screenRect;
     screenRect.w = mCellWidth;
     screenRect.h = mCellHeight;
-    screenRect.x = camera->WorldToScreenX(pos.x - 0.5f * mCellWidth);
-    screenRect.y = camera->WorldToScreenY(pos.y - 0.5f * mCellHeight);
+
+
+	if (mIsBackground) {
+		screenRect.x =pos.x;
+		screenRect.y = pos.y;
+	}
+	else
+	{
+		screenRect.x = camera->WorldToScreenX(pos.x - 0.5f * mCellWidth);
+		screenRect.y = camera->WorldToScreenY(pos.y - 0.5f * mCellHeight);
+	}
 
     SDL_RenderCopyEx(renderer, mTex, &texRect, &screenRect, 0.0, NULL, mFlipType);
+
+
+	//	player center x : 348
+	//	player center y : -157
+	//	World To ScreenX(using 0 as position x and 4096) : -2395
+	//	World To ScreenY(using 0 as position x and 3469) : -1577
+	//	camera view left : 348
+	//	camera view camera top : -157
+	//	camera view bottom : 867
+	//	camera view right : 2024
+	//	screen width 1676
+	//	screen height : 1024
 
 }
 
@@ -135,8 +157,17 @@ void Animation::Draw(SDL_Renderer* renderer, const Vec2& pos, Camera* camera, Ui
 	SDL_Rect screenRect;
 	screenRect.w = mCellWidth;
 	screenRect.h = mCellHeight;
-	screenRect.x = camera->WorldToScreenX(pos.x - 0.5f * mCellWidth);
-	screenRect.y = camera->WorldToScreenY(pos.y - 0.5f * mCellHeight);
+
+	if (mIsBackground) {
+		screenRect.x = pos.x;
+		screenRect.y = pos.y;
+	}
+	else
+	{
+		screenRect.x = camera->WorldToScreenX(pos.x - 0.5f * mCellWidth);
+		screenRect.y = camera->WorldToScreenY(pos.y - 0.5f * mCellHeight);
+		
+	}
 	SDL_SetTextureAlphaMod(mTex, alpha);
 	
 	//Add Layer 

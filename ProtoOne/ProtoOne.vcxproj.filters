@@ -91,6 +91,9 @@
     <ClCompile Include="GrassLandsGamePlay.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
+    <ClCompile Include="BackgroundConstants.cpp">
+      <Filter>Constants</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h">
@@ -188,6 +191,9 @@
     </ClInclude>
     <ClInclude Include="GrassLandsGamePlay.h">
       <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="BackgroundConstants.h">
+      <Filter>Constants</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

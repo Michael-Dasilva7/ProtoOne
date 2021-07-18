@@ -5,26 +5,26 @@ Camera::Camera(float viewWidth, float viewHeight, float worldWidth, float worldH
     , mWorldHeight(worldHeight)
     , mViewWidth(viewWidth)
     , mViewHeight(viewHeight)
-    , mViewLeft(0.5f * worldWidth - 0.5f * viewWidth)
-    , mViewTop(0.5f * worldHeight - 0.5f * viewHeight)
+    , mViewLeft(0.0 + viewWidth)
+    , mViewTop(0.0 + viewHeight)
     , mTarget(NULL)
 {
 }
 
 void Camera::LookAt(const Vec2& wpos)
 {
-    //// center on the given position
-    //mViewLeft = (wpos.x - 0.5f * mViewWidth);
-    //mViewTop = (wpos.y - 0.5f * mViewHeight);
-	mViewLeft = (wpos.x - 0.5f * mViewWidth);
-	mViewTop = (wpos.y - 0.5f * mViewHeight);
-    // keep camera viewing offset in valid range
-    if (mViewLeft < 0) {
-        mViewLeft = 0;
-    }
-    if (mViewTop < 0) {
-        mViewTop = 0;
-    }
+	//world X has to be between world width and world height!!
+    // center on the given position in the world
+    mViewLeft = (wpos.x - 0.5f * mViewWidth);
+    mViewTop = (wpos.y - 0.5f * mViewHeight);
+
+     //keep camera viewing offset in valid range
+	if (mViewLeft < 0) {
+		mViewLeft = 0;
+	}
+	if (mViewTop < 0) {
+		mViewTop = 0;
+	}
     if (mViewLeft + mViewWidth > mWorldWidth) {
         mViewLeft = mWorldWidth - mViewWidth;
     }

@@ -5,6 +5,7 @@
 #include "ResourceManager.h"
 #include "SoundConstants.h"
 #include "StoryScriptConstants.h"
+#include "BackgroundConstants.h"
 #include "Actions.h"
 #include <iostream>
 #include <algorithm>
@@ -56,7 +57,7 @@ void Gameplay::Initialize()
 	mNarsheBackground = ResourceManager::Acquire("media/background/SnowCliff_Back.png", renderer);
 	mNarsheForeground = ResourceManager::Acquire("media/background/SnowCliff_Front.png", renderer);
 	mDesertBackground = ResourceManager::Acquire("media/background/desert/desertX4.png", renderer);
-	mFigaroCastle = ResourceManager::Acquire("media/background/desert/figaroCastleX4.png", renderer);
+	//mFigaroCastle = ResourceManager::Acquire("media/background/desert/figaroCastleX4.png", renderer);
 
 
 
@@ -86,12 +87,21 @@ void Gameplay::Shutdown()
 	SDL_DestroyTexture(mBgTexBack);
 	SDL_DestroyTexture(mExplosionTex);
 	SDL_DestroyTexture(mTextImage);
-	SDL_DestroyTexture(Text);
-	SDL_DestroyTexture(mFigaroCastle);
+	SDL_DestroyTexture(Text); 
 
 
 }
 
+void Gameplay::OnWindowResized(int w, int h) {
+	mCamera = new Camera((float)mGame->GetScreenWidth(),
+		(float)mGame->GetScreenHeight(),
+		(float)mWorldWidth,
+		(float)mWorldHeight);
+
+	std::cout << "Screen width in gameplay window resize: " << (float)mGame->GetScreenWidth() << std::endl;
+	std::cout << "Screen height in gameplay window resize: " << (float)mGame->GetScreenHeight() << std::endl;
+	
+}
 
 void Gameplay::LoadLevel()
 {
@@ -100,12 +110,16 @@ void Gameplay::LoadLevel()
 	//ClearLevel();
 	
 	//whatever the size of the background is the size of the world....
-	SDL_QueryTexture(mFigaroCastle, NULL, NULL, &mWorldWidth, &mWorldHeight);
+	//SDL_QueryTexture(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), NULL, NULL, &mWorldWidth, &mWorldHeight);
  
 	//SDL_QueryTexture(mNarsheForeground, NULL, NULL, &mWorldWidth, &mWorldHeight);
-	mWorldWidth = mWorldWidth;
-	mWorldHeight = mWorldHeight;
+	
+	//size of background:
+	mWorldWidth = 4096;
+	mWorldHeight = 3465;
+
 	//std::cout << "World size is " << mWorldWidth  << "x" << mWorldHeight << std::endl;
+	mFigaroCastle = new Animation(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer),3,0.2,true,SDL_FLIP_NONE,true);
 
 	//*********************************************************************
 	// initialize the player
@@ -124,7 +138,6 @@ void Gameplay::LoadLevel()
 
 	//set the player in the world, then set the camera on the player
 	mPlayer = new Player(ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, mGameRenderer), 4, 1, true);
-	mPlayer->SetCenter(mWorldWidth - 820, 0);
 
 	mPlayerTex = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
 	mPlayer->mWalkDownTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_DOWN, renderer);
@@ -184,12 +197,6 @@ void Gameplay::LoadLevel()
 	//****************
 	//LOAD MAP EFFECTS
 	//****************
-	//mWindMillTex =
-	//will need a translate to differnet resolution sizes...
-	mWindMillTex  = ResourceManager::Acquire("./media/background/desert/figaroWindMillsX4.png", renderer);
-
-	//make the background 3 images that animate...make the background a class that animates
-	// animate...its quicker than adding 50 effects....
 
 	//UPDATE EFFECTS TO ADD OPAQUE RENDER. 
 	// OR AT LEAST CREATE A SPELL ACTION THAT CHANGES THE OPAQUENESS of textures. 
@@ -209,9 +216,6 @@ void Gameplay::LoadLevel()
 	//then the player has stats and does dmg and have items and a status menu
 
 	
-	AddEffect(new Effect(mWindMillTex, 3, 2, true, Vec2(2752, 575)));
-	AddEffect(new Effect(mWindMillTex, 3, 2, true, Vec2(2700, 926)));
- 
 	Game* game = GetGame();
 	
 	mCamera = new Camera((float)game->GetScreenWidth(),
@@ -219,6 +223,16 @@ void Gameplay::LoadLevel()
 		(float)mWorldWidth,
 		(float)mWorldHeight);
 
+
+	//*******************************************************************************
+	//do NOT set arbitrary values for the player position
+	//always set players within the world! or else issues can happen with the camera!
+	//*******************************************************************************
+	//mPlayer->SetCenter(mCamera->WorldToScreen(500, 500).x, mCamera->WorldToScreen(500, 500).y);//minus player height
+	mPlayer->SetCenter(mWorldWidth / 2.0,mWorldHeight);//minus player height
+
+	std::cout << "world to screen 500,500 x: " << mCamera->WorldToScreen(500, 500).x << std::endl;
+	std::cout << "world to screen 500,500 y: " << mCamera->WorldToScreen(500, 500).y << std::endl;
 	// make camera follow the player
 	mCamera->SetTarget(mPlayer);
 
@@ -263,21 +277,27 @@ void Gameplay::LoadLevel()
 
 	int width = mGame->GetScreenWidth();
 	int height = mGame->GetScreenHeight();
+
+	std::cout << "Screen width in gameplay load: "<< width << std::endl;
+	std::cout << "Screen height in gameplay load: "<< height << std::endl;
+
+	std::cout << "world width in gameplay load: " << mWorldWidth << std::endl;
+	std::cout << "world height in gameplay load: " << mWorldHeight << std::endl;
 	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 200, 10, 0));
 	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 200, 10, 200));
 	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 200, 200, 0));
-	newplayerX = mPlayer->Center().x;
-	newplayerY = mPlayer->Center().y + 500.0f;
+	//newplayerX = mPlayer->Center().x;
+	//newplayerY = mPlayer->Center().y + 500.0f;
 
 	mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 2000, mGame->GetRenderer(), 0, 0, 0));
-	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_2, 45, mGame->mE));
-	mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX + 100, newplayerY), 2.0f));
+	//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_2, 45, mGame->mE));
+	//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX + 100, newplayerY), 2.0f));
 	SDL_Texture* t[] = {
 		ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_HIT,renderer),
 		ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_HURT, renderer)
 	};
-	mScriptProcessor_CharacterMovements.AddAction(new aAction_ChangeAnimation(mPlayer, t, 3000));
-	mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(e, Vec2(e->Center().x, e->Center().y - 500), 1.5f, false));
+	//mScriptProcessor_CharacterMovements.AddAction(new aAction_ChangeAnimation(mPlayer, t, 3000));
+	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(e, Vec2(e->Center().x, e->Center().y - 500), 1.5f, false));
 
 	//easrthquake, charge, cast spell, flash of lightning. bot3 lightning hits bof character
 	//ahem, sorry, he was in the wrong game....i will be the narrator of this plot and it is just
@@ -595,7 +615,9 @@ void Gameplay::Update(float dt)
 
 	mIsActive = true;
 
-	//if area
+	//updateBackground
+	mFigaroCastle->AddTime(dt);
+ 
 
 
 }
@@ -606,20 +628,60 @@ void Gameplay::Draw(float dt)
 
 	//mScriptProcessor_EffectsProcessActions(dt);
 	//LAYER 0 (BACKGROUND)
-	SDL_Rect distantBackground;
+	//SDL_Rect distantBackground;
 
-	//distantBackground.x = 0;//RoundToInt(mCamera->ViewLeft());
-	//distantBackground.y = 0 ;//RoundToInt(mCamera->ViewTop());
-	//distantBackground.w = mWorldWidth;
+	//mCamera->ScreenToWorld(0,0)
+	//{(float) mCamera->WorldToScreenX(0),(float)mCamera->WorldToScreenY(0) }
+	mFigaroCastle->Draw(renderer,mCamera->WorldToScreenVec(0,0), mCamera);
+ 
+	if (mCounter % 100 == 0){
+		//player center x : 1024
+		//	player center y : 1684
+		//	World To ScreenX(using 0 as position x and 4096) : -2231
+		//	World To ScreenY(using 0 as position x and 3469) : -2418
+		//	camera view left : 184
+		//	camera view camera top : 684
+		//	camera view bottom : 1734
+		//	camera view right : 1864
+	/*	mWorldWidth = 2048;
+		mWorldHeight = 1734;*/
+
+	cout << "camera view left: " << mCamera->ViewLeft() << endl;
+	cout << "camera view camera top: " << mCamera->ViewTop() << endl;
+	cout << "camera view bottom: " << mCamera->ViewBottom() << endl;
+	cout << "camera view right: " << mCamera->ViewRight() << endl;
+
+	cout << "player center x: " << mPlayer->Center().x << endl;
+	cout << "player center y: " << mPlayer->Center().y << endl;
+
+	cout << "player x world to screen x: " << mCamera->WorldToScreenX(mPlayer->Center().x) << endl;
+	cout << "player y world to screen y: " << mCamera->WorldToScreenY(mPlayer->Center().y) << endl;
+
+	cout << "figaro Background animation x calculation: " << mCamera->WorldToScreenX(0 - 0.5f * 4096) << endl;
+	cout << "figaro Background animation y calculation: " << mCamera->WorldToScreenY(0 - 0.5f * 3468) << endl;
+
+	cout << "screen width " << (float)mGame->GetScreenWidth() << endl;
+	cout << "screen height: " << (float)mGame->GetScreenHeight() << endl;
+	cout << "*********************************************************" << endl;
+	cout << "*********************************************************" << endl;
+	//cout << "camera left: " << mCamera->ScreenToWorld({ mPlayer->Center().x,mPlayer->Center().y }) << endl;
+	
+	}
+	mCounter += 1;
+	//cout << "counter: " << mCounter << endl;
+
+	//distantBackground.x = RoundToInt(mCamera->ViewLeft());
+	//distantBackground.y = RoundToInt(mCamera->ViewTop());
+	//distantBackground.w = mGame->GetScreenWidth();
 	//distantBackground.h = mGame->GetScreenHeight();
-	distantBackground.x = RoundToInt(mCamera->ViewLeft());
-	distantBackground.y = RoundToInt(mCamera->ViewTop());
-	distantBackground.w = mGame->GetScreenWidth();
-	distantBackground.h = mGame->GetScreenHeight();
-	SDL_RenderCopy(renderer, mFigaroCastle, &distantBackground, NULL);
+	//SDL_RenderCopy(renderer, mFigaroCastle, &distantBackground, NULL);
 	//cout << "world width: " << mWorldWidth << endl;
 
+	//if collide with a box, do not draw that part of the sprite. so it will make it seem like layers
+	//
 
+
+	mPlayer->Draw(renderer, mCamera);
 	for (auto& e : mEffects) {
 		e->Draw(renderer, mCamera);
 	}
@@ -644,7 +706,7 @@ void Gameplay::Draw(float dt)
 	SDL_RenderCopy(renderer, mNarsheForeground, &foregroundRect, NULL);
 */
 //LAYER 2 (Main Level)
-	mPlayer->Draw(renderer, mCamera);
+	
 	mPlayer2->Draw(renderer, mCamera);
 
 	for (auto& e : mEnemies) {
@@ -658,7 +720,8 @@ void Gameplay::Draw(float dt)
 			m->Draw(renderer, mCamera);
 		}
 	}
-
+	//create NPC, make him walk
+	//priority queue?
 	// make animation
 	//make giga gaia stay still and appear once i get to the top and slowly make an entrance
 	//add sound/music
@@ -678,7 +741,7 @@ void Gameplay::Draw(float dt)
 	//Layer 5 (Effects)
 	mScriptProcessor_Effects.ProcessActions(dt);
 
-
+	mCamera->LookAt(mPlayer->Center());
 	/*for (auto& e : mEffects) {
 		e->Draw(renderer, mCamera);
 	}*/
@@ -782,14 +845,15 @@ void Gameplay::OnMouseDown(const SDL_MouseButtonEvent& mbe)
 //
 void Gameplay::ClipToWorldBounds(Entity* ent)
 {
-	if (ent->Left() < 0) {
-		ent->SetLeft(0);
+
+	if (ent->Left() < 0.0) {
+		ent->SetLeft(0.0);
 	}
 	else if (mPlayer->Right() > mWorldWidth) {
 		ent->SetRight((float)mWorldWidth);
 	}
-	if (mPlayer->Top() < 0) {
-		ent->SetTop(0);
+	if (mPlayer->Top() < 0.0) {
+		ent->SetTop(0.0);
 	}
 	else if (mPlayer->Bottom() > mWorldHeight) {
 		ent->SetBottom((float)mWorldHeight);

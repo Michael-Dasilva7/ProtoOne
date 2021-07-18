@@ -190,11 +190,13 @@
     <ClCompile Include="SoundConstants.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="BackgroundConstants.cpp" />
     <ClCompile Include="StoryScriptConstants.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BackgroundConstants.h" />
     <ClInclude Include="GrassLandsGamePlay.h" />
     <ClInclude Include="NPC.h" />
     <ClInclude Include="Actions.h" />

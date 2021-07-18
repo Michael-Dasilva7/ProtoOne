@@ -98,17 +98,6 @@ bool Game::Initialize()
 	//
 	mKeys = SDL_GetKeyboardState(NULL);
 
-	//SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
-	//SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
-
-	/*
-	*  \sa SDL_RenderGetLogicalSize()
-	*  \sa SDL_RenderSetScale()
-	*  \sa SDL_RenderSetViewport()
-	*/
-	//Rendering resolution
-	SDL_RenderSetLogicalSize(mRenderer, 1920, 1080);
-	//SDL_RenderSetLogicalSize(mRenderer, 1280, 720);
 
 	//
 	// create a renderer that takes care of drawing stuff to the window
@@ -119,7 +108,20 @@ bool Game::Initialize()
 		return false;
 	}
 
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0"); 
+	//SDL_RenderSetScale(mRenderer, 1, 1);
+	SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	//SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+	/*
+	*  \sa SDL_RenderGetLogicalSize()
+	*  \sa SDL_RenderSetScale()
+	*  \sa SDL_RenderSetViewport()
+	*/
+	//Rendering resolution
+	//SDL_RenderSetLogicalSize(mRenderer, 200, 300);
+	SDL_RenderSetLogicalSize(mRenderer, 1680, 1050);
+	
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"); 
 	//
 	//initialize the sounds
 	//

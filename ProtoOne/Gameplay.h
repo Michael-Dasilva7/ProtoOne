@@ -39,7 +39,7 @@ public: // <-- HACK
     SDL_Texture*        mShotTex;
     SDL_Texture*        mEnemyTex;
 
-
+	int mCounter;
 	/*
 	___________ START BACKGROUNDS __________
 	*/
@@ -48,7 +48,8 @@ public: // <-- HACK
 	SDL_Texture*        mNarsheBackground;
 	SDL_Texture*        mNarsheForeground;
 	SDL_Texture*        mDesertBackground;
-	SDL_Texture*        mFigaroCastle;
+	//SDL_Texture*        mFigaroCastle;
+	Animation*			mFigaroCastle;
 	/*
 	___________ END BACKGROUNDS __________
 	*/
@@ -131,7 +132,8 @@ public:
     void                AddMissile(Missile* m)  { mMissiles.push_back(m); }
     void                AddEffect(Effect* e)    { mEffects.push_back(e); }
 
-	void	            OnWindowResized(int w, int h) override {  }    					 
+	void	            OnWindowResized(int w, int h) override;
+
 
 };
 

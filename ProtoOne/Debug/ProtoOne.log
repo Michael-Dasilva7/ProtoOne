@@ -1,7 +1,12 @@
 ﻿  Gameplay.cpp
+c:\protoone\protoone\camera.h(115): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\camera.h(116): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 c:\protoone\protoone\actions.h(117): warning C4200: nonstandard extension used: zero-sized array in struct/union
   c:\protoone\protoone\actions.h(117): note: This member will be ignored by a defaulted constructor or copy/move assignment operator
-c:\protoone\protoone\gameplay.cpp(127): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(140): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(264): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(122): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\protoone\protoone\gameplay.cpp(153): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(232): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(232): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(272): warning C4101: 'newplayerX': unreferenced local variable
+c:\protoone\protoone\gameplay.cpp(273): warning C4101: 'newplayerY': unreferenced local variable
   ProtoOne.vcxproj -> C:\ProtoOne\ProtoOne\Debug\ProtoOne.exe

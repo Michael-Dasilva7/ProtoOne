@@ -57,11 +57,11 @@ void Player::Update(float dt)
 			game->EnterMainMenu();
 		}
 	}
-	if (mContinueColorChange) {
+	//if (mContinueColorChange) {
 		if (mColorChange->IncrementRedValue_WithLimit(5, 255)) {
 			mContinueColorChange = false;
 		}
-	}
+	//}
 
 	if (mCurrentState == RUNNING) {
 		if (mRunUpTexture != nullptr ) {
@@ -115,7 +115,7 @@ void Player::Update(float dt)
 	}
 
 	if (!mInCutscene) {
-		mCenterPos += mVelocity * mMoveSpeedScale;
+		mCenterPos +=  mVelocity * mMoveSpeedScale;
 	}
 	
 }
@@ -184,6 +184,8 @@ void Player::PlayerDamaged(float damageAmount) {
 
 void Player::SetState(mState newState)
 {
+	
+	
 	if (mCurrentState == newState) {
 		if (mCurrentState == Player::DAMAGED) {
 			//set damage counter to 0 cause we want to reset animation 
