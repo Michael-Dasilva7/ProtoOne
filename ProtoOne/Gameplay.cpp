@@ -59,10 +59,8 @@ void Gameplay::Initialize()
 	mDesertBackground = ResourceManager::Acquire("media/background/desert/desertX4.png", renderer);
 	//mFigaroCastle = ResourceManager::Acquire("media/background/desert/figaroCastleX4.png", renderer);
 
-
-
 	//mBgTex = ResourceManager::Acquire("media/background/darkforest.png", renderer);
-	//mBgTex = LoadTexture("media/background/blah.jpg", renderer);		 
+	//mBgTex = LoadTexture("media/background/blah.jpg", renderer);
 	//mTextImage = ResourceManager::Acquire("media/DialogueText.png", renderer);
 	mTextImage = ResourceManager::Acquire("media/DialogueText_32x32.png", renderer);
 	//mTextBoxFF6 = ResourceManager::Acquire("media/textBox.png", renderer);	
@@ -136,6 +134,10 @@ void Gameplay::LoadLevel()
 		//mPlayer->SetSpriteAngleCorrection(DIR_UP);
 	*/
 
+	//use this to zoom. but everything grows. so might not be the best option.
+	//probably just a fade or something.... but can try a cool zoom type option for bosses
+	SDL_RenderSetScale(renderer, 1, 1);
+ 
 	//set the player in the world, then set the camera on the player
 	mPlayer = new Player(ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, mGameRenderer), 4, 1, true);
 
@@ -236,6 +238,7 @@ void Gameplay::LoadLevel()
 	// make camera follow the player
 	mCamera->SetTarget(mPlayer);
 
+	
 	/////////////////
 	///INTRO BEGIN///
 	/////////////////
@@ -259,18 +262,16 @@ void Gameplay::LoadLevel()
 	//ninjaBlue->SetState(ENEMY_HOVER);
 	//ninjaBlue->SetSpeedScale(0);
 
-	//Enemy* ninjaBlue2 = new Enemy(ResourceManager::Acquire(EnemyConstants::NINJA_BLUE, renderer));
-	//ninjaBlue2->SetCenter(500, 700);
-	//ninjaBlue2->SetLayer(1);
-	//ninjaBlue2->SetState(ENEMY_HOVER);
-	//ninjaBlue2->SetSpeedScale(0);
+	Enemy* ninjaBlue2 = new Enemy(ResourceManager::Acquire(EnemyConstants::NINJA_BLUE, renderer));
+	ninjaBlue2->SetCenter(500, 700);
+	ninjaBlue2->SetLayer(1);
+	ninjaBlue2->SetState(ENEMY_HOVER);
+	ninjaBlue2->SetSpeedScale(0);
 
 	mEnemies.push_back(e);/*
 	mEnemies.push_back(ninjaBlue);
 	mEnemies.push_back(ninjaBlue2);*/
 
-	float newplayerX;
-	float newplayerY;
 
 	ResourceManager::initializeTextBoxTextures(renderer);
 	ResourceManager::PopulateCharacterRects();
@@ -286,16 +287,41 @@ void Gameplay::LoadLevel()
 	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 200, 10, 0));
 	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 200, 10, 200));
 	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 200, 200, 0));
-	//newplayerX = mPlayer->Center().x;
-	//newplayerY = mPlayer->Center().y + 500.0f;
+	 
+	int screenHeight = game->GetScreenWidth();
+	int screenWidth = game->GetScreenWidth();
 
-	mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 2000, mGame->GetRenderer(), 0, 0, 0));
-	//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_2, 45, mGame->mE));
-	//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX + 100, newplayerY), 2.0f));
-	SDL_Texture* t[] = {
-		ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_HIT,renderer),
-		ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_HURT, renderer)
-	};
+	cout << " mPlayer->Center().x: " << mPlayer->Center().x << endl;
+	cout << "mPlayer->Center().y  " << mPlayer->Center().y << endl;
+	/*2048
+	3465*/
+	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 2200,1200 }, { 1200,1200 }, mCamera, 5.0f));
+	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1200 }, { 1200,1900 }, mCamera, 5.0f));
+	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1900 }, { 1800,1900 }, mCamera, 5.0f));
+	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1800,1900 }, { 1800,2800 }, mCamera, 5.0f));
+
+	//didnt set the player again
+	mGame->mScriptProcessor.AddAction(new aAction_FadeIn(width, height, 10000, mGame->GetRenderer(), 255, 255, 255));
+	//mTextBoxFF6
+	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_2, 5, mGame->mE));
+	// 
+	////End cutscene on the last movement! (bool argument at the end)
+	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { mCamera->ViewLeft()+500, 3100 }, 2.0f));
+	//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1820, 2900 }, 2.0f));
+	//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1820, 2650 }, 3.0f, true));
+ //
+	//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_3, 5, mGame->mE));
+	//
+	////
+	////mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { nextPlayerX, nextPlayerY }, 3.0f)); //
+	////mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { nextPlayerX, nextPlayerY }, 3.0f));
+	////mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1000.0f, 1000.0f }, 3.0f));
+	////mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1000.0f, 1500.0f }, 3.0f));
+	//SDL_Texture* t[] = {
+	//	ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_HIT,renderer),
+	//	ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_HURT, renderer)
+	//};
+
 	//mScriptProcessor_CharacterMovements.AddAction(new aAction_ChangeAnimation(mPlayer, t, 3000));
 	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(e, Vec2(e->Center().x, e->Center().y - 500), 1.5f, false));
 
@@ -335,8 +361,6 @@ void Gameplay::LoadLevel()
 	
 	
 
- 
-	
 }
 
 void Gameplay::ClearLevel()
@@ -395,12 +419,10 @@ void Gameplay::Update(float dt)
 
 	if (mScriptProcessor_CharacterMovements.userControlEnabled && mGame->mScriptProcessor.userControlEnabled) {
 
-		if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_LSHIFT)) {
-			mPlayer->SetState(mPlayer->RUNNING);
-		}
-		else {
+	
+		/*else {
 			mPlayer->SetState(mPlayer->WALKING);
-		}
+		}*/
 
 		//priority order: u,left,right,down
 		if (mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_W)) {
@@ -430,16 +452,43 @@ void Gameplay::Update(float dt)
 
 		if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_W)) {
 			mPlayer->mVelocity.y = -2;
+			if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_LSHIFT)) {
+				mPlayer->SetState(mPlayer->RUNNING);
+				mPlayer->mVelocity.y *= PlayerConstants::RUN_SPEED_MODIFYER;
+			}
+			else {
+				mPlayer->SetState(mPlayer->WALKING);				
+			}
 		}
 		 if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_A)) {
 			mPlayer->mVelocity.x = -2;
-
+			if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_LSHIFT)) {
+				mPlayer->SetState(mPlayer->RUNNING);
+				mPlayer->mVelocity.x *= PlayerConstants::RUN_SPEED_MODIFYER;
+			}
+			else {
+				mPlayer->SetState(mPlayer->WALKING);
+			}
 		}
 		 if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_S)) {
 			mPlayer->mVelocity.y = 2;
+			if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_LSHIFT)) {
+				mPlayer->SetState(mPlayer->RUNNING);
+				mPlayer->mVelocity.y *= PlayerConstants::RUN_SPEED_MODIFYER;
+			}
+			else {
+				mPlayer->SetState(mPlayer->WALKING);
+			}
 		}
 		 if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_D)) {
 			mPlayer->mVelocity.x = 2;
+			if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_LSHIFT)) {
+				mPlayer->SetState(mPlayer->RUNNING);
+				mPlayer->mVelocity.x *= PlayerConstants::RUN_SPEED_MODIFYER;
+			}
+			else {
+				mPlayer->SetState(mPlayer->WALKING);
+			}
 		}
 
 
@@ -451,9 +500,12 @@ void Gameplay::Update(float dt)
 			mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 255, 255, 230));
 			mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_SPACE);
 		}
-
-		mPlayer->Update(dt);
+		
 	}
+	/*if (mPlayer->mInCutscene) {
+		mPlayer->SetState(mPlayer->WALKING);
+	}*/
+	mPlayer->Update(dt);
 
 	//mPlayer->SetCenter(mPlayer->Center() + 20 * mPlayer->mMoveSpeedScale * dt * moveVec);
 		// update enemies
@@ -646,24 +698,24 @@ void Gameplay::Draw(float dt)
 	/*	mWorldWidth = 2048;
 		mWorldHeight = 1734;*/
 
-	cout << "camera view left: " << mCamera->ViewLeft() << endl;
-	cout << "camera view camera top: " << mCamera->ViewTop() << endl;
-	cout << "camera view bottom: " << mCamera->ViewBottom() << endl;
-	cout << "camera view right: " << mCamera->ViewRight() << endl;
+	//cout << "camera view left: " << mCamera->ViewLeft() << endl;
+	//cout << "camera view camera top: " << mCamera->ViewTop() << endl;
+	//cout << "camera view bottom: " << mCamera->ViewBottom() << endl;
+	//cout << "camera view right: " << mCamera->ViewRight() << endl;
 
-	cout << "player center x: " << mPlayer->Center().x << endl;
-	cout << "player center y: " << mPlayer->Center().y << endl;
+	//cout << "player center x: " << mPlayer->Center().x << endl;
+	//cout << "player center y: " << mPlayer->Center().y << endl;
 
-	cout << "player x world to screen x: " << mCamera->WorldToScreenX(mPlayer->Center().x) << endl;
-	cout << "player y world to screen y: " << mCamera->WorldToScreenY(mPlayer->Center().y) << endl;
+	//cout << "player x world to screen x: " << mCamera->WorldToScreenX(mPlayer->Center().x) << endl;
+	//cout << "player y world to screen y: " << mCamera->WorldToScreenY(mPlayer->Center().y) << endl;
 
-	cout << "figaro Background animation x calculation: " << mCamera->WorldToScreenX(0 - 0.5f * 4096) << endl;
-	cout << "figaro Background animation y calculation: " << mCamera->WorldToScreenY(0 - 0.5f * 3468) << endl;
+	//cout << "figaro Background animation x calculation: " << mCamera->WorldToScreenX(0 - 0.5f * 4096) << endl;
+	//cout << "figaro Background animation y calculation: " << mCamera->WorldToScreenY(0 - 0.5f * 3468) << endl;
 
-	cout << "screen width " << (float)mGame->GetScreenWidth() << endl;
-	cout << "screen height: " << (float)mGame->GetScreenHeight() << endl;
-	cout << "*********************************************************" << endl;
-	cout << "*********************************************************" << endl;
+	//cout << "screen width " << (float)mGame->GetScreenWidth() << endl;
+	//cout << "screen height: " << (float)mGame->GetScreenHeight() << endl;
+	//cout << "*********************************************************" << endl;
+	//cout << "*********************************************************" << endl;
 	//cout << "camera left: " << mCamera->ScreenToWorld({ mPlayer->Center().x,mPlayer->Center().y }) << endl;
 	
 	}
@@ -739,13 +791,13 @@ void Gameplay::Draw(float dt)
 	mScriptProcessor_CharacterMovements.ProcessActions(dt);
 
 	//Layer 5 (Effects)
-	mScriptProcessor_Effects.ProcessActions(dt);
 
 	mCamera->LookAt(mPlayer->Center());
 	/*for (auto& e : mEffects) {
 		e->Draw(renderer, mCamera);
 	}*/
 
+	mScriptProcessor_Effects.ProcessActions(dt);
 }
 
 void Gameplay::OnKeyDown(const SDL_KeyboardEvent& kbe)

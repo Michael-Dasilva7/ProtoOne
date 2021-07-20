@@ -83,20 +83,24 @@ void aAction_ChangeAnimation::Update(float dt) {
 //for (int i = 0; i < MAX; i++) {
 //	ptr[i] = &var[i]; // assign the address of integer.
 //}
-aAction_MoveTo::aAction_MoveTo(Entity* object, Vec2 end, float duration, bool animate) {
+aAction_MoveTo::aAction_MoveTo(Entity* object, Vec2 end, float duration, bool endCutscene, bool animate) {
 	mAnimate = animate;
 	mMoveableObject = object;
+	cout << "mMoveableObject x contructor: " << mMoveableObject->Center().x << endl;
+	cout << "mMoveableObject y contructor: " << mMoveableObject->Center().y << endl;
 	mMoveableObject->mInCutscene = true;
 	mEnd = end;
 	mTimeSoFar = 0.0f;
 	mDuration = max(duration, 0.001f);//prevent divide by zero later and to cap durations
-	mVel = 2.0f;
-
+	//mVel = 2.0f;
+	mEndCutscene = endCutscene;
 }
  
 void aAction_MoveTo::Start() {
 
 	mStart = mMoveableObject->Center();
+	cout << "mMoveableObject x: " << mMoveableObject->Center().x << endl;
+	cout << "mMoveableObject y: " << mMoveableObject->Center().y << endl;
 	////check direction. if its up, move up. if its down , move down....etc...
 	//float degreeofDirection = Rad2Deg(atan2(mDir.y, mDir.x));
 	//degreeofDirection = abs(degreeofDirection);
@@ -136,17 +140,18 @@ void aAction_MoveTo::Update(float dt) {
 	mMoveableObject->SetCenter((mEnd - mStart) * t + mStart);
 	mMoveableObject->mVelocity.x = (mEnd.x - mStart.x) / mDuration;
 	mMoveableObject->mVelocity.y = (mEnd.y - mStart.y) / mDuration;
-	if (mAnimate) {
-		mMoveableObject->addTimeToAnimation(dt);
-	}
+	//mMoveableObject->setState(mMoveableObject->mState::WALKING);
+	//mMoveableObject->addTimeToAnimation(dt);
+	
 	
 	//mMoveableObject->SetCenter(mMoveableObject->Center() + mDir * mVel);
 	if (mTimeSoFar >= mDuration) {
 		mMoveableObject->SetCenter(mEnd);
-		mMoveableObject->mVelocity.x = 0;
-		mMoveableObject->mVelocity.y = 0;
+		mMoveableObject->mVelocity.x = 0.0f;
+		mMoveableObject->mVelocity.y = 0.0f;
+		 
 		isDone = true;
-		mMoveableObject->mInCutscene = false;
+		if (mEndCutscene) mMoveableObject->mInCutscene = false;
 	}
 
 }
@@ -231,6 +236,31 @@ void aAction_Delay::Update(float elapsedTime) {
 void aAction_Delay::Restart() {
 	isDone = false;
 	durationInMilliseconds = mOriginalDuration;
+}
+
+aAction_PanCamera::aAction_PanCamera(Vec2 panCameraFrom, Vec2 panCameraTo, Camera* camera, float durationOfCameraPan) {
+	mStart = panCameraFrom;
+	this->mOriginalEntity = camera->GetTarget();
+	camera->SetTarget(NULL);
+	mCamera = camera;
+	mEnd = panCameraTo;
+	mTimeSoFar = 0.0f;
+
+	//duration is how long
+	mDuration = max(durationOfCameraPan, 0.001f);//prevent divide by zero later and to cap durations
+}
+void aAction_PanCamera::Update(float elapsedTime) {
+
+		mTimeSoFar += elapsedTime;
+		float t = mTimeSoFar / mDuration;
+		if (t > 1.0f) t = 1.0f;
+
+		mCamera->LookAt((mEnd - mStart) * t + mStart); 
+ 
+		if (mTimeSoFar >= mDuration) {
+			mCamera->SetTarget(mOriginalEntity);
+			isDone = true;	 
+		}
 }
 
 

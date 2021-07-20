@@ -43,6 +43,7 @@ void Camera::SetTarget(Entity* target)
 
 void Camera::Update(float dt)
 {
+
     if (mTarget) {
         LookAt(mTarget->Center());
     }

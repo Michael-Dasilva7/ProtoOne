@@ -51,9 +51,12 @@ public:
     Vec2                        ScreenToWorld(const SDL_Point& scrpos) const;
     SDL_Point                   WorldToScreen(const Vec2& wpos) const;
 
-    void                        SetTarget(Entity* target);
+	void                        SetTarget(Entity* target);
+	Entity*                     GetTarget() { if (mTarget) { return mTarget; } else return NULL; };
 
     void                        Update(float dt);
+
+
 };
 
 

@@ -41,11 +41,17 @@ void Player::Update(float dt)
 	Game* game = GetGame();
 
 	//determine direction based on velocity
-
-	if (mVelocity.y < -0.1f) mDirection = UP;
+	//mDirection = UP;
+	if (mVelocity.y < -0.1f) mDirection = UP;	
 	if (mVelocity.y > 0.1f) mDirection = DOWN;
 	if (mVelocity.x < -0.1f) mDirection = LEFT;
 	if (mVelocity.x > 0.1f) mDirection = RIGHT;
+
+	if (abs(mVelocity.x) == 2 * PlayerConstants::RUN_SPEED_MODIFYER) this->SetState(RUNNING);
+	else if (abs(mVelocity.y) == 2 * PlayerConstants::RUN_SPEED_MODIFYER) this->SetState(RUNNING);
+	else this->SetState(WALKING);
+
+	if (mVelocity.x == 0.0f && mVelocity.y == 0.0f) this->SetState(STANDING);
 
 	//check if standing and thats how i can revert the sprite to a normal position!!!
 	//if absolute velocity == 0 then im on sprite 0 based on direction
@@ -65,7 +71,7 @@ void Player::Update(float dt)
 
 	if (mCurrentState == RUNNING) {
 		if (mRunUpTexture != nullptr ) {
-			mMoveSpeedScale = PlayerConstants::RUN_SPEED_MODIFYER;
+			//mMoveSpeedScale = PlayerConstants::RUN_SPEED_MODIFYER;
 			//TODO: create asset constant files with actual values(i.e.
 			// 1.  Duration of Animation from start to finish in seconds
 			// 2.  isLoopable; Do we loop the animation or stop after one?
@@ -104,19 +110,26 @@ void Player::Update(float dt)
 		else if (mDirection == RIGHT) {
 			setAnimation(mWalkRightTexture, 4, 1.0f, true, SDL_FLIP_HORIZONTAL);
 		}
-	}
 	
-	if (mVelocity.x == 0.0f && mVelocity.y == 0.0f) mCurrentState = STANDING;
+	}
+
+	
 	
 	if (mCurrentState != STANDING) {
 		Entity::mCurrentAnimation->AddTime(dt);
+		if (!mInCutscene) {
+			std::cout << mVelocity.y << std::endl;
+			std::cout << mVelocity.x << std::endl;
+			
+			mCenterPos += mVelocity * mMoveSpeedScale;
+		}
+	
 	} else {
 		Entity::mCurrentAnimation->Reset();
 	}
 
-	if (!mInCutscene) {
-		mCenterPos +=  mVelocity * mMoveSpeedScale;
-	}
+
+	
 	
 }
 

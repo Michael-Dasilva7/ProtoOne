@@ -49,7 +49,7 @@ class aAction_MoveTo : public Action
 {
 
 public:
-	aAction_MoveTo(Entity* object, Vec2 end, float duration, bool animate = true);
+	aAction_MoveTo(Entity* object, Vec2 end, float duration, bool endCutscene = false, bool animate = true);
  
 	void Start() override;
 	void Update(float fElapsedTime) override;	
@@ -57,7 +57,7 @@ public:
 	float mVel;
 	Vec2  mDir;
 	bool  mAnimate;
-
+	bool  mEndCutscene;
 private:
 	Entity*  mMoveableObject;
 	Vec2	 mStart;
@@ -103,6 +103,38 @@ public:
 	void Update(float elapsedTime) override;            
 };
 
+class aAction_PanCamera : public Action {
+
+private:
+	unsigned short int durationInMilliseconds;
+	unsigned short int mOriginalDuration;
+public:
+	// I want the camera to slowly move to the location specified.
+	/*
+	the challange here is that the camaera updates every frame in gameplay
+		it looks at whatever is set to look at. so either i need to unlook at the beginning...then look at the end
+		but if i do that, the camera will jump when i go back....
+		option 1:
+			if no target is set		
+		from
+			to
+			update gets next lerp position, 
+	...so what i should do, is take a from and a to...so i can do a couple in a row and go back to the original entity
+	*/
+	Entity*			mOriginalEntity;
+	Camera*			mCamera;
+
+	Vec2			mStart;
+	Vec2			mEnd;
+	float			mTimeSoFar;
+	float			mDuration;
+
+	aAction_PanCamera(Vec2 panCameraFrom, Vec2 panCameraTo, Camera* camera, float durationOfCameraPan);
+	
+	//void Start() override;
+ 
+	void Update(float elapsedTime) override;
+};
 
 class aAction_ChangeAnimation : public Action
 {

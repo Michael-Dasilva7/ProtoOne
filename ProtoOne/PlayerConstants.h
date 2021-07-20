@@ -8,9 +8,8 @@ public:
 
 	const static int PlayerConstants::MAX_LEVEL = 99;
 	const static int PlayerConstants::STARTING_HEALTH = 999;
-	const static int PlayerConstants::RUN_SPEED_MODIFYER = 5;
+	const static int PlayerConstants::RUN_SPEED_MODIFYER = 3;
 	const static int PlayerConstants::WALK_SPEED_MODIFYER = 2;
-
 
 	const static std::string PlayerConstants::ANIM_TEX_UNDINE_WALK_LEFT;
 	const static std::string PlayerConstants::ANIM_TEX_UNDINE_WALK_UP;

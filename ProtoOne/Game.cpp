@@ -108,7 +108,6 @@ bool Game::Initialize()
 		return false;
 	}
 
-	//SDL_RenderSetScale(mRenderer, 1, 1);
 	SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	//SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 
@@ -120,7 +119,7 @@ bool Game::Initialize()
 	//Rendering resolution
 	//SDL_RenderSetLogicalSize(mRenderer, 200, 300);
 	SDL_RenderSetLogicalSize(mRenderer, 1680, 1050);
-	
+
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"); 
 	//
 	//initialize the sounds

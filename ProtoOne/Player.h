@@ -16,14 +16,14 @@ protected:
 
 
 public:
-	enum mDirection {
+	enum  mDirection {
 		UP,
 		DOWN,
 		LEFT,
 		RIGHT
 	};
 
-	enum mState {
+	enum  mState {
 		IDLE,
 		DAMAGED,
 		ATTACKING,
@@ -69,6 +69,7 @@ public:
 	bool					SetPlayerLeftDir();///Sets the player direction and animation up 
 	bool					SetPlayerRightDir();///Sets the player direction and animation up 
 
+	void					setState(mState x) { mCurrentState = x; }
 
 	float					mPlayerHealth;
 
