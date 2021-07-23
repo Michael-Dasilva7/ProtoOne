@@ -55,7 +55,7 @@ public:
 	Entity*                     GetTarget() { if (mTarget) { return mTarget; } else return NULL; };
 
     void                        Update(float dt);
-
+	bool						mPauseCamera;
 
 };
 

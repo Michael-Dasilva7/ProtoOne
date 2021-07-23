@@ -13,8 +13,6 @@ class Player : public Entity
 protected:
     float                   mMoveSpeed;
 
-
-
 public:
 	enum  mDirection {
 		UP,

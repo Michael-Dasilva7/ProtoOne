@@ -8,6 +8,7 @@ Camera::Camera(float viewWidth, float viewHeight, float worldWidth, float worldH
     , mViewLeft(0.0 + viewWidth)
     , mViewTop(0.0 + viewHeight)
     , mTarget(NULL)
+	, mPauseCamera(false)
 {
 }
 
@@ -36,15 +37,18 @@ void Camera::LookAt(const Vec2& wpos)
 void Camera::SetTarget(Entity* target)
 {
     mTarget = target;
-    if (target) {
-        LookAt(target->Center());
-    }
+	if (!mPauseCamera) {
+		if (target) {
+			LookAt(target->Center());
+		}
+	}
 }
 
 void Camera::Update(float dt)
 {
-
-    if (mTarget) {
-        LookAt(mTarget->Center());
-    }
+	if (!mPauseCamera){
+		if (mTarget) {
+			LookAt(mTarget->Center());
+		}
+	}
 }

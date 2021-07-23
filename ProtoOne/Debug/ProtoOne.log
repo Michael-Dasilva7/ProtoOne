@@ -1,11 +1,16 @@
-﻿  Gameplay.cpp
+﻿  Entity.cpp
 c:\protoone\protoone\camera.h(118): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 c:\protoone\protoone\camera.h(119): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\actions.h(149): warning C4200: nonstandard extension used: zero-sized array in struct/union
-  c:\protoone\protoone\actions.h(149): note: This member will be ignored by a defaulted constructor or copy/move assignment operator
+  Gameplay.cpp
+c:\protoone\protoone\camera.h(118): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\camera.h(119): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\actions.h(150): warning C4200: nonstandard extension used: zero-sized array in struct/union
+  c:\protoone\protoone\actions.h(150): note: This member will be ignored by a defaulted constructor or copy/move assignment operator
 c:\protoone\protoone\gameplay.cpp(120): warning C4305: 'argument': truncation from 'double' to 'float'
 c:\protoone\protoone\gameplay.cpp(155): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(234): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(234): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(306): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(282): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(282): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(326): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(327): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  Generating Code...
   ProtoOne.vcxproj -> C:\ProtoOne\ProtoOne\Debug\ProtoOne.exe

@@ -8,6 +8,13 @@
 
 class Missile;
 
+enum  mDirection {
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT
+};
+
 enum EnemyState
 {
     ENEMY_INIT,
@@ -40,9 +47,10 @@ class Enemy : public Entity
 
     float                   mPatrolTurnSpeed;
     float                   mPatrolThinkTime;
-
+	mDirection				mDirection;
 public:
 							Enemy(SDL_Texture* tex);
+							Enemy::Enemy(SDL_Texture* tex, int numCells, float duration, bool loopable);
                             ~Enemy();
 
     void                    SetSpeedScale(float s);
@@ -58,6 +66,16 @@ public:
 	void					Update(float dt) override;
 
     void                    Draw(SDL_Renderer* renderer, Camera* camera, SDL_RendererFlip flipType = SDL_FLIP_NONE) const override;
+
+	SDL_Texture*			mWalkLeftTexture;
+	SDL_Texture*			mWalkUpTexture;
+	SDL_Texture*			mWalkDownTexture;
+	SDL_Texture*			mWalkRightTexture;
+
+	SDL_Texture*			mRunLeftTexture;
+	SDL_Texture*			mRunUpTexture;
+	SDL_Texture*			mRunDownTexture;
+	SDL_Texture*			mRunRightTexture;
 };
 
 

@@ -20,7 +20,26 @@ Enemy::Enemy(SDL_Texture* tex)
 	
 {
     SetState(ENEMY_PATROL);
+	mDirection = DOWN;
+
 }
+
+Enemy::Enemy(SDL_Texture* tex, int numCells, float duration, bool loopable)
+	: Entity(tex, numCells, duration, loopable)
+	, mState(ENEMY_INIT)
+	, mDefaultSpeed(200)   // in pixels per second
+	, mSpeedScale(1.0f)
+	, mDesiredAngle(mAngle)
+	, mTarget(NULL)
+	, mNextShootTime(0.0f)
+	, mPatrolTurnSpeed(0.0f)
+	, mPatrolThinkTime(0.0f)
+
+{
+	SetState(ENEMY_PATROL);
+	mDirection = DOWN;
+
+} 
 
 Enemy::~Enemy()
 {
@@ -104,7 +123,37 @@ void Enemy::Update(float dt)
             }
             SetForwardDir(fwd);
 
-            break;
+			//change this to be an entity
+			//change animation dependong on angle
+			if (fwd.y < -0.1f) mDirection = UP;
+			if (fwd.y > 0.1f) mDirection = DOWN;
+			if (fwd.x < -0.1f) mDirection = LEFT;
+			if (fwd.x > 0.1f) mDirection = RIGHT;
+
+			// testing, testing, testing
+			//different animations have different textures. some enemies dont run...some do
+			//need to make this customado.
+			// ideas:
+				//1. Make the texture based on the EnemyType? 
+				//2. then we would need to add a new if statemnet each one. which is fine, unless we see lots of future configuration happenining here
+					//then in that case we should make a inheiritance solution.
+			if (mDirection == UP) {
+				setAnimation(mRunUpTexture, 4, 0.4, true);
+			}
+			else if (mDirection == DOWN) {
+				setAnimation(mRunDownTexture, 4, 0.3, true);
+			}
+			else if (mDirection == LEFT) {
+				setAnimation(mRunLeftTexture, 3, 0.4, true);
+			}
+			else if (mDirection == RIGHT) {
+				setAnimation(mRunRightTexture, 3, 0.3, true, SDL_FLIP_HORIZONTAL);
+			}
+
+			if (mCurrentAnimation != NULL){
+				Entity::mCurrentAnimation->AddTime(dt);
+			}
+
         }
 
     case ENEMY_ATTACK:
@@ -184,6 +233,7 @@ void Enemy::Update(float dt)
 
     // move along the forward/backward axis
     mCenterPos += mDefaultSpeed * mSpeedScale * dt * ForwardDir();
+
 }
 
 

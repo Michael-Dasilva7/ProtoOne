@@ -128,8 +128,9 @@ public:
 	Vec2			mEnd;
 	float			mTimeSoFar;
 	float			mDuration;
+	bool			mLastCameraMovement;
 
-	aAction_PanCamera(Vec2 panCameraFrom, Vec2 panCameraTo, Camera* camera, float durationOfCameraPan);
+	aAction_PanCamera(Vec2 panCameraFrom, Vec2 panCameraTo, Camera* camera, float durationOfCameraPan, bool lastCameraMovement = false);
 	
 	//void Start() override;
  

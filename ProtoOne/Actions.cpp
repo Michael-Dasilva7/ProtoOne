@@ -140,11 +140,7 @@ void aAction_MoveTo::Update(float dt) {
 	mMoveableObject->SetCenter((mEnd - mStart) * t + mStart);
 	mMoveableObject->mVelocity.x = (mEnd.x - mStart.x) / mDuration;
 	mMoveableObject->mVelocity.y = (mEnd.y - mStart.y) / mDuration;
-	//mMoveableObject->setState(mMoveableObject->mState::WALKING);
-	//mMoveableObject->addTimeToAnimation(dt);
-	
-	
-	//mMoveableObject->SetCenter(mMoveableObject->Center() + mDir * mVel);
+ 
 	if (mTimeSoFar >= mDuration) {
 		mMoveableObject->SetCenter(mEnd);
 		mMoveableObject->mVelocity.x = 0.0f;
@@ -238,14 +234,21 @@ void aAction_Delay::Restart() {
 	durationInMilliseconds = mOriginalDuration;
 }
 
-aAction_PanCamera::aAction_PanCamera(Vec2 panCameraFrom, Vec2 panCameraTo, Camera* camera, float durationOfCameraPan) {
+/*
+1. Must specify the same # of movements in "panCameraFrom" and "panCameraTo"
+**************START WARNING******************
+2. if specifying multiple camera pan movements, need to specific "true" as the last boolean or the camera will not look at the user 
+************** END  WARNING******************
+*/
+aAction_PanCamera::aAction_PanCamera(Vec2 panCameraFrom, Vec2 panCameraTo, Camera* camera, float durationOfCameraPan, bool lastCameraMovement) {
 	mStart = panCameraFrom;
-	this->mOriginalEntity = camera->GetTarget();
-	camera->SetTarget(NULL);
+	//this->mOriginalEntity = camera->GetTarget();
+	//camera->SetTarget(NULL);
 	mCamera = camera;
 	mEnd = panCameraTo;
 	mTimeSoFar = 0.0f;
-
+	mLastCameraMovement = lastCameraMovement;
+	mCamera->mPauseCamera = true;
 	//duration is how long
 	mDuration = max(durationOfCameraPan, 0.001f);//prevent divide by zero later and to cap durations
 }
@@ -257,24 +260,39 @@ void aAction_PanCamera::Update(float elapsedTime) {
 
 		mCamera->LookAt((mEnd - mStart) * t + mStart); 
  
+		//start with one
+		//mCamera->SetTarget(mOriginalEntity);
+		//start with another
+		
+		//
 		if (mTimeSoFar >= mDuration) {
-			mCamera->SetTarget(mOriginalEntity);
 			isDone = true;	 
+			if (mLastCameraMovement) {
+				mCamera->mPauseCamera = false;				
+			}
 		}
 }
 
 
 /*
-Dialogue documentation:
-	-Add an action and specifiy:
-		x and y location to start the text
-		width and height of the window of text
-		the background image of the text box
-		need the list of texture pointers, retrieved from te resouce manager
-		SDL renderer object
-		a script, which is basically a string with the text to write
-			special characters can be input into this script to perform certain actions like skipping a line(semicolon)
 
+	 x: x location to start the text
+	 y: y location to start the text
+	 width: width of the window of text
+	 height: height of the window of text
+	 texDialogueBox: SDL texture of the background image of the text box
+	 texCharacterTexture: The list of texture pointers, retrieved from te resouce manager
+	 renderer: SDL renderer object
+	 writtenDialogue: a script, which is basically a string with the text to write
+	 textDelayInMilliseconds: 
+	 e: 
+	 delayToProgressDialogueMilliseconds: 
+	 forceSkipDialogueProgression: 
+		
+		
+	 Description:
+	 Special characters can be input into this script to perform certain actions like skipping a line(semicolon)		
+	
 */
 aAction_Dialogue::aAction_Dialogue(
 	float x,
@@ -541,65 +559,6 @@ void aAction_Dialogue::Update(float elapsedTime) {
 
 
 }
-//cout << "character: " << c << " in ascii value is: " << (int)c << " and divisible by 65 it is: " << v  << endl;
-
-//	bool isColonCharacter = (v == 58);
-//	bool isSpaceCharacter = (v == 32);
-//	bool isExclamationMark = (v == 33);
-//	bool isQuestionMark = (v == 63);
-//	bool isDoubleApostrophe = (v == 34);
-//	bool isApostrophe = (v == 39);
-//	bool isPeriod = (v == 46);
-//	//can also determine the nextXPosition based on above mapping
-
-//	int nextXPosIncrement = 38;
-//	if (isSpaceCharacter) {
-//*		textRect.y = 0;
-//		textRect.x = letterWidth * 12;*/
-//	}
-//	else if (isColonCharacter) {
-//		//textRect.y = letterHeight * 3;
-//		//textRect.x = letterWidth;
-
-//		//INSTEAD OF LOOKING UP THESE VALUES, CHANGE THE INITIAL CREATION HEIGHT/WIDTH TO COMPENSATE SO ALL WE NEED TO DO HERE IS TAKE THE RECTS
-//		nextXPosIncrement = 32;
-//		dialogueY += 2;
-//	}
-//	else if (isApostrophe) {
-//		textRect.y = letterHeight * 3;
-//		textRect.x = letterWidth * 3;
-//		nextXPosIncrement = 32;
-//	}
-//	else if (isExclamationMark) {
-//		textRect.y = 0;
-//		textRect.x = letterWidth * 10;
-//		nextXPosIncrement = 21;
-//	}
-//	else if (isQuestionMark) {
-//		textRect.y = 0;
-//		textRect.x = letterWidth * 11;
-//		nextXPosIncrement = 21;
-//	}
-//	else if (v >= 48 && v <= 57) {
-//		//NUMBERS
-//		v = v % 48;
-//		textRect.y = 0;
-//		textRect.x = v * letterWidth;
-//	} 
-//	else if (v >= 65 && v <= 90) {
-//		//UPPERCASE LETTERS
-//		v = v % 65;
-//		textRect.y = letterHeight;
-//		textRect.x = v * letterWidth;
-//	}
-//	else if (v  >= 97 && v  <= 122) {
-//		//LOWERCASE LETTERS
-//		v = v % 97;
-//		textRect.y = letterHeight * 2;
-//		textRect.x = v * letterWidth;
-//	}
-
-
 
 template <class Container>
 void split(const std::string& str, Container& cont, char delim = ' ')
@@ -610,18 +569,3 @@ void split(const std::string& str, Container& cont, char delim = ' ')
 		cont.push_back(token);
 	}
 }
-
-//LERP
-	//Vec2 dirToEnd = mEnd - mStart;
-	//dirToEnd.Normalize();
-	//float speedMultiplyer = 3.0;		 
-	//float degreeofDirection = 0.0f;		
-	//degreeofDirection = Rad2Deg(atan2( dirToEnd.y, dirToEnd.x ));
-	// When creating the action, we specify the direction we want the sprite to face. i mean we might want him to moonwalk :)
-	//Vec2 nextPosition = mMoveableObject->Center() + (dirToEnd * speedMultiplyer);		
-	//mStart = nextPosition;
-
-//mPlayer->SetCenter(mPlayer->Center() + 20 * mPlayer->mMoveSpeedScale * dt * moveVec);		
-//need normalized vector of the direction to the end
-//if objects location @ end location, were done
-// move along the forward/backward axis

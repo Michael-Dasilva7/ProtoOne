@@ -138,44 +138,6 @@ void Gameplay::LoadLevel()
 	//probably just a fade or something.... but can try a cool zoom type option for bosses
 	SDL_RenderSetScale(renderer, 1, 1);
  
-	//set the player in the world, then set the camera on the player
-	mPlayer = new Player(ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, mGameRenderer), 4, 1, true);
-
-	mPlayerTex = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
-	mPlayer->mWalkDownTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_DOWN, renderer);
-	mPlayer->mWalkUpTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
-	mPlayer->mWalkLeftTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_LEFT, renderer);
-	mPlayer->mWalkRightTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_RIGHT, renderer);
-	mPlayer->mRunDownTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_DOWN, renderer);
-	mPlayer->mRunUpTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, renderer);
-	mPlayer->mRunLeftTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_LEFT, renderer);
-	mPlayer->mRunRightTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_RIGHT, renderer);
-
-	mPlayer2 = new Player(ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_DOWN, mGameRenderer), 4, 1, true);
-	mPlayer2->SetCenter(mWorldWidth - 870, 0);
-
-	mPlayerTex = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
-	mPlayer2->mWalkDownTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_DOWN, renderer);
-	mPlayer2->mWalkUpTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
-	mPlayer2->mWalkLeftTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_LEFT, renderer);
-	mPlayer2->mWalkRightTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_RIGHT, renderer);
-	mPlayer2->mRunDownTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_DOWN, renderer);
-	mPlayer2->mRunUpTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, renderer);
-	mPlayer2->mRunLeftTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_LEFT, renderer);
-	mPlayer2->mRunRightTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_RIGHT, renderer);
-
-	//
-	// create some enemies
-	//
-	/*for (int i = 0; i < 5; i++) {
-		Enemy* e = new Enemy(mEnemyTex);
-		e->SetSpriteAngleCorrection(DIR_DOWN);
-		float x = RandomFloat(e->Radius(), mWorldWidth - e->Radius());
-		float y = RandomFloat(e->Radius(), mWorldHeight - e->Radius());
-		e->SetCenter(x, y);
-		e->SetAngle(RandomFloat(0.0f, 360.0f));
-		mEnemies.push_back(e);
-	}*/
 
 
 	/*
@@ -219,39 +181,86 @@ void Gameplay::LoadLevel()
 
 	
 	Game* game = GetGame();
-	
+
+	//*//**************//
+	//*/////////////////*
+	//*               //*
+	//* Camera Init   //*
+	//*               //*
+	//*/////////////////*
+	//*****************//
 	mCamera = new Camera((float)game->GetScreenWidth(),
 		(float)game->GetScreenHeight(),
 		(float)mWorldWidth,
 		(float)mWorldHeight);
-
 
 	//*******************************************************************************
 	//do NOT set arbitrary values for the player position
 	//always set players within the world! or else issues can happen with the camera!
 	//*******************************************************************************
 	//mPlayer->SetCenter(mCamera->WorldToScreen(500, 500).x, mCamera->WorldToScreen(500, 500).y);//minus player height
-	mPlayer->SetCenter(mWorldWidth / 2.0,mWorldHeight);//minus player height
+	mPlayer->SetCenter(mWorldWidth / 2.0, mWorldHeight);//minus player height
 
 	std::cout << "world to screen 500,500 x: " << mCamera->WorldToScreen(500, 500).x << std::endl;
 	std::cout << "world to screen 500,500 y: " << mCamera->WorldToScreen(500, 500).y << std::endl;
+	
 	// make camera follow the player
 	mCamera->SetTarget(mPlayer);
 
-	
-	/////////////////
-	///INTRO BEGIN///
-	/////////////////
+
+
+	//set the player in the world, then set the camera on the player
+	mPlayer = new Player(ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, mGameRenderer), 4, 1, true);
+
+	mPlayerTex = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
+	mPlayer->mWalkDownTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_DOWN, renderer);
+	mPlayer->mWalkUpTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
+	mPlayer->mWalkLeftTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_LEFT, renderer);
+	mPlayer->mWalkRightTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_RIGHT, renderer);
+	mPlayer->mRunDownTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_DOWN, renderer);
+	mPlayer->mRunUpTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, renderer);
+	mPlayer->mRunLeftTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_LEFT, renderer);
+	mPlayer->mRunRightTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_RIGHT, renderer);
+
+	mPlayer2 = new Player(ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_DOWN, mGameRenderer), 4, 1, true);
+	mPlayer2->SetCenter(mWorldWidth - 870, 0);
+
+	mPlayerTex = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
+	mPlayer2->mWalkDownTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_DOWN, renderer);
+	mPlayer2->mWalkUpTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
+	mPlayer2->mWalkLeftTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_LEFT, renderer);
+	mPlayer2->mWalkRightTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_RIGHT, renderer);
+	mPlayer2->mRunDownTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_DOWN, renderer);
+	mPlayer2->mRunUpTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, renderer);
+	mPlayer2->mRunLeftTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_LEFT, renderer);
+	mPlayer2->mRunRightTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_RIGHT, renderer);
+
+
 	/*
-	LOAD GIGA GAIA
-	*/
-	Enemy* e = new Enemy(ResourceManager::Acquire(EnemyConstants::GIGA_GAIA_IDLE, renderer));
-	float x = mCamera->ViewLeft();
-	float y = mCamera->ViewBottom();
-	e->SetCenter(x+100, y+300);
-	e->SetLayer(1);
-	e->SetState(ENEMY_HOVER);
-	e->SetSpeedScale(0);
+		LOAD GIGA GAIA
+		*/
+		//Enemy* e = new Enemy(ResourceManager::Acquire(EnemyConstants::GIGA_GAIA_IDLE, renderer));
+		//float x = mCamera->ViewLeft();
+		//float y = mCamera->ViewBottom();
+		//e->SetCenter(x + 100, y + 300);
+		//e->SetLayer(1);
+		//e->SetState(ENEMY_HOVER);
+		//e->SetSpeedScale(0);
+
+		/*
+		LOAD dragon
+		*/
+	Enemy* greenDragon = new Enemy(ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer), 3, 0.5, true);
+	greenDragon->SetCenter(500, 500);
+	greenDragon->SetLayer(1);
+	greenDragon->SetState(ENEMY_PATROL);
+	//greenDragon->SetSpeedScale(1);
+
+	greenDragon->mRunUpTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
+	greenDragon->mRunLeftTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
+	greenDragon->mRunDownTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
+	greenDragon->mRunRightTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
+	//	greenDragon->setAnimationTexture(greenDragon->mRunDownTexture);
 
 	/*
 	Load Dragon off screen
@@ -262,17 +271,39 @@ void Gameplay::LoadLevel()
 	//ninjaBlue->SetState(ENEMY_HOVER);
 	//ninjaBlue->SetSpeedScale(0);
 
+
 	Enemy* ninjaBlue2 = new Enemy(ResourceManager::Acquire(EnemyConstants::NINJA_BLUE, renderer));
 	ninjaBlue2->SetCenter(500, 700);
 	ninjaBlue2->SetLayer(1);
 	ninjaBlue2->SetState(ENEMY_HOVER);
-	ninjaBlue2->SetSpeedScale(0);
-
-	mEnemies.push_back(e);/*
+	ninjaBlue2->SetSpeedScale(1);
+	/*
+		mEnemies.push_back(e);*/
+	mEnemies.push_back(greenDragon);
+	/*
 	mEnemies.push_back(ninjaBlue);
 	mEnemies.push_back(ninjaBlue2);*/
 
+	//
+	// create some enemies
+	//
+	/*for (int i = 0; i < 5; i++) {
+		Enemy* e = new Enemy(mEnemyTex);
+		e->SetSpriteAngleCorrection(DIR_DOWN);
+		float x = RandomFloat(e->Radius(), mWorldWidth - e->Radius());
+		float y = RandomFloat(e->Radius(), mWorldHeight - e->Radius());
+		e->SetCenter(x, y);
+		e->SetAngle(RandomFloat(0.0f, 360.0f));
+		mEnemies.push_back(e);
+	}*/
 
+	//*//**************//
+	//*/////////////////*
+	//*               //*
+	//* INTRO CUTSCENE//*
+	//*               //*
+	//*/////////////////*
+	//*****************//
 	ResourceManager::initializeTextBoxTextures(renderer);
 	ResourceManager::PopulateCharacterRects();
 
@@ -293,30 +324,34 @@ void Gameplay::LoadLevel()
 
 	cout << " mPlayer->Center().x: " << mPlayer->Center().x << endl;
 	cout << "mPlayer->Center().y  " << mPlayer->Center().y << endl;
-	/*2048
-	3465*/
+	/*
+	2048
+	3465
+	*/
 	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 2200,1200 }, { 1200,1200 }, mCamera, 5.0f));
 	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1200 }, { 1200,1900 }, mCamera, 5.0f));
 	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1900 }, { 1800,1900 }, mCamera, 5.0f));
-	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1800,1900 }, { 1800,2800 }, mCamera, 5.0f));
+	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1800,1900 }, { 1800,2800 }, mCamera, 5.0f, true));
 
 	//didnt set the player again
 	mGame->mScriptProcessor.AddAction(new aAction_FadeIn(width, height, 10000, mGame->GetRenderer(), 255, 255, 255));
 	//mTextBoxFF6
-	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_2, 5, mGame->mE));
-	// 
-	////End cutscene on the last movement! (bool argument at the end)
-	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { mCamera->ViewLeft()+500, 3100 }, 2.0f));
-	//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1820, 2900 }, 2.0f));
-	//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1820, 2650 }, 3.0f, true));
- //
+	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE, 5, mGame->mE, 2000, true));
+	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_4, 5, mGame->mE, 2000, true));
+
+	// End cutscene on the last movement! (bool argument at the end)
+	// mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { mCamera->ViewLeft()+500, 3100 }, 2.0f));
+	mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1820, 2900 }, 2.0f));
+	mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1820, 2650 }, 3.0f, true));
+	
 	//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_3, 5, mGame->mE));
-	//
-	////
+	
+	
 	////mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { nextPlayerX, nextPlayerY }, 3.0f)); //
 	////mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { nextPlayerX, nextPlayerY }, 3.0f));
 	////mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1000.0f, 1000.0f }, 3.0f));
 	////mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1000.0f, 1500.0f }, 3.0f));
+	
 	//SDL_Texture* t[] = {
 	//	ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_HIT,renderer),
 	//	ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_HURT, renderer)
@@ -357,7 +392,7 @@ void Gameplay::LoadLevel()
 	//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, Vec2(0, newplayerY), 6.0f));
 
 //MUSIC!
-	//mSound->playMusicFadeIn(SoundConstants::M_MP3_WA_ADELHYDE_CASTLE, -1, 1000);
+	mSound->playMusicFadeIn(SoundConstants::M_MP3_WA_ADELHYDE_CASTLE, -1, 1000);
 	
 	
 
@@ -633,8 +668,6 @@ void Gameplay::Update(float dt)
 	//Vec2 camPos = mPlayer->Center() + 0.3f * toMouse;
 	//mCamera->LookAt(camPos);
 
-	// update camera
-	mCamera->Update(dt);
 	//
 	// update all effects
 	//
@@ -670,7 +703,8 @@ void Gameplay::Update(float dt)
 	//updateBackground
 	mFigaroCastle->AddTime(dt);
  
-
+	// update camera
+	mCamera->Update(dt);
 
 }
 
@@ -684,7 +718,7 @@ void Gameplay::Draw(float dt)
 
 	//mCamera->ScreenToWorld(0,0)
 	//{(float) mCamera->WorldToScreenX(0),(float)mCamera->WorldToScreenY(0) }
-	mFigaroCastle->Draw(renderer,mCamera->WorldToScreenVec(0,0), mCamera);
+	mFigaroCastle->Draw(renderer, mCamera->WorldToScreenVec(0,0), mCamera);
  
 	if (mCounter % 100 == 0){
 		//player center x : 1024
@@ -730,8 +764,6 @@ void Gameplay::Draw(float dt)
 	//cout << "world width: " << mWorldWidth << endl;
 
 	//if collide with a box, do not draw that part of the sprite. so it will make it seem like layers
-	//
-
 
 	mPlayer->Draw(renderer, mCamera);
 	for (auto& e : mEffects) {
@@ -751,13 +783,14 @@ void Gameplay::Draw(float dt)
 		}
 	}
 
-	/*SDL_Rect foregroundRect;
+/*  
+	SDL_Rect foregroundRect;
 	foregroundRect.x = 0;
 	foregroundRect.y = 0;
 	SDL_QueryTexture(mNarsheForeground, NULL, NULL, &foregroundRect.w, &foregroundRect.h);
 	SDL_RenderCopy(renderer, mNarsheForeground, &foregroundRect, NULL);
-*/
-//LAYER 2 (Main Level)
+	*/
+	//LAYER 2 (Main Level)
 	
 	mPlayer2->Draw(renderer, mCamera);
 
@@ -791,8 +824,8 @@ void Gameplay::Draw(float dt)
 	mScriptProcessor_CharacterMovements.ProcessActions(dt);
 
 	//Layer 5 (Effects)
+	//mCamera->LookAt(mPlayer->Center());
 
-	mCamera->LookAt(mPlayer->Center());
 	/*for (auto& e : mEffects) {
 		e->Draw(renderer, mCamera);
 	}*/
