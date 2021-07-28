@@ -2,12 +2,11 @@
 
 #include "Missile.h"
 
-Missile::Missile(SDL_Texture* tex, Entity* shooter)
-	: Entity(tex)
+Missile::Missile(SDL_Texture* tex, Entity* shooter, int numCells, float duration, bool loopable)
+	: Entity(tex,numCells,duration,loopable)
     , mSpeed(400)   // in pixels per second
     , mShooter(shooter)
 	
-
 {
 	SetLayer(2);
     if (mShooter) {
@@ -32,5 +31,6 @@ void Missile::SetSpeed(float speed)
 void Missile::Update(float dt)
 {
     // move along the forward direction
+	this->addTimeToAnimation(dt);
     mCenterPos += mSpeed * dt * ForwardDir();
 }

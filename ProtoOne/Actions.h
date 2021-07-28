@@ -71,7 +71,7 @@ class aAction_FadeIn : public Action
 {
 
 public:
-	aAction_FadeIn(int w, int h, float duration, SDL_Renderer* renderer, int r, int g, int b);
+	aAction_FadeIn(int w, int h, float duration, SDL_Renderer* renderer, int fromR, int fromG, int fromB, int toR, int toG, int toB, int fromOpacity, int toOpacity);
 	void Start() override;
 	void Update(float fElapsedTime) override;
 
@@ -86,9 +86,17 @@ private:
 	int16_t				mW;
 	int16_t				mH;
 
-	int16_t				mR;
-	int16_t				mG;
-	int16_t				mB;
+	float				mFR;
+	float				mFG;
+	float				mFB;
+	float				mTR;
+	float				mTG;
+	float				mTB;
+	float				mFO;
+	float				mTO;
+ 
+	float			mTimeSoFar;
+	float			mDuration;
 };
 
 class aAction_Delay : public Action {

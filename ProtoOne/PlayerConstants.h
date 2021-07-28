@@ -28,4 +28,6 @@ public:
 
 	const static std::string PlayerConstants::ANIM_TEX_UNDINE_CHANT;
 
+
+	const static std::string PlayerConstants::ANIM_TEX_FIREBALL;
 };

@@ -11,7 +11,7 @@ class Missile : public Entity
     Entity*                 mShooter;
 
 public:
-							Missile(SDL_Texture* tex, Entity* shooter);
+							Missile(SDL_Texture* tex, Entity* shooter, int numCells, float duration, bool loopable);
                             ~Missile();
 
     void                    SetSpeed(float speed);

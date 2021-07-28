@@ -21,7 +21,7 @@ void aScriptProcessor::ProcessActions(float fElapsedTime) {
 	//if (m_listActions.empty()) {
 	//	userControlEnabled = true;
 	//}
-	userControlEnabled =  m_listActions.empty();
+	userControlEnabled = m_listActions.empty();
 
 	if (!m_listActions.empty()) {
 		if (!m_listActions.front()->isDone) {
@@ -45,7 +45,7 @@ aAction_ChangeAnimation::aAction_ChangeAnimation(Entity* object, SDL_Texture* t[
 	mEntity = object;
 	object->setAnimationTexture(t[0]);
 	mDelayAfterFirstAnimation = new aAction_Delay(delayInMilliseconds);
-	
+
 	//aScriptProcessor::userControlEnabled = false;
 }
 void aAction_ChangeAnimation::Start() {
@@ -68,7 +68,7 @@ void aAction_ChangeAnimation::Update(float dt) {
 		//else {
 		//	isDone = true;
 		//}
-		 
+
 	}
 }
 
@@ -95,7 +95,7 @@ aAction_MoveTo::aAction_MoveTo(Entity* object, Vec2 end, float duration, bool en
 	//mVel = 2.0f;
 	mEndCutscene = endCutscene;
 }
- 
+
 void aAction_MoveTo::Start() {
 
 	mStart = mMoveableObject->Center();
@@ -140,77 +140,94 @@ void aAction_MoveTo::Update(float dt) {
 	mMoveableObject->SetCenter((mEnd - mStart) * t + mStart);
 	mMoveableObject->mVelocity.x = (mEnd.x - mStart.x) / mDuration;
 	mMoveableObject->mVelocity.y = (mEnd.y - mStart.y) / mDuration;
- 
+
 	if (mTimeSoFar >= mDuration) {
 		mMoveableObject->SetCenter(mEnd);
 		mMoveableObject->mVelocity.x = 0.0f;
 		mMoveableObject->mVelocity.y = 0.0f;
-		 
+
 		isDone = true;
 		if (mEndCutscene) mMoveableObject->mInCutscene = false;
 	}
 
 }
 
-//the higher the duration, the slower fade
-//TODO: add option to fade in our out depending on flag!!!!
-aAction_FadeIn::aAction_FadeIn(int w, int h, float duration, SDL_Renderer* renderer, int r, int g, int b) {
+
+/*
+
+The higher the duration, the slower fade
+
+Opacity:
+	For Fade in:
+		From: 255
+		To:   0
+	For Fade Out:
+		From: 0
+		To:   255
+
+
+	Color Combinations:
+		white:  255,255,255  (i.e. lightning)
+		black:  0,0,0
+		other:  0,0,0
+		Red:    255,0,0
+		Green:  0,255,0
+		Blue    0,0,255
+		orange: 0,0,0
+
+*/
+aAction_FadeIn::aAction_FadeIn(int w, int h, float duration, SDL_Renderer* renderer, int fromR, int fromG, int fromB, int toR, int toG, int toB, int fromOpacity, int toOpacity) {
 	mW = w;
 	mH = h;
 
-	mR = r;
-	mG = g;
-	mB = b;
+	mFR = fromR;
+	mFG = fromG;
+	mFB = fromB;
 
-	mDecrementer = 1000 / duration;
+	mTR = toR;
+	mTG = toG;
+	mTB = toB;
+
+	mFO = fromOpacity;
+	mTO = toOpacity;
+
+	mDuration = duration;
+	//mDecrementer = 1000 / duration;
 	mRenderer = renderer;
+	mTimeSoFar = 0.0f;
+	//mOpacity = 255;
+	//mFadeRect.x = 0;
+	//mFadeRect.y = 0;
+	//mFadeRect.w = mW;
+	//mFadeRect.h = mH;
+
 }
 
-/*
-!!!!!!!!!!!!!!!!!!!!!!!!
-!!!FADE IN FROM BLACK!!!
-!!!!!!!!!!!!!!!!!!!!!!!!
-*/
-//TODO: add a direction to start in so we can face the player that way.
 void aAction_FadeIn::Start() {
-	//start out with no opacity at all; the rectangle color is completely solid 
-	mOpacity = 255;
+	//mOpacity = 255;
 	mFadeRect.x = 0;
 	mFadeRect.y = 0;
 	mFadeRect.w = mW;
 	mFadeRect.h = mH;
-	//isStarted = true;//I THINK THIS IS DONE IN PROCESS ACTION CODE AFTER START. CONFIRM THIS AND IF SO REMOVE LINE
 }
+
 void aAction_FadeIn::Update(float fElapsedTime) {
-	//its basically a black rectange overlaying the screen that gets increasingly opaque  
 
-	//SDL_Render idea:
-		//time passed divided by duration to get actual increment value??? verify	
-		//incrementer is duration in seconds we want the process to take. we divide by elapsed time because 
-	//NEED TO CREATE LAYERS, so we can have the flashes and keep character sprites visible
+	mTimeSoFar += fElapsedTime;
+	float t = mTimeSoFar / mDuration;
+	if (t > 1.0f) t = 1.0f;	 
 
-	if (mOpacity <= 0) {
-		isDone = true;
-	}
-	//color dictionary:
-		//white: 255,255,255  (lightning)
-		//black: 0,0,0
-		//other: 0,0,0
-		//green: 0,0,0
-		//orange: 0,0,0
-		//Red: 0,0,0
-
-	//i need to convert the position in the texture, to the
 	SDL_SetRenderDrawBlendMode(mRenderer, SDL_BLENDMODE_BLEND);
-	SDL_SetRenderDrawColor(mRenderer, mR, mG, mB, mOpacity);
+	SDL_SetRenderDrawColor(mRenderer, (mFR - (mFR - mTR) * t), mFG - ((mFG - mTG) * t), mFB - ((mFB - mTB) * t), mFO - ((mFO - mTO) * t));
 
-	mOpacity = mOpacity -= mDecrementer;
-	if (mOpacity < 0) { mOpacity = 0; }
-	//we want it to fade is slow AT FIRST then speed up at the end. so increment exponentially. need another variable or some maths here.
-	//also need to have parameter specify for how quick to increment
-	mDecrementer = mDecrementer * 1.02;
+	//TODO: make a change to increase or decrease the duration variably to speed up or slowdown the fade
 
 	SDL_RenderFillRect(mRenderer, &mFadeRect);
+
+	if (mTimeSoFar >= mDuration) {
+		isDone = true; 
+		//delete &mFadeRect;
+	}
 }
 
 aAction_Delay::aAction_Delay(unsigned short int durationInMilliseconds) {
@@ -237,7 +254,7 @@ void aAction_Delay::Restart() {
 /*
 1. Must specify the same # of movements in "panCameraFrom" and "panCameraTo"
 **************START WARNING******************
-2. if specifying multiple camera pan movements, need to specific "true" as the last boolean or the camera will not look at the user 
+2. if specifying multiple camera pan movements, need to specific "true" as the last boolean or the camera will not look at the user
 ************** END  WARNING******************
 */
 aAction_PanCamera::aAction_PanCamera(Vec2 panCameraFrom, Vec2 panCameraTo, Camera* camera, float durationOfCameraPan, bool lastCameraMovement) {
@@ -254,23 +271,23 @@ aAction_PanCamera::aAction_PanCamera(Vec2 panCameraFrom, Vec2 panCameraTo, Camer
 }
 void aAction_PanCamera::Update(float elapsedTime) {
 
-		mTimeSoFar += elapsedTime;
-		float t = mTimeSoFar / mDuration;
-		if (t > 1.0f) t = 1.0f;
+	mTimeSoFar += elapsedTime;
+	float t = mTimeSoFar / mDuration;
+	if (t > 1.0f) t = 1.0f;
 
-		mCamera->LookAt((mEnd - mStart) * t + mStart); 
- 
-		//start with one
-		//mCamera->SetTarget(mOriginalEntity);
-		//start with another
-		
-		//
-		if (mTimeSoFar >= mDuration) {
-			isDone = true;	 
-			if (mLastCameraMovement) {
-				mCamera->mPauseCamera = false;				
-			}
+	mCamera->LookAt((mEnd - mStart) * t + mStart);
+
+	//start with one
+	//mCamera->SetTarget(mOriginalEntity);
+	//start with another
+
+
+	if (mTimeSoFar >= mDuration) {
+		isDone = true;
+		if (mLastCameraMovement) {
+			mCamera->mPauseCamera = false;
 		}
+	}
 }
 
 
@@ -284,15 +301,15 @@ void aAction_PanCamera::Update(float elapsedTime) {
 	 texCharacterTexture: The list of texture pointers, retrieved from te resouce manager
 	 renderer: SDL renderer object
 	 writtenDialogue: a script, which is basically a string with the text to write
-	 textDelayInMilliseconds: 
-	 e: 
-	 delayToProgressDialogueMilliseconds: 
-	 forceSkipDialogueProgression: 
-		
-		
+	 textDelayInMilliseconds:
+	 e:
+	 delayToProgressDialogueMilliseconds:
+	 forceSkipDialogueProgression:
+
+
 	 Description:
-	 Special characters can be input into this script to perform certain actions like skipping a line(semicolon)		
-	
+	 Special characters can be input into this script to perform certain actions like skipping a line(semicolon)
+
 */
 aAction_Dialogue::aAction_Dialogue(
 	float x,
@@ -307,7 +324,7 @@ aAction_Dialogue::aAction_Dialogue(
 	unsigned short int textDelayInMilliseconds,
 	SDL_Event e,
 	unsigned short int delayToProgressDialogueMilliseconds,
-	bool forceSkipDialogueProgression	
+	bool forceSkipDialogueProgression
 )
 {
 	mE = e;
@@ -525,9 +542,9 @@ void aAction_Dialogue::Update(float elapsedTime) {
 			//We are now at the end of the provided dialogue
 			//make the polling logic a reusuable method:
 			//The below buttons are valid "progression" confirmation buttons
-			
+
 			SDL_PollEvent(&mE);
-			
+
 			if (mE.type == SDL_KEYDOWN) {
 				if (mE.key.keysym.scancode == SDL_SCANCODE_RETURN) {
 					mCheckForProgressDelay = true;

@@ -38,7 +38,7 @@ void Gameplay::Initialize()
 	//***********************************
 	//*********   Main Player   *********
 	//***********************************
-	mShotTex = ResourceManager::Acquire("media/shot.png", renderer);
+	mShotTex = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_FIREBALL, renderer);
 
 	////*********************************
 	////*********   NPCs   **************
@@ -106,10 +106,8 @@ void Gameplay::LoadLevel()
 
 	SDL_Renderer* renderer = mGame->GetRenderer();
 	//ClearLevel();
-	
 	//whatever the size of the background is the size of the world....
 	//SDL_QueryTexture(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), NULL, NULL, &mWorldWidth, &mWorldHeight);
- 
 	//SDL_QueryTexture(mNarsheForeground, NULL, NULL, &mWorldWidth, &mWorldHeight);
 	
 	//size of background:
@@ -118,6 +116,26 @@ void Gameplay::LoadLevel()
 
 	//std::cout << "World size is " << mWorldWidth  << "x" << mWorldHeight << std::endl;
 	mFigaroCastle = new Animation(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer),3,0.2,true,SDL_FLIP_NONE,true);
+
+	//for the intro scene, we want to pan the camera through multiple screens. and have characters moving so here is the following actions:
+
+	/*
+	
+	1. FADE IN FROM BLACK
+	2. MUSIC BEGINS
+	3. screen pans left and down across an area talking about the demon war. spells fire.
+	4. screen darkens
+	5. LEVEL CHANGES TO A DIFFERENT BACKGROUND
+	6. Fade in
+	7. peace at last thanks to the efforts of the brave specialists and team of good
+	8. but now.....
+	7. train noise...
+	8. fade in 
+	9. screen 
+
+	
+	*/
+
 
 	//*********************************************************************
 	// initialize the player
@@ -138,8 +156,6 @@ void Gameplay::LoadLevel()
 	//probably just a fade or something.... but can try a cool zoom type option for bosses
 	SDL_RenderSetScale(renderer, 1, 1);
  
-
-
 	/*
 		//background
 		//effects
@@ -198,16 +214,6 @@ void Gameplay::LoadLevel()
 	//do NOT set arbitrary values for the player position
 	//always set players within the world! or else issues can happen with the camera!
 	//*******************************************************************************
-	//mPlayer->SetCenter(mCamera->WorldToScreen(500, 500).x, mCamera->WorldToScreen(500, 500).y);//minus player height
-	mPlayer->SetCenter(mWorldWidth / 2.0, mWorldHeight);//minus player height
-
-	std::cout << "world to screen 500,500 x: " << mCamera->WorldToScreen(500, 500).x << std::endl;
-	std::cout << "world to screen 500,500 y: " << mCamera->WorldToScreen(500, 500).y << std::endl;
-	
-	// make camera follow the player
-	mCamera->SetTarget(mPlayer);
-
-
 
 	//set the player in the world, then set the camera on the player
 	mPlayer = new Player(ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, mGameRenderer), 4, 1, true);
@@ -235,6 +241,8 @@ void Gameplay::LoadLevel()
 	mPlayer2->mRunLeftTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_LEFT, renderer);
 	mPlayer2->mRunRightTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_RIGHT, renderer);
 
+	//mPlayer->SetCenter(mCamera->WorldToScreen(500, 500).x, mCamera->WorldToScreen(500, 500).y);//minus player height
+	mPlayer->SetCenter(mWorldWidth / 2.0, mWorldHeight);//minus player height
 
 	/*
 		LOAD GIGA GAIA
@@ -247,20 +255,30 @@ void Gameplay::LoadLevel()
 		//e->SetState(ENEMY_HOVER);
 		//e->SetSpeedScale(0);
 
-		/*
-		LOAD dragon
-		*/
-	Enemy* greenDragon = new Enemy(ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer), 3, 0.5, true);
-	greenDragon->SetCenter(500, 500);
-	greenDragon->SetLayer(1);
-	greenDragon->SetState(ENEMY_PATROL);
-	//greenDragon->SetSpeedScale(1);
+	for (int i = 0; i < 10; i++) {
+		Enemy* greenDragon = new Enemy(ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer), 3, 0.5, true);
+		greenDragon->SetCenter(rand() % mWorldWidth, rand() % mWorldHeight );
+		greenDragon->SetLayer(1);
+		greenDragon->SetState(ENEMY_PATROL);
+		//greenDragon->SetSpeedScale(1);
 
-	greenDragon->mRunUpTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
-	greenDragon->mRunLeftTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
-	greenDragon->mRunDownTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
-	greenDragon->mRunRightTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
-	//	greenDragon->setAnimationTexture(greenDragon->mRunDownTexture);
+		greenDragon->mRunUpTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
+		greenDragon->mRunLeftTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
+		greenDragon->mRunDownTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
+		greenDragon->mRunRightTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
+		mEnemies.push_back(greenDragon);
+	}
+	//Enemy* greenDragon = new Enemy(ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer), 3, 0.5, true);
+	//greenDragon->SetCenter(500, 500);
+	//greenDragon->SetLayer(1);
+	//greenDragon->SetState(ENEMY_PATROL);
+	////greenDragon->SetSpeedScale(1);
+
+	//greenDragon->mRunUpTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
+	//greenDragon->mRunLeftTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
+	//greenDragon->mRunDownTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
+	//greenDragon->mRunRightTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
+	////	greenDragon->setAnimationTexture(greenDragon->mRunDownTexture);
 
 	/*
 	Load Dragon off screen
@@ -271,7 +289,6 @@ void Gameplay::LoadLevel()
 	//ninjaBlue->SetState(ENEMY_HOVER);
 	//ninjaBlue->SetSpeedScale(0);
 
-
 	Enemy* ninjaBlue2 = new Enemy(ResourceManager::Acquire(EnemyConstants::NINJA_BLUE, renderer));
 	ninjaBlue2->SetCenter(500, 700);
 	ninjaBlue2->SetLayer(1);
@@ -279,7 +296,7 @@ void Gameplay::LoadLevel()
 	ninjaBlue2->SetSpeedScale(1);
 	/*
 		mEnemies.push_back(e);*/
-	mEnemies.push_back(greenDragon);
+
 	/*
 	mEnemies.push_back(ninjaBlue);
 	mEnemies.push_back(ninjaBlue2);*/
@@ -307,34 +324,27 @@ void Gameplay::LoadLevel()
 	ResourceManager::initializeTextBoxTextures(renderer);
 	ResourceManager::PopulateCharacterRects();
 
-	int width = mGame->GetScreenWidth();
-	int height = mGame->GetScreenHeight();
-
-	std::cout << "Screen width in gameplay load: "<< width << std::endl;
-	std::cout << "Screen height in gameplay load: "<< height << std::endl;
-
-	std::cout << "world width in gameplay load: " << mWorldWidth << std::endl;
-	std::cout << "world height in gameplay load: " << mWorldHeight << std::endl;
-	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 200, 10, 0));
-	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 200, 10, 200));
-	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 200, 200, 0));
-	 
 	int screenHeight = game->GetScreenWidth();
 	int screenWidth = game->GetScreenWidth();
 
-	cout << " mPlayer->Center().x: " << mPlayer->Center().x << endl;
-	cout << "mPlayer->Center().y  " << mPlayer->Center().y << endl;
-	/*
-	2048
-	3465
-	*/
 	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 2200,1200 }, { 1200,1200 }, mCamera, 5.0f));
 	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1200 }, { 1200,1900 }, mCamera, 5.0f));
 	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1900 }, { 1800,1900 }, mCamera, 5.0f));
 	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1800,1900 }, { 1800,2800 }, mCamera, 5.0f, true));
 
-	//didnt set the player again
-	mGame->mScriptProcessor.AddAction(new aAction_FadeIn(width, height, 10000, mGame->GetRenderer(), 255, 255, 255));
+	//mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1800,1900 }, { 1800,2800 }, mCamera, 5.0f, true));
+	//keep the screen blacked out for a period of time:
+	//mGame->mScriptProcessor.AddAction(new aAction_FadeIn(width, height,10, mGame->GetRenderer(), 255, 255, 255,255,255,255,255,255));
+
+	int width = mGame->GetScreenWidth();
+	int height = mGame->GetScreenHeight();
+
+	mGame->mScriptProcessor.AddAction(new aAction_FadeIn(width, height, 5, mGame->GetRenderer(), 255, 255, 255, 0, 0, 0, 255, 0));
+	mGame->mScriptProcessor.AddAction(new aAction_FadeIn(width, height, 5, mGame->GetRenderer(), 0, 0, 0, 255, 255, 255, 0, 255));
+	mGame->mScriptProcessor.AddAction(new aAction_FadeIn(width, height, 5, mGame->GetRenderer(), 255, 255, 255, 255, 255, 255, 255, 255));
+	//mGame->mScriptProcessor.AddAction(new aAction_Delay(2000)); //will this work on all systems? 
+	//time it so by this time, the effects script processor will change the location. or have an action that calls this fade in, then calls the change
+
 	//mTextBoxFF6
 	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE, 5, mGame->mE, 2000, true));
 	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_4, 5, mGame->mE, 2000, true));
@@ -345,12 +355,6 @@ void Gameplay::LoadLevel()
 	mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1820, 2650 }, 3.0f, true));
 	
 	//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_3, 5, mGame->mE));
-	
-	
-	////mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { nextPlayerX, nextPlayerY }, 3.0f)); //
-	////mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { nextPlayerX, nextPlayerY }, 3.0f));
-	////mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1000.0f, 1000.0f }, 3.0f));
-	////mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1000.0f, 1500.0f }, 3.0f));
 	
 	//SDL_Texture* t[] = {
 	//	ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_HIT,renderer),
@@ -371,7 +375,6 @@ void Gameplay::LoadLevel()
 	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 2.0f));
 	//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_2, 45));
 	//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_2, 45, mGame->mE));
-
 
 	//list of entities  with a list of durations and a list of locations 
 	//mScriptProcessor_CharacterMovements.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::AFTER_FLASH, 45));
@@ -394,7 +397,9 @@ void Gameplay::LoadLevel()
 //MUSIC!
 	mSound->playMusicFadeIn(SoundConstants::M_MP3_WA_ADELHYDE_CASTLE, -1, 1000);
 	
-	
+	// make camera follow the player
+	mCamera->SetTarget(mPlayer);
+
 
 }
 
@@ -532,7 +537,7 @@ void Gameplay::Update(float dt)
 			//Check if we are facing an NPC, and if so, bring up dialogue
 			int width = mGame->GetScreenWidth();
 			int height = mGame->GetScreenHeight();
-			mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 255, 255, 230));
+			//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 255, 255, 230));
 			mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_SPACE);
 		}
 		
@@ -916,7 +921,8 @@ void Gameplay::OnMouseDown(const SDL_MouseButtonEvent& mbe)
 			// shoot
 			std::cout << "Creating missile" << std::endl;
 
-			Missile* m = new Missile(mShotTex, mPlayer);
+			//TODO: create constants for all textures
+			Missile* m = new Missile(mShotTex, mPlayer,60,3,true);
 			m->SetSpriteAngleCorrection(DIR_UP);
 			m->SetCenter(mPlayer->Center());
 			m->SetAngle(mPlayer->Angle());

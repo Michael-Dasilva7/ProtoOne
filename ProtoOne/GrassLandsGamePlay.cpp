@@ -396,7 +396,7 @@ void GrassLandsGamePlay::Update(float dt)
 			//Check if we are facing an NPC, and if so, bring up dialogue
 			int width = mGame->GetScreenWidth();
 			int height = mGame->GetScreenHeight();
-			mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 255, 255, 230));
+			//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 255, 255, 230));
 			mGrassLandsGamePlayKeyboardHandler.isReleased(SDL_SCANCODE_SPACE);
 		}
 
@@ -729,7 +729,7 @@ void GrassLandsGamePlay::OnMouseDown(const SDL_MouseButtonEvent& mbe)
 			// shoot
 			std::cout << "Creating missile" << std::endl;
 
-			Missile* m = new Missile(mShotTex, mPlayer);
+			Missile* m = new Missile(mShotTex, mPlayer, 60, 3, true);
 			m->SetSpriteAngleCorrection(DIR_UP);
 			m->SetCenter(mPlayer->Center());
 			m->SetAngle(mPlayer->Angle());

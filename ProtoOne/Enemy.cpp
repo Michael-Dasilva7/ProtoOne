@@ -192,7 +192,7 @@ void Enemy::Update(float dt)
 
             // shoot?
             if (t >= mNextShootTime && std::fabs(mDesiredAngle - mAngle) < 5) {
-                Missile* m = new Missile(game->GetGameplayState()->mShotTex, this);
+				Missile* m = new Missile(game->GetGameplayState()->mShotTex, this, 60, 3, true);
                 m->SetSpriteAngleCorrection(DIR_UP);
                 m->SetCenter(mCenterPos);
                 m->SetAngle(mDesiredAngle);
