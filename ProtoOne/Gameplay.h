@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "Effect.h"
 #include "Actions.h"
+#include "Boundary.h"
 
 #include "StoryScriptConstants.h"
 
@@ -31,6 +32,9 @@ public: // <-- HACK
 
     std::list<Enemy*>   mEnemies;
 
+	//boundaries
+	std::list<Boundary*>   mBoundaries;
+	
     std::list<Entity*>  mMorgue;        // where dead entities get parked until all references are released
 
     std::list<Effect*>  mEffects;       // temporary animated effects like explosions
@@ -63,6 +67,10 @@ public: // <-- HACK
 	/*
 	___________ END FIGARO EFFECTS __________
 	*/
+	int mTempBoundaryX;
+	int mTempBoundaryY;
+	int mTempBoundaryW;
+	int mTempBoundaryH;
 
 
     SDL_Texture*        mExplosionTex;
@@ -122,6 +130,7 @@ public:
     void		        OnKeyDown(const SDL_KeyboardEvent& kbe) override;
     void		        OnKeyUp(const SDL_KeyboardEvent& kbe) override;
     void                OnMouseDown(const SDL_MouseButtonEvent& mbe) override;
+	void				OnMouseUp(const SDL_MouseButtonEvent& mbe) override;
 
     Player*             GetPlayer() const       { return mPlayer; }
     Camera*             GetCamera() const       { return mCamera; }
@@ -133,7 +142,6 @@ public:
     void                AddEffect(Effect* e)    { mEffects.push_back(e); }
 
 	void	            OnWindowResized(int w, int h) override;
-
 
 };
 

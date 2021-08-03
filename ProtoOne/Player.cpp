@@ -120,7 +120,7 @@ void Player::Update(float dt)
 		if (!mInCutscene) {
 			std::cout << mVelocity.y << std::endl;
 			std::cout << mVelocity.x << std::endl;
-			
+			mPreviousPosition = mCenterPos;
 			mCenterPos += mVelocity * mMoveSpeedScale;
 		}
 	

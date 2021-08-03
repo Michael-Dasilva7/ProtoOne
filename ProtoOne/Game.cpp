@@ -16,6 +16,7 @@ Game::Game()
     , mMainMenuState(NULL)
 	, mCurrentState(NULL)
 	, mSound(NULL)
+	, mDebugMode(false)
 {
 }
 

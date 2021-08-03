@@ -53,6 +53,7 @@ public:
 
 	aScriptProcessor    mScriptProcessor;
 
+	bool				mDebugMode;
 private:
 	bool				Initialize();
 	void				Shutdown();

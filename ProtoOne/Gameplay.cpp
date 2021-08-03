@@ -10,6 +10,8 @@
 #include <iostream>
 #include <algorithm>
 
+
+
 Gameplay::Gameplay(Game* game, Sound* sound)
 	: GameState(game, sound)
 	, mPlayer(NULL)
@@ -21,7 +23,7 @@ Gameplay::Gameplay(Game* game, Sound* sound)
 	, mIsActive(false)
 	, mCamera(NULL)
 	, mGameplayKeyboardHandler()
-	, mDialogueMode(false) 
+	, mDialogueMode(false)
 	, mGameRenderer(mGame->GetRenderer())
 
 {
@@ -85,7 +87,7 @@ void Gameplay::Shutdown()
 	SDL_DestroyTexture(mBgTexBack);
 	SDL_DestroyTexture(mExplosionTex);
 	SDL_DestroyTexture(mTextImage);
-	SDL_DestroyTexture(Text); 
+	SDL_DestroyTexture(Text);
 
 
 }
@@ -98,7 +100,7 @@ void Gameplay::OnWindowResized(int w, int h) {
 
 	std::cout << "Screen width in gameplay window resize: " << (float)mGame->GetScreenWidth() << std::endl;
 	std::cout << "Screen height in gameplay window resize: " << (float)mGame->GetScreenHeight() << std::endl;
-	
+
 }
 
 void Gameplay::LoadLevel()
@@ -109,18 +111,18 @@ void Gameplay::LoadLevel()
 	//whatever the size of the background is the size of the world....
 	//SDL_QueryTexture(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), NULL, NULL, &mWorldWidth, &mWorldHeight);
 	//SDL_QueryTexture(mNarsheForeground, NULL, NULL, &mWorldWidth, &mWorldHeight);
-	
+
 	//size of background:
 	mWorldWidth = 4096;
 	mWorldHeight = 3465;
 
 	//std::cout << "World size is " << mWorldWidth  << "x" << mWorldHeight << std::endl;
-	mFigaroCastle = new Animation(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer),3,0.2,true,SDL_FLIP_NONE,true);
+	mFigaroCastle = new Animation(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), 3, 0.2, true, SDL_FLIP_NONE, true);
 
 	//for the intro scene, we want to pan the camera through multiple screens. and have characters moving so here is the following actions:
 
 	/*
-	
+
 	1. FADE IN FROM BLACK
 	2. MUSIC BEGINS
 	3. screen pans left and down across an area talking about the demon war. spells fire.
@@ -130,10 +132,10 @@ void Gameplay::LoadLevel()
 	7. peace at last thanks to the efforts of the brave specialists and team of good
 	8. but now.....
 	7. train noise...
-	8. fade in 
-	9. screen 
+	8. fade in
+	9. screen
 
-	
+
 	*/
 
 
@@ -155,7 +157,7 @@ void Gameplay::LoadLevel()
 	//use this to zoom. but everything grows. so might not be the best option.
 	//probably just a fade or something.... but can try a cool zoom type option for bosses
 	SDL_RenderSetScale(renderer, 1, 1);
- 
+
 	/*
 		//background
 		//effects
@@ -168,12 +170,12 @@ void Gameplay::LoadLevel()
 		signs
 		save points
 		Load Figaro
-	*/	
+	*/
 	//if Figaro then
 	// load map
 	// name
 	// map class will have location of everyhing kind of like tiles
-	
+
 	//****************
 	//LOAD MAP EFFECTS
 	//****************
@@ -195,7 +197,7 @@ void Gameplay::LoadLevel()
 
 	//then the player has stats and does dmg and have items and a status menu
 
-	
+
 	Game* game = GetGame();
 
 	//*//**************//
@@ -257,7 +259,7 @@ void Gameplay::LoadLevel()
 
 	for (int i = 0; i < 10; i++) {
 		Enemy* greenDragon = new Enemy(ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer), 3, 0.5, true);
-		greenDragon->SetCenter(rand() % mWorldWidth, rand() % mWorldHeight );
+		greenDragon->SetCenter(rand() % mWorldWidth, rand() % mWorldHeight);
 		greenDragon->SetLayer(1);
 		greenDragon->SetState(ENEMY_PATROL);
 		//greenDragon->SetSpeedScale(1);
@@ -297,107 +299,110 @@ void Gameplay::LoadLevel()
 	/*
 		mEnemies.push_back(e);*/
 
-	/*
-	mEnemies.push_back(ninjaBlue);
-	mEnemies.push_back(ninjaBlue2);*/
+		/*
+		mEnemies.push_back(ninjaBlue);
+		mEnemies.push_back(ninjaBlue2);*/
 
-	//
-	// create some enemies
-	//
-	/*for (int i = 0; i < 5; i++) {
-		Enemy* e = new Enemy(mEnemyTex);
-		e->SetSpriteAngleCorrection(DIR_DOWN);
-		float x = RandomFloat(e->Radius(), mWorldWidth - e->Radius());
-		float y = RandomFloat(e->Radius(), mWorldHeight - e->Radius());
-		e->SetCenter(x, y);
-		e->SetAngle(RandomFloat(0.0f, 360.0f));
-		mEnemies.push_back(e);
-	}*/
+		//
+		// create some enemies
+		//
+		/*for (int i = 0; i < 5; i++) {
+			Enemy* e = new Enemy(mEnemyTex);
+			e->SetSpriteAngleCorrection(DIR_DOWN);
+			float x = RandomFloat(e->Radius(), mWorldWidth - e->Radius());
+			float y = RandomFloat(e->Radius(), mWorldHeight - e->Radius());
+			e->SetCenter(x, y);
+			e->SetAngle(RandomFloat(0.0f, 360.0f));
+			mEnemies.push_back(e);
+		}*/
 
-	//*//**************//
-	//*/////////////////*
-	//*               //*
-	//* INTRO CUTSCENE//*
-	//*               //*
-	//*/////////////////*
-	//*****************//
+		//*//**************//
+		//*/////////////////*
+		//*               //*
+		//* INTRO CUTSCENE//*
+		//*               //*
+		//*/////////////////*
+		//*****************//
 	ResourceManager::initializeTextBoxTextures(renderer);
 	ResourceManager::PopulateCharacterRects();
 
 	int screenHeight = game->GetScreenWidth();
 	int screenWidth = game->GetScreenWidth();
+	bool mShowIntro = false;
+	if (mShowIntro) {
+		mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 2200,1200 }, { 1200,1200 }, mCamera, 5.0f));
+		mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1200 }, { 1200,1900 }, mCamera, 5.0f));
+		mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1900 }, { 1800,1900 }, mCamera, 5.0f));
+		mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1800,1900 }, { 1800,2800 }, mCamera, 5.0f, true));
 
-	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 2200,1200 }, { 1200,1200 }, mCamera, 5.0f));
-	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1200 }, { 1200,1900 }, mCamera, 5.0f));
-	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1900 }, { 1800,1900 }, mCamera, 5.0f));
-	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1800,1900 }, { 1800,2800 }, mCamera, 5.0f, true));
+		//mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1800,1900 }, { 1800,2800 }, mCamera, 5.0f, true));
+		//keep the screen blacked out for a period of time:
+		//mGame->mScriptProcessor.AddAction(new aAction_FadeIn(width, height,10, mGame->GetRenderer(), 255, 255, 255,255,255,255,255,255));
 
-	//mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1800,1900 }, { 1800,2800 }, mCamera, 5.0f, true));
-	//keep the screen blacked out for a period of time:
-	//mGame->mScriptProcessor.AddAction(new aAction_FadeIn(width, height,10, mGame->GetRenderer(), 255, 255, 255,255,255,255,255,255));
+		int width = mGame->GetScreenWidth();
+		int height = mGame->GetScreenHeight();
 
-	int width = mGame->GetScreenWidth();
-	int height = mGame->GetScreenHeight();
+		mGame->mScriptProcessor.AddAction(new aAction_FadeIn(width, height, 5, mGame->GetRenderer(), 255, 255, 255, 0, 0, 0, 255, 0));
+		mGame->mScriptProcessor.AddAction(new aAction_FadeIn(width, height, 5, mGame->GetRenderer(), 0, 0, 0, 255, 255, 255, 0, 255));
+		mGame->mScriptProcessor.AddAction(new aAction_FadeIn(width, height, 5, mGame->GetRenderer(), 255, 255, 255, 255, 255, 255, 255, 255));
+		//mGame->mScriptProcessor.AddAction(new aAction_Delay(2000)); //will this work on all systems? 
+		//time it so by this time, the effects script processor will change the location. or have an action that calls this fade in, then calls the change
 
-	mGame->mScriptProcessor.AddAction(new aAction_FadeIn(width, height, 5, mGame->GetRenderer(), 255, 255, 255, 0, 0, 0, 255, 0));
-	mGame->mScriptProcessor.AddAction(new aAction_FadeIn(width, height, 5, mGame->GetRenderer(), 0, 0, 0, 255, 255, 255, 0, 255));
-	mGame->mScriptProcessor.AddAction(new aAction_FadeIn(width, height, 5, mGame->GetRenderer(), 255, 255, 255, 255, 255, 255, 255, 255));
-	//mGame->mScriptProcessor.AddAction(new aAction_Delay(2000)); //will this work on all systems? 
-	//time it so by this time, the effects script processor will change the location. or have an action that calls this fade in, then calls the change
+		//mTextBoxFF6
+		mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE, 5, mGame->mE, 2000, true));
+		mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_4, 5, mGame->mE, 2000, true));
 
-	//mTextBoxFF6
-	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE, 5, mGame->mE, 2000, true));
-	mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_4, 5, mGame->mE, 2000, true));
+		// End cutscene on the last movement! (bool argument at the end)
+		// mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { mCamera->ViewLeft()+500, 3100 }, 2.0f));
+		mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1820, 2900 }, 2.0f));
+		mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1820, 2650 }, 3.0f, true));
 
-	// End cutscene on the last movement! (bool argument at the end)
-	// mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { mCamera->ViewLeft()+500, 3100 }, 2.0f));
-	mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1820, 2900 }, 2.0f));
-	mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1820, 2650 }, 3.0f, true));
-	
-	//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_3, 5, mGame->mE));
-	
-	//SDL_Texture* t[] = {
-	//	ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_HIT,renderer),
-	//	ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_HURT, renderer)
-	//};
+		//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_3, 5, mGame->mE));
 
-	//mScriptProcessor_CharacterMovements.AddAction(new aAction_ChangeAnimation(mPlayer, t, 3000));
-	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(e, Vec2(e->Center().x, e->Center().y - 500), 1.5f, false));
+		//SDL_Texture* t[] = {
+		//	ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_HIT,renderer),
+		//	ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_HURT, renderer)
+		//};
 
-	//easrthquake, charge, cast spell, flash of lightning. bot3 lightning hits bof character
-	//ahem, sorry, he was in the wrong game....i will be the narrator of this plot and it is just
-	// a short showcase of what this engine allows :) and provides you with creative liberties
-	//summon an esper!
-	//talk to giga gaia. block an attack from his hand. 
-	//have the two characters move down to the same position
+		//mScriptProcessor_CharacterMovements.AddAction(new aAction_ChangeAnimation(mPlayer, t, 3000));
+		//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(e, Vec2(e->Center().x, e->Center().y - 500), 1.5f, false));
 
-	//mScriptProcessor_Effects.AddAction(new aAction_MoveTo(mPlayer2, Vec2(newplayerX - 20, newplayerY), 2.0f));
-	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 2.0f));
-	//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_2, 45));
-	//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_2, 45, mGame->mE));
+		//easrthquake, charge, cast spell, flash of lightning. bot3 lightning hits bof character
+		//ahem, sorry, he was in the wrong game....i will be the narrator of this plot and it is just
+		// a short showcase of what this engine allows :) and provides you with creative liberties
+		//summon an esper!
+		//talk to giga gaia. block an attack from his hand. 
+		//have the two characters move down to the same position
 
-	//list of entities  with a list of durations and a list of locations 
-	//mScriptProcessor_CharacterMovements.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::AFTER_FLASH, 45));
-	//once they press enter, she should wink and smile
+		//mScriptProcessor_Effects.AddAction(new aAction_MoveTo(mPlayer2, Vec2(newplayerX - 20, newplayerY), 2.0f));
+		//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 2.0f));
+		//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_2, 45));
+		//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_2, 45, mGame->mE));
 
-	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 100, mGame->GetRenderer(), 200, 10, 0));
-	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 100, mGame->GetRenderer(), 200, 10, 200));
-	//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 100, mGame->GetRenderer(), 200, 200, 0));
+		//list of entities  with a list of durations and a list of locations 
+		//mScriptProcessor_CharacterMovements.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::AFTER_FLASH, 45));
+		//once they press enter, she should wink and smile
 
-	//then we will say more and walk and introduce another character
-	//mScriptProcessor_CharacterMovements.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, "This is a prototype RPG Engine that I worked; tirelessly on...; It is almost at a presentable point now!", 45));
-	//mScriptProcessor_CharacterMovements.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, "I hope you enjoy it!", 45));
+		//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 100, mGame->GetRenderer(), 200, 10, 0));
+		//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 100, mGame->GetRenderer(), 200, 10, 200));
+		//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 100, mGame->GetRenderer(), 200, 200, 0));
 
-//ENEMY ACTIONS
-	//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(ninjaBlue,Vec2(100,100), 2.5f,false) );
+		//then we will say more and walk and introduce another character
+		//mScriptProcessor_CharacterMovements.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, "This is a prototype RPG Engine that I worked; tirelessly on...; It is almost at a presentable point now!", 45));
+		//mScriptProcessor_CharacterMovements.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, "I hope you enjoy it!", 45));
 
-	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 2.5f));
-	//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, Vec2(0, newplayerY), 6.0f));
+		//ENEMY ACTIONS
+		//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(ninjaBlue,Vec2(100,100), 2.5f,false) );
 
-//MUSIC!
-	mSound->playMusicFadeIn(SoundConstants::M_MP3_WA_ADELHYDE_CASTLE, -1, 1000);
-	
-	// make camera follow the player
+		//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 2.5f));
+		//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, Vec2(0, newplayerY), 6.0f));
+
+		//MUSIC!
+		//mSound->playMusicFadeIn(SoundConstants::M_MP3_WA_ADELHYDE_CASTLE, -1, 1000);
+
+	}//end show intro
+
+	 // make camera follow the player
 	mCamera->SetTarget(mPlayer);
 
 
@@ -459,7 +464,7 @@ void Gameplay::Update(float dt)
 
 	if (mScriptProcessor_CharacterMovements.userControlEnabled && mGame->mScriptProcessor.userControlEnabled) {
 
-	
+
 		/*else {
 			mPlayer->SetState(mPlayer->WALKING);
 		}*/
@@ -497,10 +502,10 @@ void Gameplay::Update(float dt)
 				mPlayer->mVelocity.y *= PlayerConstants::RUN_SPEED_MODIFYER;
 			}
 			else {
-				mPlayer->SetState(mPlayer->WALKING);				
+				mPlayer->SetState(mPlayer->WALKING);
 			}
 		}
-		 if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_A)) {
+		if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_A)) {
 			mPlayer->mVelocity.x = -2;
 			if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_LSHIFT)) {
 				mPlayer->SetState(mPlayer->RUNNING);
@@ -510,7 +515,7 @@ void Gameplay::Update(float dt)
 				mPlayer->SetState(mPlayer->WALKING);
 			}
 		}
-		 if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_S)) {
+		if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_S)) {
 			mPlayer->mVelocity.y = 2;
 			if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_LSHIFT)) {
 				mPlayer->SetState(mPlayer->RUNNING);
@@ -520,7 +525,7 @@ void Gameplay::Update(float dt)
 				mPlayer->SetState(mPlayer->WALKING);
 			}
 		}
-		 if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_D)) {
+		if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_D)) {
 			mPlayer->mVelocity.x = 2;
 			if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_LSHIFT)) {
 				mPlayer->SetState(mPlayer->RUNNING);
@@ -531,16 +536,12 @@ void Gameplay::Update(float dt)
 			}
 		}
 
-
 		if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_SPACE)) {
-			//mPlayer->Entity::mCurrentAnimation->
-			//Check if we are facing an NPC, and if so, bring up dialogue
 			int width = mGame->GetScreenWidth();
 			int height = mGame->GetScreenHeight();
-			//mScriptProcessor_Effects.AddAction(new aAction_FadeIn(width, height, 1000, mGame->GetRenderer(), 255, 255, 230));
 			mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_SPACE);
 		}
-		
+
 	}
 	/*if (mPlayer->mInCutscene) {
 		mPlayer->SetState(mPlayer->WALKING);
@@ -548,7 +549,7 @@ void Gameplay::Update(float dt)
 	mPlayer->Update(dt);
 
 	//mPlayer->SetCenter(mPlayer->Center() + 20 * mPlayer->mMoveSpeedScale * dt * moveVec);
-		// update enemies
+
 	for (auto& e : mEnemies) {
 		e->Update(dt);
 	}
@@ -556,10 +557,6 @@ void Gameplay::Update(float dt)
 	//
 	// update missiles
 	//
-
-	//These can be used for mini games :)
-	// go into a bar and throw bottles or something lol.
-
 	for (auto it = mMissiles.begin(); it != mMissiles.end(); ) {
 		Missile* m = *it;
 		m->Update(dt);
@@ -572,11 +569,8 @@ void Gameplay::Update(float dt)
 				// ignore collisions with player, for now
 			}
 		}
-		//make this check for bools with entities on whether we can interact with each other or not!! :)
-		//i.e.  
 
 		// check for collisions with enemies
-		//BATTLE!
 		for (auto e : mEnemies) {
 			if (e->IsAlive() && m->GetShooter() != e && Dist(m->Center(), e->Center()) < m->Radius() + e->Radius()) {
 				e->OnMissileImpact(m);
@@ -614,12 +608,6 @@ void Gameplay::Update(float dt)
 	//
 	// apply non-penetration constraints
 	//
-
-	//REMOVE COMMENTS IF YOU WANT THE PLAYER TO CHECK COLLISION WITH THER ENEMIES.
-
-	//WE NEED THIS LOGIC TO START RANDOM BATTLES! First area after the cutscene will be an open
-	//area that we can rn into battles
-
 	for (auto it1 = mEnemies.begin(); it1 != mEnemies.end(); ++it1) {
 		Enemy* e = *it1;
 
@@ -634,6 +622,8 @@ void Gameplay::Update(float dt)
 			Vec2 pos = e->Center() + depth * fromPlayer;
 			e->SetCenter(pos);
 		}
+
+
 
 		// check for collisions with other enemies
 		auto it2 = it1;
@@ -651,8 +641,37 @@ void Gameplay::Update(float dt)
 				e2->SetCenter(pos2);
 			}
 		}
+
+
+		for (auto it3 = mBoundaries.begin(); it3 != mBoundaries.end(); ++it3) {
+			Boundary* b = *it3;
+
+			//check for collisions with boundaries
+			if (b->mBoundaryRect->x < e->Right() &&
+				b->mBoundaryRect->x + b->mBoundaryRect->w > e->Left() &&
+				b->mBoundaryRect->y < e->Bottom() &&
+				b->mBoundaryRect->y + b->mBoundaryRect->h > e->Top())
+			{
+				e->SetCenter(e->mPreviousPosition);
+			}
+
+		}
+
 	}
-	
+
+	for (auto it3 = mBoundaries.begin(); it3 != mBoundaries.end(); ++it3) {
+		Boundary* b = *it3;
+
+		//check for collisions with boundaries
+		if (b->mBoundaryRect->x < mPlayer->Right() &&
+			b->mBoundaryRect->x + b->mBoundaryRect->w > mPlayer->Left() &&
+			b->mBoundaryRect->y < mPlayer->Bottom() &&
+			b->mBoundaryRect->y + b->mBoundaryRect->h > mPlayer->Top())
+		{
+			mPlayer->SetCenter(mPlayer->mPreviousPosition);
+		}
+
+	}
 
 	ClipToWorldBounds(mPlayer);
 	// ***************
@@ -663,6 +682,7 @@ void Gameplay::Update(float dt)
 	}
 
 	// **********************
+
 	// ******  CAMERA  ******
 	// **********************
 
@@ -680,7 +700,7 @@ void Gameplay::Update(float dt)
 		Effect* e = *it;
 		e->Update(dt);
 		if (e->IsDone()) {
-		
+
 			delete e;
 			it = mEffects.erase(it);
 		}
@@ -707,7 +727,7 @@ void Gameplay::Update(float dt)
 
 	//updateBackground
 	mFigaroCastle->AddTime(dt);
- 
+
 	// update camera
 	mCamera->Update(dt);
 
@@ -723,9 +743,9 @@ void Gameplay::Draw(float dt)
 
 	//mCamera->ScreenToWorld(0,0)
 	//{(float) mCamera->WorldToScreenX(0),(float)mCamera->WorldToScreenY(0) }
-	mFigaroCastle->Draw(renderer, mCamera->WorldToScreenVec(0,0), mCamera);
- 
-	if (mCounter % 100 == 0){
+	mFigaroCastle->Draw(renderer, mCamera->WorldToScreenVec(0, 0), mCamera);
+
+	if (mCounter % 100 == 0) {
 		//player center x : 1024
 		//	player center y : 1684
 		//	World To ScreenX(using 0 as position x and 4096) : -2231
@@ -737,26 +757,26 @@ void Gameplay::Draw(float dt)
 	/*	mWorldWidth = 2048;
 		mWorldHeight = 1734;*/
 
-	//cout << "camera view left: " << mCamera->ViewLeft() << endl;
-	//cout << "camera view camera top: " << mCamera->ViewTop() << endl;
-	//cout << "camera view bottom: " << mCamera->ViewBottom() << endl;
-	//cout << "camera view right: " << mCamera->ViewRight() << endl;
+		//cout << "camera view left: " << mCamera->ViewLeft() << endl;
+		//cout << "camera view camera top: " << mCamera->ViewTop() << endl;
+		//cout << "camera view bottom: " << mCamera->ViewBottom() << endl;
+		//cout << "camera view right: " << mCamera->ViewRight() << endl;
 
-	//cout << "player center x: " << mPlayer->Center().x << endl;
-	//cout << "player center y: " << mPlayer->Center().y << endl;
+		//cout << "player center x: " << mPlayer->Center().x << endl;
+		//cout << "player center y: " << mPlayer->Center().y << endl;
 
-	//cout << "player x world to screen x: " << mCamera->WorldToScreenX(mPlayer->Center().x) << endl;
-	//cout << "player y world to screen y: " << mCamera->WorldToScreenY(mPlayer->Center().y) << endl;
+		//cout << "player x world to screen x: " << mCamera->WorldToScreenX(mPlayer->Center().x) << endl;
+		//cout << "player y world to screen y: " << mCamera->WorldToScreenY(mPlayer->Center().y) << endl;
 
-	//cout << "figaro Background animation x calculation: " << mCamera->WorldToScreenX(0 - 0.5f * 4096) << endl;
-	//cout << "figaro Background animation y calculation: " << mCamera->WorldToScreenY(0 - 0.5f * 3468) << endl;
+		//cout << "figaro Background animation x calculation: " << mCamera->WorldToScreenX(0 - 0.5f * 4096) << endl;
+		//cout << "figaro Background animation y calculation: " << mCamera->WorldToScreenY(0 - 0.5f * 3468) << endl;
 
-	//cout << "screen width " << (float)mGame->GetScreenWidth() << endl;
-	//cout << "screen height: " << (float)mGame->GetScreenHeight() << endl;
-	//cout << "*********************************************************" << endl;
-	//cout << "*********************************************************" << endl;
-	//cout << "camera left: " << mCamera->ScreenToWorld({ mPlayer->Center().x,mPlayer->Center().y }) << endl;
-	
+		//cout << "screen width " << (float)mGame->GetScreenWidth() << endl;
+		//cout << "screen height: " << (float)mGame->GetScreenHeight() << endl;
+		//cout << "*********************************************************" << endl;
+		//cout << "*********************************************************" << endl;
+		//cout << "camera left: " << mCamera->ScreenToWorld({ mPlayer->Center().x,mPlayer->Center().y }) << endl;
+
 	}
 	mCounter += 1;
 	//cout << "counter: " << mCounter << endl;
@@ -788,15 +808,26 @@ void Gameplay::Draw(float dt)
 		}
 	}
 
-/*  
-	SDL_Rect foregroundRect;
-	foregroundRect.x = 0;
-	foregroundRect.y = 0;
-	SDL_QueryTexture(mNarsheForeground, NULL, NULL, &foregroundRect.w, &foregroundRect.h);
-	SDL_RenderCopy(renderer, mNarsheForeground, &foregroundRect, NULL);
-	*/
-	//LAYER 2 (Main Level)
-	
+	if (mGame->mDebugMode) {
+		for (auto& m : mBoundaries) {
+			//m->mBoundaryRect->x = mCamera->WorldToScreenX(m->mBoundaryRect->x);
+			//m->mBoundaryRect->y = mCamera->WorldToScreenY(m->mBoundaryRect->y);
+
+			//cout << "boundary x draw: " << m->mBoundaryRect->x << endl;
+			//cout << "boundary y draw: " << m->mBoundaryRect->y << endl;
+			m->Draw(renderer, mCamera);
+			//SDL_RenderFillRect(renderer, m->mBoundaryRect);
+		}
+	}
+	/*
+		SDL_Rect foregroundRect;
+		foregroundRect.x = 0;
+		foregroundRect.y = 0;
+		SDL_QueryTexture(mNarsheForeground, NULL, NULL, &foregroundRect.w, &foregroundRect.h);
+		SDL_RenderCopy(renderer, mNarsheForeground, &foregroundRect, NULL);
+		*/
+		//LAYER 2 (Main Level)
+
 	mPlayer2->Draw(renderer, mCamera);
 
 	for (auto& e : mEnemies) {
@@ -878,11 +909,11 @@ void Gameplay::OnKeyDown(const SDL_KeyboardEvent& kbe)
 
 		case SDL_SCANCODE_T:
 			g_NoTarget ^= true;
-			
+
 			break;
 		case SDL_SCANCODE_SPACE:
-			 mSound->PlaySFX( SoundConstants::S_WAV_FALLING ,1,1);
-
+			//mSound->PlaySFX(SoundConstants::S_WAV_FALLING, 1, 1);
+			mGame->mDebugMode = !mGame->mDebugMode;
 			break;
 		case SDL_SCANCODE_LSHIFT:
 			mGameplayKeyboardHandler.btnPressed(SDL_SCANCODE_LSHIFT);
@@ -913,6 +944,37 @@ void Gameplay::OnKeyUp(const SDL_KeyboardEvent& kbe)
 	mGameplayKeyboardHandler.btnReleased(kbe.keysym.scancode);
 }
 
+void Gameplay::OnMouseUp(const SDL_MouseButtonEvent& mbe)
+{
+	if (mbe.button == SDL_BUTTON_RIGHT) {
+		/*	int x = mCamera->ScreenToWorldX(min(mTempBoundaryX, mbe.x) + (int)mCamera->ViewLeft());
+			int y = mCamera->ScreenToWorldY(min(mTempBoundaryY, mbe.y) + (int)mCamera->ViewTop());
+	*/
+
+
+		int latestX = (int)mCamera->ScreenToWorldX(mbe.x);
+		int latestY = (int)mCamera->ScreenToWorldY(mbe.y);
+
+		int x = min(mTempBoundaryX, latestX);
+		int y = min(mTempBoundaryY, latestY);
+		//x = mCamera->WorldToScreenX(x);
+		//y = mCamera->WorldToScreenY(y);
+		//cout << x << endl;
+		//cout << y << endl;
+
+		
+
+		cout << "min x : " << min(mTempBoundaryX, (int)mCamera->ScreenToWorldX(mbe.x)) << endl;
+		cout << "min y : " << min(mTempBoundaryY, (int)mCamera->ScreenToWorldY(mbe.y)) << endl;
+		cout << "mTempBoundaryX x create: " << mTempBoundaryX << endl;
+		cout << "mTempBoundaryY y create: " << mTempBoundaryY << endl;
+		cout << "boundary x create: " << x << endl;
+		cout << "boundary y create: " << y << endl;
+
+		Boundary* B = new Boundary(x, y, abs(mTempBoundaryX - latestX), abs(mTempBoundaryY - latestY));
+		mBoundaries.push_back(B);
+	}
+}
 
 void Gameplay::OnMouseDown(const SDL_MouseButtonEvent& mbe)
 {
@@ -922,13 +984,31 @@ void Gameplay::OnMouseDown(const SDL_MouseButtonEvent& mbe)
 			std::cout << "Creating missile" << std::endl;
 
 			//TODO: create constants for all textures
-			Missile* m = new Missile(mShotTex, mPlayer,60,3,true);
+			Missile* m = new Missile(mShotTex, mPlayer, 60, 3, true);
 			m->SetSpriteAngleCorrection(DIR_UP);
 			m->SetCenter(mPlayer->Center());
 			m->SetAngle(mPlayer->Angle());
 			m->SetSpeed(200);   // pixels per second
 
 			mMissiles.push_back(m);
+		}
+		else if (mbe.button == SDL_BUTTON_RIGHT) {
+			//create a box
+			//when release. determine width/height of the box. 
+
+			//create a new boundary object with that coordinate.
+			//determine world coordinate from the window coordinate (is it world to begin with or view x/y??
+
+			//boundary is basically a width and a height and a x and a y. 
+			//maybe later we can extend it to be different shapes?
+
+			//_x = mbe.x;
+			//_y = mbe.y;
+			mTempBoundaryX = mCamera->ScreenToWorldX(mbe.x);
+			mTempBoundaryY = mCamera->ScreenToWorldY(mbe.y);
+
+
+
 		}
 	}
 }

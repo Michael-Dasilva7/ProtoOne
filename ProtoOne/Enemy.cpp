@@ -232,6 +232,7 @@ void Enemy::Update(float dt)
     }
 
     // move along the forward/backward axis
+	mPreviousPosition = mCenterPos;
     mCenterPos += mDefaultSpeed * mSpeedScale * dt * ForwardDir();
 
 }

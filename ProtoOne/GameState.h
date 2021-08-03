@@ -11,6 +11,7 @@ class GameState
 protected:
     Game*               mGame;
 	Sound*				mSound;
+
 public:
                         GameState(Game* game, Sound* sound)
                             : mGame(game), mSound(sound)

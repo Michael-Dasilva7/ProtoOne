@@ -197,6 +197,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundConstants.h" />
+    <ClInclude Include="Boundary.h" />
     <ClInclude Include="GrassLandsGamePlay.h" />
     <ClInclude Include="NPC.h" />
     <ClInclude Include="Actions.h" />

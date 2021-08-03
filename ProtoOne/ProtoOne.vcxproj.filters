@@ -195,6 +195,9 @@
     <ClInclude Include="BackgroundConstants.h">
       <Filter>Constants</Filter>
     </ClInclude>
+    <ClInclude Include="Boundary.h">
+      <Filter>Base\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Gameplay">

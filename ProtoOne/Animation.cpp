@@ -106,7 +106,7 @@ void Animation::Draw(SDL_Renderer* renderer, const Vec2& pos, Camera* camera) co
 
 
 	if (mIsBackground) {
-		screenRect.x =pos.x;
+		screenRect.x = pos.x;
 		screenRect.y = pos.y;
 	}
 	else
@@ -116,7 +116,6 @@ void Animation::Draw(SDL_Renderer* renderer, const Vec2& pos, Camera* camera) co
 	}
 
     SDL_RenderCopyEx(renderer, mTex, &texRect, &screenRect, 0.0, NULL, mFlipType);
-
 
 	//	player center x : 348
 	//	player center y : -157
