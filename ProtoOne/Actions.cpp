@@ -7,6 +7,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
+#include "SoundConstants.h"
 
 aScriptProcessor::aScriptProcessor() {
 	userControlEnabled = true;
@@ -109,10 +110,12 @@ void aAction_MoveTo::Start() {
 	////x -   <
 	////y +   V
 	////Y -   ^
+
 	////0    >
 	////90   ^
 	////180  <
 	////260  V
+
 	//if (degreeofDirection < 60 && degreeofDirection > 25)
 	//{
 	//	//set direction and change player or entity to move based on direction and update velocity
@@ -215,17 +218,17 @@ void aAction_FadeIn::Update(float fElapsedTime) {
 
 	mTimeSoFar += fElapsedTime;
 	float t = mTimeSoFar / mDuration;
-	if (t > 1.0f) t = 1.0f;	 
+	if (t > 1.0f) t = 1.0f;
 
 	SDL_SetRenderDrawBlendMode(mRenderer, SDL_BLENDMODE_BLEND);
+	//the code below is lerping between the start and end RGB and A values to slowly transition between the two
 	SDL_SetRenderDrawColor(mRenderer, (mFR - (mFR - mTR) * t), mFG - ((mFG - mTG) * t), mFB - ((mFB - mTB) * t), mFO - ((mFO - mTO) * t));
 
 	//TODO: make a change to increase or decrease the duration variably to speed up or slowdown the fade
-
 	SDL_RenderFillRect(mRenderer, &mFadeRect);
 
 	if (mTimeSoFar >= mDuration) {
-		isDone = true; 
+		isDone = true;
 		//delete &mFadeRect;
 	}
 }
@@ -526,18 +529,18 @@ void aAction_Dialogue::Update(float elapsedTime) {
 
 		//2. then we need to check if its divisible by 4 OR, if we are at the end of the written dialogue:
 				//****************************************************************************************** 
-				// if divisible by 4 and not end of dialogue, we are DONE when the user hits enter
+// if divisible by 4 and not end of dialogue, we are DONE when the user hits enter
 
-				// if we are divisible by 4 and not end of dialogue, 
+// if we are divisible by 4 and not end of dialogue, 
 
-				// if we are not dibislbe by 4 and not end of idalogue, keep going
+// if we are not dibislbe by 4 and not end of idalogue, keep going
 
-				// if we are not dibible by 4 any at end of dialogue, poll for user input and done when enter
-				 //****************************************************************************************** 
+// if we are not dibible by 4 any at end of dialogue, poll for user input and done when enter
+ //****************************************************************************************** 
 
-		//3. set the next start/end loop accordinly based on the next section of text
+//3. set the next start/end loop accordinly based on the next section of text
 
-		//if the next character is past the dialogue text passed into the action, poll for "is done" button
+//if the next character is past the dialogue text passed into the action, poll for "is done" button
 		if (mCurrentDialogueCharacter + 1 > mWrittenDialogue.length()) {
 			//We are now at the end of the provided dialogue
 			//make the polling logic a reusuable method:
@@ -586,3 +589,180 @@ void split(const std::string& str, Container& cont, char delim = ' ')
 		cont.push_back(token);
 	}
 }
+
+//
+//aAction_BigBang::aAction_BigBang(Entity* object, Entity* target, SDL_Texture* fireball, Animation* explosion, SDL_Renderer* renderer, Camera* cam) {
+aAction_BigBang::aAction_BigBang(Entity* object, Vec2 target, SDL_Texture* fireball, SDL_Texture* fireball2, Animation* explosion, SDL_Renderer* renderer, Camera* cam, Sound* sound) {
+
+	mPhase1 = true;
+	mPhase2 = false;
+	mPhase3 = false;
+
+	//in the future i will make it so once the attack hits, the target will need to run its hit animation. or just "is hit" state and
+	//reduced hp which will automatically make its animation run in the main update of an entity. 
+	mPlayer = object;
+	mTarget = target;
+
+	mFireball = fireball;
+	mFireball2 = fireball2;
+	mExplosion = explosion;
+
+	mRenderer = renderer;
+	mCamera = cam;
+
+	mSound = sound;
+
+
+}
+void aAction_BigBang::Start() {
+	//start fireball above the casters head. 
+	mFireballRect.x = mCamera->WorldToScreenX(mPlayer->Center().x);
+	mFireballRect.y = mCamera->WorldToScreenY(mPlayer->Center().y);
+	mFireballRect.w = 20;
+	mFireballRect.h = 20;
+
+	mScreenExplosion.x = 0;
+	mScreenExplosion.y = mCamera->ViewHeight();
+	mScreenExplosion.w = mCamera->ViewWidth();
+	mScreenExplosion.h = 0;
+
+
+}
+
+//!!!!!   TODO   !!!!!!!!!!!!!!!!
+//add portraits to the dialogue!!
+//add custcenein first area "HALT!" dangerous to go ahead!
+
+//step on a button an door opens to allow you to fight a monster
+void aAction_BigBang::Update(float fElapsedTime) {
+
+	if (mPhase1) {
+		/*mFireball->AddTime(fElapsedTime);
+		mFireball->Draw(mRenderer, mPlayer->Center(), mCamera);
+*/
+		int fireballMaxSize = 300;
+		if (mFireballRect.w <= fireballMaxSize) {
+			//keep growing until max size
+			mFireballRect.x -= 2;
+			mFireballRect.y -= 2;
+			mFireballRect.w += 4;
+			mFireballRect.h += 4;
+		}
+		else {
+			//START NEXT PHASE OF THE ATTACK
+			mPhase1 = false;
+			mPhase2 = true;
+
+		}
+		//draw stationary texture if no current animation. replace this with, say an idle animation maybe?
+		//SDL_SetRenderBlendMode();
+		SDL_RenderCopy(mRenderer, mFireball, NULL, &mFireballRect);
+		//	mPhase1 = false;
+		//	this->isDone = true;
+		/*if (mFireball->IsDone()){
+		}*/
+	}
+	else if (mPhase2) {
+		//lerp the ball to the target
+
+		//spell cast animation
+		Vec2 fireballPosition;
+		if (mCurrentLerp == nullptr) {
+			Vec2 start(mFireballRect.x, mFireballRect.y);
+			fireballPosition = Vec2(mFireballRect.x, mFireballRect.y);
+
+			mCurrentLerp = new Lerp(start, mTarget, fireballPosition, 1);
+
+		}
+		else {
+			if (mCurrentLerp->update(fElapsedTime)) {
+				//target reached
+				mPhase2 = false;
+				mPhase3 = true;
+
+				mSound->PlaySFX(SoundConstants::S_WAV_INFERNO, -1, 1);
+				// Move the explosion down w
+				mFireball2Rect.x = mFireballRect.x;
+				mFireball2Rect.y = mFireballRect.y + 120;
+				mFireball2Rect.w = mFireballRect.w;
+				mFireball2Rect.h = mFireballRect.h;
+			}
+		}
+
+		mFireballRect.x = mCurrentLerp->mPosition.x;
+		mFireballRect.y = mCurrentLerp->mPosition.y;
+		SDL_RenderCopy(mRenderer, mFireball, NULL, &mFireballRect);
+		//mFireball2Rect.w += 16;
+		//mFireball2Rect.h += 16;
+	/*	if (mFireball2Rect.w > 1000) {
+
+		}
+		else {*/
+
+		//}
+
+	}
+	else if (mPhase3) {
+		// first stage explosion begin!
+
+		mFireball2Rect.x -= 8;
+		mFireball2Rect.y -= 8;
+		mFireball2Rect.w += 16;
+		mFireball2Rect.h += 16;
+
+		int fireballMaxSize = 1000;
+		if (mFireball2Rect.w <= fireballMaxSize) {
+
+			SDL_RenderCopy(mRenderer, mFireball2, NULL, &mFireball2Rect);
+		}
+		else {
+			mPhase3 = false;
+			mPhase4 = true;
+			SDL_SetRenderDrawBlendMode(mRenderer, SDL_BLENDMODE_BLEND);
+		}
+
+
+		//transform to new explosion and grow to full screen in about 5 frames. then less opaque. more white. then explosions
+
+	}
+	else if (mPhase4) {
+		mScreenExplosion.y -= 60;
+		mScreenExplosion.h += 60;
+		//the code below is lerping between the start and end RGB and A values to slowly transition between the two
+		SDL_SetRenderDrawColor(mRenderer, 150, 150,50,220);
+
+		SDL_RenderFillRect(mRenderer, &mScreenExplosion);
+	}
+	//phase4 -
+	//wall of light 
+
+	//phase5 
+	//explosions and play sound!!
+
+
+}
+// 
+//bool aAction_BigBang::Lerp::Update(float timesofar) {
+//	{
+//		mTimeSoFar += timesofar;
+//		float t = mTimeSoFar / mDuration;
+//		if (t > 1.0f) t = 1.0f;
+//
+//		mPosition.x = ((mEnd.x - mStart.x) * t + mStart.x);
+//		mPosition.y = ((mEnd.y - mStart.y) * t + mStart.y);
+//
+//		//mMoveableObject->mVelocity.x = (mEnd.x - mStart.x) / mDuration;
+//		//mMoveableObject->mVelocity.y = (mEnd.y - mStart.y) / mDuration;
+//
+//		if (mTimeSoFar >= mDuration) {
+//			mPosition.x = mEnd.x;
+//			mPosition.y = mEnd.y;
+//
+//			return true;
+//			//if (mEndCutscene) mMoveableObject->mInCutscene = false;
+//		}
+//		else {
+//			return false;
+//		}
+//	}
+//}

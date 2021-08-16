@@ -17,7 +17,7 @@ public:
 									Animation(SDL_Texture* tex, int numCells, float duration, bool loopable, SDL_RendererFlip flipType = SDL_FLIP_NONE, bool isBackground = false);
 									
 									~Animation();
-	
+	char*							mName;
 	SDL_RendererFlip				mFlipType;
 	int								mCellWidth;
 	int								mCellHeight;

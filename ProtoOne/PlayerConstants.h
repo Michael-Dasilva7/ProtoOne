@@ -30,4 +30,8 @@ public:
 
 
 	const static std::string PlayerConstants::ANIM_TEX_FIREBALL;
+
+
+	const  static std::string PlayerConstants::BLAST;
+	const  static std::string PlayerConstants::BLAST2;
 };

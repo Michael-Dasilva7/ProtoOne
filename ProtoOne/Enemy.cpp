@@ -138,10 +138,10 @@ void Enemy::Update(float dt)
 				//2. then we would need to add a new if statemnet each one. which is fine, unless we see lots of future configuration happenining here
 					//then in that case we should make a inheiritance solution.
 			if (mDirection == UP) {
-				setAnimation(mRunUpTexture, 4, 0.4, true);
+				setAnimation(mRunUpTexture, 3, 0.4, true);
 			}
 			else if (mDirection == DOWN) {
-				setAnimation(mRunDownTexture, 4, 0.3, true);
+				setAnimation(mRunDownTexture, 3, 0.3, true);
 			}
 			else if (mDirection == LEFT) {
 				setAnimation(mRunLeftTexture, 3, 0.4, true);
@@ -192,7 +192,7 @@ void Enemy::Update(float dt)
 
             // shoot?
             if (t >= mNextShootTime && std::fabs(mDesiredAngle - mAngle) < 5) {
-				Missile* m = new Missile(game->GetGameplayState()->mShotTex, this, 60, 3, true);
+				Missile* m = new Missile(game->GetGameplayState()->mShotTex, this, 35, 3, true);
                 m->SetSpriteAngleCorrection(DIR_UP);
                 m->SetCenter(mCenterPos);
                 m->SetAngle(mDesiredAngle);

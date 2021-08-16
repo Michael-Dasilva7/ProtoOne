@@ -9,7 +9,9 @@
 #include "Actions.h"
 #include <iostream>
 #include <algorithm>
-
+#include <iostream>
+#include <fstream>
+using namespace std;
 
 
 Gameplay::Gameplay(Game* game, Sound* sound)
@@ -59,7 +61,7 @@ void Gameplay::Initialize()
 	mNarsheBackground = ResourceManager::Acquire("media/background/SnowCliff_Back.png", renderer);
 	mNarsheForeground = ResourceManager::Acquire("media/background/SnowCliff_Front.png", renderer);
 	mDesertBackground = ResourceManager::Acquire("media/background/desert/desertX4.png", renderer);
-	//mFigaroCastle = ResourceManager::Acquire("media/background/desert/figaroCastleX4.png", renderer);
+	//mCurrentBackground = ResourceManager::Acquire("media/background/desert/figaroCastleX4.png", renderer);
 
 	//mBgTex = ResourceManager::Acquire("media/background/darkforest.png", renderer);
 	//mBgTex = LoadTexture("media/background/blah.jpg", renderer);
@@ -117,7 +119,7 @@ void Gameplay::LoadLevel()
 	mWorldHeight = 3465;
 
 	//std::cout << "World size is " << mWorldWidth  << "x" << mWorldHeight << std::endl;
-	mFigaroCastle = new Animation(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), 3, 0.2, true, SDL_FLIP_NONE, true);
+	mCurrentBackground = new Animation(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), 3, 0.2, true, SDL_FLIP_NONE, true);
 
 	//for the intro scene, we want to pan the camera through multiple screens. and have characters moving so here is the following actions:
 
@@ -264,9 +266,9 @@ void Gameplay::LoadLevel()
 		greenDragon->SetState(ENEMY_PATROL);
 		//greenDragon->SetSpeedScale(1);
 
-		greenDragon->mRunUpTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
+		greenDragon->mRunUpTexture = ResourceManager::Acquire("./media/dragonFlyUpX4.png", renderer);
 		greenDragon->mRunLeftTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
-		greenDragon->mRunDownTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
+		greenDragon->mRunDownTexture = ResourceManager::Acquire("./media/dragonFlyDownX4.png", renderer);
 		greenDragon->mRunRightTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
 		mEnemies.push_back(greenDragon);
 	}
@@ -280,7 +282,7 @@ void Gameplay::LoadLevel()
 	//greenDragon->mRunLeftTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
 	//greenDragon->mRunDownTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
 	//greenDragon->mRunRightTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
-	////	greenDragon->setAnimationTexture(greenDragon->mRunDownTexture);
+	//greenDragon->setAnimationTexture(greenDragon->mRunDownTexture);
 
 	/*
 	Load Dragon off screen
@@ -357,6 +359,17 @@ void Gameplay::LoadLevel()
 		mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1820, 2900 }, 2.0f));
 		mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1820, 2650 }, 3.0f, true));
 
+
+		//std::cout << "World size is " << mWorldWidth  << "x" << mWorldHeight << std::endl;
+		//TODO: create constants for the fireball animation. growing yellow ball basically
+		//another animation of a semicircle sphere yellow ball
+		//Animation* fireball = new Animation(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), 3, 0.2, true, SDL_FLIP_NONE, true);
+
+		//Animation* fireball = new Animation(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), 3, 0.2, true, SDL_FLIP_NONE, true);
+		
+		
+		
+
 		//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_3, 5, mGame->mE));
 
 		//SDL_Texture* t[] = {
@@ -398,7 +411,7 @@ void Gameplay::LoadLevel()
 		//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, Vec2(0, newplayerY), 6.0f));
 
 		//MUSIC!
-		//mSound->playMusicFadeIn(SoundConstants::M_MP3_WA_ADELHYDE_CASTLE, -1, 1000);
+		mSound->playMusicFadeIn(SoundConstants::M_MP3_WA_ADELHYDE_CASTLE, -1, 1000);
 
 	}//end show intro
 
@@ -654,9 +667,7 @@ void Gameplay::Update(float dt)
 			{
 				e->SetCenter(e->mPreviousPosition);
 			}
-
 		}
-
 	}
 
 	for (auto it3 = mBoundaries.begin(); it3 != mBoundaries.end(); ++it3) {
@@ -668,7 +679,21 @@ void Gameplay::Update(float dt)
 			b->mBoundaryRect->y < mPlayer->Bottom() &&
 			b->mBoundaryRect->y + b->mBoundaryRect->h > mPlayer->Top())
 		{
-			mPlayer->SetCenter(mPlayer->mPreviousPosition);
+			//if we are moving right, and the x is + 1 and the y is + 1. then only plus 1 
+			//this logic makes the player slide along boundaries instead of "sticking" to the boundaries:
+			Vec2 distDifference = mPlayer->Center() - mPlayer->mPreviousPosition;
+			
+			if (distDifference.x > 0 && distDifference.y > 0) {
+				mPlayer->SetCenter(mPlayer->mPreviousPosition.x, mPlayer->mPreviousPosition.y + distDifference.y);
+			}
+			else if (distDifference.x < 0 && distDifference.y > 0) {
+				mPlayer->SetCenter(mPlayer->mPreviousPosition.x, mPlayer->mPreviousPosition.y - distDifference.y);
+			}
+
+			else {
+				mPlayer->SetCenter(mPlayer->mPreviousPosition);
+			}		
+
 		}
 
 	}
@@ -726,7 +751,7 @@ void Gameplay::Update(float dt)
 	mIsActive = true;
 
 	//updateBackground
-	mFigaroCastle->AddTime(dt);
+	mCurrentBackground->AddTime(dt);
 
 	// update camera
 	mCamera->Update(dt);
@@ -743,7 +768,7 @@ void Gameplay::Draw(float dt)
 
 	//mCamera->ScreenToWorld(0,0)
 	//{(float) mCamera->WorldToScreenX(0),(float)mCamera->WorldToScreenY(0) }
-	mFigaroCastle->Draw(renderer, mCamera->WorldToScreenVec(0, 0), mCamera);
+	mCurrentBackground->Draw(renderer, mCamera->WorldToScreenVec(0, 0), mCamera);
 
 	if (mCounter % 100 == 0) {
 		//player center x : 1024
@@ -785,7 +810,7 @@ void Gameplay::Draw(float dt)
 	//distantBackground.y = RoundToInt(mCamera->ViewTop());
 	//distantBackground.w = mGame->GetScreenWidth();
 	//distantBackground.h = mGame->GetScreenHeight();
-	//SDL_RenderCopy(renderer, mFigaroCastle, &distantBackground, NULL);
+	//SDL_RenderCopy(renderer, mCurrentBackground, &distantBackground, NULL);
 	//cout << "world width: " << mWorldWidth << endl;
 
 	//if collide with a box, do not draw that part of the sprite. so it will make it seem like layers
@@ -931,11 +956,40 @@ void Gameplay::OnKeyDown(const SDL_KeyboardEvent& kbe)
 		case SDL_SCANCODE_W:
 			mGameplayKeyboardHandler.btnPressed(SDL_SCANCODE_W);
 			break;
+		case SDL_SCANCODE_J:
+			mGameplayKeyboardHandler.btnPressed(SDL_SCANCODE_J);
 
+			//SAVE BOUNDARIES TO THE FILE
+			ofstream myfile;
 
+			//Depending on which background we're working on. change this text file.
+			// TODO: automate this to save to whichever is the current texture. can we find the name of the texture by querying it somehow?
+			myfile.open("./media/figaroBoundaries.txt");
+			//Save Boundaries
+			for each (Boundary* var in mBoundaries)
+			{
+				//x,y,w,h,centerX,centerY				
+				myfile << var->mBoundaryRect->x << "," << var->mBoundaryRect->y << "," << var->mBoundaryRect->w << "," << var->mBoundaryRect->h << "," << var->mCenter.x << "," << var->mCenter.y << endl;
+			}
+			myfile.close();
+			break;
+
+		//case SDL_SCANCODE_K:
+		//	mGameplayKeyboardHandler.btnPressed(SDL_SCANCODE_K);
+		//	//Load Boundaries
+		//	//ofstream myfile;
+		//	//Depending on which background we're working on. change this text file.
+		//	// TODO: automate this to save to whichever is the current texture. can we find the name of the texture by querying it somehow?
+		//	//myfile.open("./media/figaroBoundaries.txt");
+		//	//*****************************************************************************
+		//	//for each line in the file, split on commas and create a boundary object and throw it into the boundary array
+		//	//*****************************************************************************
+
+		//	//myfile.close();
+		//	break;
+		
 		}
 	}
-
 }
 
 
@@ -947,11 +1001,10 @@ void Gameplay::OnKeyUp(const SDL_KeyboardEvent& kbe)
 void Gameplay::OnMouseUp(const SDL_MouseButtonEvent& mbe)
 {
 	if (mbe.button == SDL_BUTTON_RIGHT) {
-		/*	int x = mCamera->ScreenToWorldX(min(mTempBoundaryX, mbe.x) + (int)mCamera->ViewLeft());
+		/*	
+			int x = mCamera->ScreenToWorldX(min(mTempBoundaryX, mbe.x) + (int)mCamera->ViewLeft());
 			int y = mCamera->ScreenToWorldY(min(mTempBoundaryY, mbe.y) + (int)mCamera->ViewTop());
-	*/
-
-
+		*/
 		int latestX = (int)mCamera->ScreenToWorldX(mbe.x);
 		int latestY = (int)mCamera->ScreenToWorldY(mbe.y);
 
@@ -961,8 +1014,6 @@ void Gameplay::OnMouseUp(const SDL_MouseButtonEvent& mbe)
 		//y = mCamera->WorldToScreenY(y);
 		//cout << x << endl;
 		//cout << y << endl;
-
-		
 
 		cout << "min x : " << min(mTempBoundaryX, (int)mCamera->ScreenToWorldX(mbe.x)) << endl;
 		cout << "min y : " << min(mTempBoundaryY, (int)mCamera->ScreenToWorldY(mbe.y)) << endl;
@@ -991,6 +1042,12 @@ void Gameplay::OnMouseDown(const SDL_MouseButtonEvent& mbe)
 			m->SetSpeed(200);   // pixels per second
 
 			mMissiles.push_back(m);
+
+			SDL_Texture* fireball = ResourceManager::Acquire(PlayerConstants::BLAST, mGameRenderer);
+			SDL_Texture* fireball2 = ResourceManager::Acquire(PlayerConstants::BLAST2, mGameRenderer);
+			Vec2 targ(mbe.x, mbe.y);
+			mGame->mScriptProcessor.AddAction(new aAction_BigBang(mPlayer, targ, fireball, fireball2,NULL, mGameRenderer, mCamera, mSound));
+
 		}
 		else if (mbe.button == SDL_BUTTON_RIGHT) {
 			//create a box

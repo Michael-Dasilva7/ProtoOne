@@ -52,8 +52,10 @@ public: // <-- HACK
 	SDL_Texture*        mNarsheBackground;
 	SDL_Texture*        mNarsheForeground;
 	SDL_Texture*        mDesertBackground;
-	//SDL_Texture*        mFigaroCastle;
-	Animation*			mFigaroCastle;
+	//SDL_Texture*        mCurrentBackground;
+
+	Animation*			mCurrentBackground;
+	
 	/*
 	___________ END BACKGROUNDS __________
 	*/

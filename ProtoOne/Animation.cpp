@@ -15,7 +15,7 @@ Animation::Animation(SDL_Texture* tex, int numCells, float duration, bool loopab
     SDL_QueryTexture(tex, NULL, NULL, &texWidth, &texHeight);
 	//TODO:
 	//will need to change this when i work with different sprites acting upon each other. we want the width of the sprite to be smaller than the image!!!!!!!!!
-
+	
     mCellWidth = texWidth / numCells;
     mCellHeight = texHeight;
 	mFlipType = flipType;
@@ -171,13 +171,6 @@ void Animation::Draw(SDL_Renderer* renderer, const Vec2& pos, Camera* camera, Ui
 	
 	//Add Layer 
 	SDL_RenderCopyEx(renderer, mTex, &texRect, &screenRect, 0.0, NULL, mFlipType);
-	/*
-	SDL_RenderDrawLine
-	SDL_RenderDrawPoint
-	SDL_RenderDrawRect
-	SDL_SetRenderDrawBlendMode
-	SDL_SetRenderDrawColor
-	*/
 }
 
 //increases speed and float value is expected in seconds

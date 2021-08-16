@@ -18,8 +18,12 @@ const  std::string PlayerConstants::ANIM_TEX_UNDINE_HIT = "./media/undine_hit.pn
 const  std::string PlayerConstants::ANIM_TEX_UNDINE_HURT = "./media/undine_hurt.png";
 
 const  std::string PlayerConstants::ANIM_TEX_UNDINE_DEAD = "./media/undine_faint.png";
-const  std::string PlayerConstants::ANIM_TEX_UNDINE_CHANT = "./media/undine_chant(2frame).png";
+const  std::string PlayerConstants::ANIM_TEX_UNDINE_CHANT = "./media/undine_chant(2frame)X2.png";
 
 
 const  std::string PlayerConstants::ANIM_TEX_FIREBALL = "./media/effects/fireball.png";
  
+
+
+const  std::string PlayerConstants::BLAST = "./media/Orb.png";
+const  std::string PlayerConstants::BLAST2 = "./media/Orb2.png";

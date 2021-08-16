@@ -56,7 +56,7 @@ void GrassLandsGamePlay::Initialize()
 	//mNarsheBackground = ResourceManager::Acquire("media/background/SnowCliff_Back.png", renderer);
 	//mNarsheForeground = ResourceManager::Acquire("media/background/SnowCliff_Front.png", renderer);
 	//mDesertBackground = ResourceManager::Acquire("media/background/desert/desertX4.png", renderer);
-	//mFigaroCastle = ResourceManager::Acquire("media/background/desert/figaroCastleX2.png", renderer);
+	//mCurrentBackground = ResourceManager::Acquire("media/background/desert/figaroCastleX2.png", renderer);
 
 
 
@@ -87,7 +87,7 @@ void GrassLandsGamePlay::Shutdown()
 	SDL_DestroyTexture(mExplosionTex);
 //	SDL_DestroyTexture(mTextImage);
 	SDL_DestroyTexture(Text);
-	SDL_DestroyTexture(mFigaroCastle);
+	SDL_DestroyTexture(mCurrentBackground);
 
 
 }
@@ -100,7 +100,7 @@ void GrassLandsGamePlay::LoadLevel()
 	//ClearLevel();
 
 	//whatever the size of the background is the size of the world....
-	SDL_QueryTexture(mFigaroCastle, NULL, NULL, &mWorldWidth, &mWorldHeight);
+	SDL_QueryTexture(mCurrentBackground, NULL, NULL, &mWorldWidth, &mWorldHeight);
 	 
 
 

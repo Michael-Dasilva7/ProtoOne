@@ -8,6 +8,7 @@ struct SoundConstants
 	const static std::string SoundConstants::FOLDER_MUS;
 
 	const static std::string SoundConstants::S_WAV_FALLING;
+	const static std::string SoundConstants::S_WAV_INFERNO;
 
 	const static std::string SoundConstants::M_MP3_SUNCITY;
 	const static std::string SoundConstants::M_MP3_MOONLIT_CITY;

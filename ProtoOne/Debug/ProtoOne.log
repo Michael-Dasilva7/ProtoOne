@@ -1,17 +1,29 @@
-﻿  Gameplay.cpp
+﻿  Actions.cpp
 c:\protoone\protoone\camera.h(118): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 c:\protoone\protoone\camera.h(119): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\actions.h(158): warning C4200: nonstandard extension used: zero-sized array in struct/union
-  c:\protoone\protoone\actions.h(158): note: This member will be ignored by a defaulted constructor or copy/move assignment operator
-c:\protoone\protoone\boundary.h(36): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\boundary.h(37): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(120): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\protoone\protoone\gameplay.cpp(234): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(247): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(247): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(262): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(352): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(353): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(1007): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\protoone\protoone\gameplay.cpp(1008): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\actions.h(246): warning C4200: nonstandard extension used: zero-sized array in struct/union
+  c:\protoone\protoone\actions.h(246): note: This member will be ignored by a defaulted constructor or copy/move assignment operator
+c:\protoone\protoone\actions.cpp(186): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\actions.cpp(187): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\actions.cpp(188): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\actions.cpp(190): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\actions.cpp(191): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\actions.cpp(192): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\actions.cpp(194): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\actions.cpp(195): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\actions.cpp(225): warning C4244: 'argument': conversion from 'float' to 'Uint8', possible loss of data
+c:\protoone\protoone\actions.cpp(249): warning C4244: '-=': conversion from 'float' to 'unsigned short', possible loss of data
+c:\protoone\protoone\actions.cpp(344): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\actions.cpp(345): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\actions.cpp(351): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\actions.cpp(352): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\actions.cpp(384): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\actions.cpp(481): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\actions.cpp(544): warning C4018: '>': signed/unsigned mismatch
+c:\protoone\protoone\actions.cpp(625): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\actions.cpp(626): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\actions.cpp(671): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\actions.cpp(672): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\actions.cpp(692): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\actions.cpp(693): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
   ProtoOne.vcxproj -> C:\ProtoOne\ProtoOne\Debug\ProtoOne.exe
