@@ -90,7 +90,7 @@ class aAction_BigBang : public Action
 {
 
 public:
-	aAction_BigBang(Entity* object, Vec2 target, SDL_Texture* fireball, SDL_Texture* fireball2, Animation* explosion, SDL_Renderer* renderer, Camera* cam, Sound* sound);
+	aAction_BigBang(Entity* object, Vec2 target, SDL_Texture* fireball, SDL_Texture* fireball2, Animation* explosion, Animation* cast, SDL_Renderer* renderer, Camera* cam, Sound* sound);
 
 	void			 Start() override;
 	void			 Update(float fElapsedTime) override;
@@ -117,7 +117,9 @@ public:
 
 	Lerp*			 mCurrentLerp;
 
+	Animation*		 mChant;
 	Animation*		 mExplosion;
+	Animation*		 mCast;
 
 	Camera*			 mCamera;
 	SDL_Renderer*	 mRenderer;

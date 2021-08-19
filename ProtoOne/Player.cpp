@@ -38,97 +38,104 @@ void Player::ClearPlayerTextures()
 
 void Player::Update(float dt)
 {
-	Game* game = GetGame();
+	if (!mInCutscene) {
 
-	//determine direction based on velocity
-	//mDirection = UP;
-	if (mVelocity.y < -0.1f) mDirection = UP;	
-	if (mVelocity.y > 0.1f) mDirection = DOWN;
-	if (mVelocity.x < -0.1f) mDirection = LEFT;
-	if (mVelocity.x > 0.1f) mDirection = RIGHT;
+		Game* game = GetGame();
 
-	if (abs(mVelocity.x) == 2 * PlayerConstants::RUN_SPEED_MODIFYER) this->SetState(RUNNING);
-	else if (abs(mVelocity.y) == 2 * PlayerConstants::RUN_SPEED_MODIFYER) this->SetState(RUNNING);
-	else this->SetState(WALKING);
+		//determine direction based on velocity
+		//mDirection = UP;
+		if (mVelocity.y < -0.1f) mDirection = UP;
+		if (mVelocity.y > 0.1f) mDirection = DOWN;
+		if (mVelocity.x < -0.1f) mDirection = LEFT;
+		if (mVelocity.x > 0.1f) mDirection = RIGHT;
 
-	if (mVelocity.x == 0.0f && mVelocity.y == 0.0f) this->SetState(STANDING);
+		if (abs(mVelocity.x) == 2 * PlayerConstants::RUN_SPEED_MODIFYER) this->SetState(RUNNING);
+		else if (abs(mVelocity.y) == 2 * PlayerConstants::RUN_SPEED_MODIFYER) this->SetState(RUNNING);
+		else this->SetState(WALKING);
 
-	//check if standing and thats how i can revert the sprite to a normal position!!!
-	//if absolute velocity == 0 then im on sprite 0 based on direction
+		if (mVelocity.x == 0.0f && mVelocity.y == 0.0f) this->SetState(STANDING);
 
-	if (mCurrentState == DAMAGED) {
-		Damaged(50);
-		//End game!  
-		if (mPlayerHealth <= 0) {
-			game->EnterMainMenu();
+		//check if standing and thats how i can revert the sprite to a normal position!!!
+		//if absolute velocity == 0 then im on sprite 0 based on direction
+
+		if (mCurrentState == DAMAGED) {
+			Damaged(50);
+			//End game!  
+			if (mPlayerHealth <= 0) {
+				game->EnterMainMenu();
+			}
 		}
-	}
-	//if (mContinueColorChange) {
+		//if (mContinueColorChange) {
 		if (mColorChange->IncrementRedValue_WithLimit(5, 255)) {
 			mContinueColorChange = false;
 		}
-	//}
+		//}
 
-	if (mCurrentState == RUNNING) {
-		if (mRunUpTexture != nullptr ) {
-			//mMoveSpeedScale = PlayerConstants::RUN_SPEED_MODIFYER;
+		if (mCurrentState == RUNNING) {
+			if (mRunUpTexture != nullptr) {
+				//mMoveSpeedScale = PlayerConstants::RUN_SPEED_MODIFYER;
+				//TODO: create asset constant files with actual values(i.e.
+				// 1.  Duration of Animation from start to finish in seconds
+				// 2.  isLoopable; Do we loop the animation or stop after one?
+				// 3.  isFlipped;  Do we flip the animation/texture?)
+				if (mDirection == UP) {
+					setAnimation(mRunUpTexture, 4, 0.4, true);
+				}
+				else if (mDirection == DOWN) {
+					setAnimation(mRunDownTexture, 4, 0.3, true);
+				}
+				else if (mDirection == LEFT) {
+					setAnimation(mRunLeftTexture, 3, 0.4, true);
+				}
+				else if (mDirection == RIGHT) {
+					setAnimation(mRunRightTexture, 3, 0.3, true, SDL_FLIP_HORIZONTAL);
+				}
+			}
+			else {
+				cout << "NO RUNNING UP TEXTURE FOUND! (err thrown from player.update)" << endl;
+			}
+
+		}
+		else if (mCurrentState == WALKING) {
+			mMoveSpeedScale = PlayerConstants::WALK_SPEED_MODIFYER;
+			//mMoveSpeedScale = PlayerConstants::WALK_SPEED_MODIFYER;
 			//TODO: create asset constant files with actual values(i.e.
 			// 1.  Duration of Animation from start to finish in seconds
 			// 2.  isLoopable; Do we loop the animation or stop after one?
 			// 3.  isFlipped;  Do we flip the animation/texture?)
 			if (mDirection == UP) {
-				setAnimation(mRunUpTexture, 4, 0.4, true);
+				setAnimation(mWalkUpTexture, 4, 0.6f, true);
 			}
 			else if (mDirection == DOWN) {
-				setAnimation(mRunDownTexture, 4, 0.3, true);
+				setAnimation(mWalkDownTexture, 4, 0.6f, true);
 			}
 			else if (mDirection == LEFT) {
-				setAnimation(mRunLeftTexture, 3, 0.4, true);
+				setAnimation(mWalkLeftTexture, 4, 1.0f, true);
 			}
 			else if (mDirection == RIGHT) {
-				setAnimation(mRunRightTexture, 3, 0.3, true, SDL_FLIP_HORIZONTAL);
+				setAnimation(mWalkRightTexture, 4, 1.0f, true, SDL_FLIP_HORIZONTAL);
 			}
+
+		}
+
+
+
+		if (mCurrentState != STANDING) {
+			Entity::mCurrentAnimation->AddTime(dt);
+			if (!mInCutscene) {
+				std::cout << mVelocity.y << std::endl;
+				std::cout << mVelocity.x << std::endl;
+				mPreviousPosition = mCenterPos;
+				mCenterPos += mVelocity * mMoveSpeedScale;
+			}
+
+		}
+		else {
+			Entity::mCurrentAnimation->Reset();
 		}
 
 	}
-	else if (mCurrentState == WALKING) {
-		mMoveSpeedScale = PlayerConstants::WALK_SPEED_MODIFYER;
-		//mMoveSpeedScale = PlayerConstants::WALK_SPEED_MODIFYER;
-		//TODO: create asset constant files with actual values(i.e.
-		// 1.  Duration of Animation from start to finish in seconds
-		// 2.  isLoopable; Do we loop the animation or stop after one?
-		// 3.  isFlipped;  Do we flip the animation/texture?)
-		if (mDirection == UP) {
-			setAnimation(mWalkUpTexture, 4, 0.6f, true);
-		}
-		else if (mDirection == DOWN) {
-			setAnimation(mWalkDownTexture, 4, 0.6f, true);
-		}
-		else if (mDirection == LEFT) {
-			setAnimation(mWalkLeftTexture, 4, 1.0f, true);
-		}
-		else if (mDirection == RIGHT) {
-			setAnimation(mWalkRightTexture, 4, 1.0f, true, SDL_FLIP_HORIZONTAL);
-		}
-	
-	}
-
-	
-	
-	if (mCurrentState != STANDING) {
-		Entity::mCurrentAnimation->AddTime(dt);
-		if (!mInCutscene) {
-			std::cout << mVelocity.y << std::endl;
-			std::cout << mVelocity.x << std::endl;
-			mPreviousPosition = mCenterPos;
-			mCenterPos += mVelocity * mMoveSpeedScale;
-		}
-	
-	} else {
-		Entity::mCurrentAnimation->Reset();
-	}
-
-
+ 
 	
 	
 }

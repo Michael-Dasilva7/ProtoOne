@@ -592,7 +592,7 @@ void split(const std::string& str, Container& cont, char delim = ' ')
 
 //
 //aAction_BigBang::aAction_BigBang(Entity* object, Entity* target, SDL_Texture* fireball, Animation* explosion, SDL_Renderer* renderer, Camera* cam) {
-aAction_BigBang::aAction_BigBang(Entity* object, Vec2 target, SDL_Texture* fireball, SDL_Texture* fireball2, Animation* explosion, SDL_Renderer* renderer, Camera* cam, Sound* sound) {
+aAction_BigBang::aAction_BigBang(Entity* object, Vec2 target, SDL_Texture* fireball, SDL_Texture* fireball2, Animation* chant, Animation* cast, SDL_Renderer* renderer, Camera* cam, Sound* sound) {
 
 	mPhase1 = true;
 	mPhase2 = false;
@@ -605,19 +605,20 @@ aAction_BigBang::aAction_BigBang(Entity* object, Vec2 target, SDL_Texture* fireb
 
 	mFireball = fireball;
 	mFireball2 = fireball2;
-	mExplosion = explosion;
+	//mExplosion = explosion;
+	mCast = cast;
+	mChant = chant;
 
 	mRenderer = renderer;
 	mCamera = cam;
 
 	mSound = sound;
 
-
 }
 void aAction_BigBang::Start() {
 	//start fireball above the casters head. 
 	mFireballRect.x = mCamera->WorldToScreenX(mPlayer->Center().x);
-	mFireballRect.y = mCamera->WorldToScreenY(mPlayer->Center().y);
+	mFireballRect.y = mCamera->WorldToScreenY(mPlayer->Center().y) - 250;
 	mFireballRect.w = 20;
 	mFireballRect.h = 20;
 
@@ -626,7 +627,9 @@ void aAction_BigBang::Start() {
 	mScreenExplosion.w = mCamera->ViewWidth();
 	mScreenExplosion.h = 0;
 
-
+	mPlayer->mInCutscene = true;
+	//mPlayer->mCurrentAnimation = mExplosion;
+	mPlayer->setAnimation(mChant->GetCurrentTexture(), 2, 0.4, true);
 }
 
 //!!!!!   TODO   !!!!!!!!!!!!!!!!
@@ -636,43 +639,31 @@ void aAction_BigBang::Start() {
 //step on a button an door opens to allow you to fight a monster
 void aAction_BigBang::Update(float fElapsedTime) {
 
-	if (mPhase1) {
-		/*mFireball->AddTime(fElapsedTime);
-		mFireball->Draw(mRenderer, mPlayer->Center(), mCamera);
-*/
-		int fireballMaxSize = 300;
-		if (mFireballRect.w <= fireballMaxSize) {
-			//keep growing until max size
+	if (mPhase1) {//phase 1 = growing fireball & spell chant
+		int fireballMaxSize = 320;
+		if (mFireballRect.w <= fireballMaxSize) {//keep growing until max size
+
+			mPlayer->mCurrentAnimation->AddTime(fElapsedTime);//chant animation progress
 			mFireballRect.x -= 2;
 			mFireballRect.y -= 2;
 			mFireballRect.w += 4;
 			mFireballRect.h += 4;
 		}
 		else {
-			//START NEXT PHASE OF THE ATTACK
 			mPhase1 = false;
 			mPhase2 = true;
-
+			mPlayer->setAnimation(mCast->GetCurrentTexture(), 1, 0.4, true);//set animation to cast
 		}
-		//draw stationary texture if no current animation. replace this with, say an idle animation maybe?
-		//SDL_SetRenderBlendMode();
-		SDL_RenderCopy(mRenderer, mFireball, NULL, &mFireballRect);
-		//	mPhase1 = false;
-		//	this->isDone = true;
-		/*if (mFireball->IsDone()){
-		}*/
-	}
-	else if (mPhase2) {
-		//lerp the ball to the target
 
-		//spell cast animation
+		SDL_RenderCopy(mRenderer, mFireball, NULL, &mFireballRect);
+
+	}
+	else if (mPhase2) {//phase 2 = throwing fireball and spell cast
 		Vec2 fireballPosition;
-		if (mCurrentLerp == nullptr) {
+		if (mCurrentLerp == nullptr) {//lerp the ball to the target
 			Vec2 start(mFireballRect.x, mFireballRect.y);
 			fireballPosition = Vec2(mFireballRect.x, mFireballRect.y);
-
 			mCurrentLerp = new Lerp(start, mTarget, fireballPosition, 1);
-
 		}
 		else {
 			if (mCurrentLerp->update(fElapsedTime)) {
@@ -688,21 +679,12 @@ void aAction_BigBang::Update(float fElapsedTime) {
 				mFireball2Rect.h = mFireballRect.h;
 			}
 		}
-
 		mFireballRect.x = mCurrentLerp->mPosition.x;
 		mFireballRect.y = mCurrentLerp->mPosition.y;
 		SDL_RenderCopy(mRenderer, mFireball, NULL, &mFireballRect);
-		//mFireball2Rect.w += 16;
-		//mFireball2Rect.h += 16;
-	/*	if (mFireball2Rect.w > 1000) {
-
-		}
-		else {*/
-
-		//}
 
 	}
-	else if (mPhase3) {
+	else if (mPhase3) {//phase 3 = exploding fireball 
 		// first stage explosion begin!
 
 		mFireball2Rect.x -= 8;
@@ -716,26 +698,33 @@ void aAction_BigBang::Update(float fElapsedTime) {
 			SDL_RenderCopy(mRenderer, mFireball2, NULL, &mFireball2Rect);
 		}
 		else {
+			mPlayer->mInCutscene = false;
 			mPhase3 = false;
 			mPhase4 = true;
 			SDL_SetRenderDrawBlendMode(mRenderer, SDL_BLENDMODE_BLEND);
 		}
-
-
 		//transform to new explosion and grow to full screen in about 5 frames. then less opaque. more white. then explosions
-
 	}
-	else if (mPhase4) {
-		mScreenExplosion.y -= 60;
-		mScreenExplosion.h += 60;
+	else if (mPhase4) {// Wall of light and explosions
+		if (mScreenExplosion.y < -3500) {
+			mPhase4 = false;
+			// Cleanup !!
+			isDone = true;
+			mPlayer->mInCutscene = false;
+		}
+		else {
+			mScreenExplosion.y -= 60;
+			mScreenExplosion.h += 60;
+
+			mPlayer->mInCutscene = true;
+			//set explosion animations randomly on the screen a random area for the explosion
+		}
+
 		//the code below is lerping between the start and end RGB and A values to slowly transition between the two
-		SDL_SetRenderDrawColor(mRenderer, 150, 150,50,220);
-
+		SDL_SetRenderDrawColor(mRenderer, 250, 250, 250, 230);
 		SDL_RenderFillRect(mRenderer, &mScreenExplosion);
-	}
-	//phase4 -
-	//wall of light 
 
+	}
 	//phase5 
 	//explosions and play sound!!
 

@@ -21,7 +21,6 @@ Enemy::Enemy(SDL_Texture* tex)
 {
     SetState(ENEMY_PATROL);
 	mDirection = DOWN;
-
 }
 
 Enemy::Enemy(SDL_Texture* tex, int numCells, float duration, bool loopable)

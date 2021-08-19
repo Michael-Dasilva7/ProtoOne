@@ -93,8 +93,7 @@ public:
 	virtual void			setAnimationTexture(SDL_Texture* tex);
 
 	virtual void	        addTimeToAnimation(float dt);
-
-
+	 
 };
 
 

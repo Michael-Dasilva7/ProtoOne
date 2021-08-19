@@ -81,18 +81,17 @@ void Entity::setAnimation(SDL_Texture* tex, int numCells, float duration, bool l
 	//TODO:
 	//will need to change this when i work with different sprites acting upon each other. 
 	//we want the width of the sprite to be smaller than the image!!!!!!!!!	
-
-	int texWidth = 0, texHeight = 0;
-	SDL_QueryTexture(tex, NULL, NULL, &texWidth, &texHeight);
+	 
+	SDL_QueryTexture(tex, NULL, NULL, &mTexWidth, &mTexHeight);
 	mCurrentAnimation->mFlipType = flipType;
-	mCurrentAnimation->mCellWidth = texWidth / numCells;
-	mCurrentAnimation->mCellHeight = texHeight;
+	mCurrentAnimation->mCellWidth = mTexWidth / numCells;
+	mCurrentAnimation->mCellHeight = mTexHeight;
 	mCurrentAnimation->SetCurrentTexture(tex);
 	mCurrentAnimation->mNumCells = numCells;
 	mCurrentAnimation->mDuration = duration;	
 	mCurrentAnimation->mIsLoopable = loopable;
 	mColorChange->SetTexture(tex);
-
+	
 
 }
 

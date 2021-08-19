@@ -122,7 +122,9 @@ void Gameplay::LoadLevel()
 	mCurrentBackground = new Animation(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), 3, 0.2, true, SDL_FLIP_NONE, true);
 
 	//for the intro scene, we want to pan the camera through multiple screens. and have characters moving so here is the following actions:
-
+	//summon giga gaia.
+	//other abilities
+	//then they get stolen ;)
 	/*
 
 	1. FADE IN FROM BLACK
@@ -137,9 +139,7 @@ void Gameplay::LoadLevel()
 	8. fade in
 	9. screen
 
-
 	*/
-
 
 	//*********************************************************************
 	// initialize the player
@@ -161,22 +161,15 @@ void Gameplay::LoadLevel()
 	SDL_RenderSetScale(renderer, 1, 1);
 
 	/*
-		//background
-		//effects
-		//collisions
-		//NPCs
-			dialogue
-		//Event indicators / cutscene starters
-		enemies
-		treasure chests
-		signs
-		save points
-		Load Figaro
+
+		NPCs
+		Event indicators / cutscene starters
+		Enemies
+		Treasure chests
+		Signs
+		Save Points
+
 	*/
-	//if Figaro then
-	// load map
-	// name
-	// map class will have location of everyhing kind of like tiles
 
 	//****************
 	//LOAD MAP EFFECTS
@@ -190,15 +183,7 @@ void Gameplay::LoadLevel()
 		//position end.
 
 	//MAKE CHANGING AREAS
-
 	//MAKE AN INTRO LIKE OCTOPATH
-
-	//
-
-	//addd a battle system and when you touch enemies it goes to a battle state...
-
-	//then the player has stats and does dmg and have items and a status menu
-
 
 	Game* game = GetGame();
 
@@ -366,10 +351,6 @@ void Gameplay::LoadLevel()
 		//Animation* fireball = new Animation(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), 3, 0.2, true, SDL_FLIP_NONE, true);
 
 		//Animation* fireball = new Animation(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), 3, 0.2, true, SDL_FLIP_NONE, true);
-		
-		
-		
-
 		//mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_3, 5, mGame->mE));
 
 		//SDL_Texture* t[] = {
@@ -382,7 +363,7 @@ void Gameplay::LoadLevel()
 
 		//easrthquake, charge, cast spell, flash of lightning. bot3 lightning hits bof character
 		//ahem, sorry, he was in the wrong game....i will be the narrator of this plot and it is just
-		// a short showcase of what this engine allows :) and provides you with creative liberties
+		// a short showcase of what this engine allows :) and provides you with certain....creative liberties... ;)  
 		//summon an esper!
 		//talk to giga gaia. block an attack from his hand. 
 		//have the two characters move down to the same position
@@ -682,7 +663,7 @@ void Gameplay::Update(float dt)
 			//if we are moving right, and the x is + 1 and the y is + 1. then only plus 1 
 			//this logic makes the player slide along boundaries instead of "sticking" to the boundaries:
 			Vec2 distDifference = mPlayer->Center() - mPlayer->mPreviousPosition;
-			
+
 			if (distDifference.x > 0 && distDifference.y > 0) {
 				mPlayer->SetCenter(mPlayer->mPreviousPosition.x, mPlayer->mPreviousPosition.y + distDifference.y);
 			}
@@ -692,7 +673,7 @@ void Gameplay::Update(float dt)
 
 			else {
 				mPlayer->SetCenter(mPlayer->mPreviousPosition);
-			}		
+			}
 
 		}
 
@@ -974,20 +955,20 @@ void Gameplay::OnKeyDown(const SDL_KeyboardEvent& kbe)
 			myfile.close();
 			break;
 
-		//case SDL_SCANCODE_K:
-		//	mGameplayKeyboardHandler.btnPressed(SDL_SCANCODE_K);
-		//	//Load Boundaries
-		//	//ofstream myfile;
-		//	//Depending on which background we're working on. change this text file.
-		//	// TODO: automate this to save to whichever is the current texture. can we find the name of the texture by querying it somehow?
-		//	//myfile.open("./media/figaroBoundaries.txt");
-		//	//*****************************************************************************
-		//	//for each line in the file, split on commas and create a boundary object and throw it into the boundary array
-		//	//*****************************************************************************
+			//case SDL_SCANCODE_K:
+			//	mGameplayKeyboardHandler.btnPressed(SDL_SCANCODE_K);
+			//	//Load Boundaries
+			//	//ofstream myfile;
+			//	//Depending on which background we're working on. change this text file.
+			//	// TODO: automate this to save to whichever is the current texture. can we find the name of the texture by querying it somehow?
+			//	//myfile.open("./media/figaroBoundaries.txt");
+			//	//*****************************************************************************
+			//	//for each line in the file, split on commas and create a boundary object and throw it into the boundary array
+			//	//*****************************************************************************
 
-		//	//myfile.close();
-		//	break;
-		
+			//	//myfile.close();
+			//	break;
+
 		}
 	}
 }
@@ -1001,7 +982,7 @@ void Gameplay::OnKeyUp(const SDL_KeyboardEvent& kbe)
 void Gameplay::OnMouseUp(const SDL_MouseButtonEvent& mbe)
 {
 	if (mbe.button == SDL_BUTTON_RIGHT) {
-		/*	
+		/*
 			int x = mCamera->ScreenToWorldX(min(mTempBoundaryX, mbe.x) + (int)mCamera->ViewLeft());
 			int y = mCamera->ScreenToWorldY(min(mTempBoundaryY, mbe.y) + (int)mCamera->ViewTop());
 		*/
@@ -1032,21 +1013,28 @@ void Gameplay::OnMouseDown(const SDL_MouseButtonEvent& mbe)
 	if (mScriptProcessor_CharacterMovements.userControlEnabled && mGame->mScriptProcessor.userControlEnabled) {
 		if (mbe.button == SDL_BUTTON_LEFT) {
 			// shoot
-			std::cout << "Creating missile" << std::endl;
+			//std::cout << "Creating missile" << std::endl;
 
-			//TODO: create constants for all textures
-			Missile* m = new Missile(mShotTex, mPlayer, 60, 3, true);
-			m->SetSpriteAngleCorrection(DIR_UP);
-			m->SetCenter(mPlayer->Center());
-			m->SetAngle(mPlayer->Angle());
-			m->SetSpeed(200);   // pixels per second
+			////TODO: create constants for all textures
+			//Missile* m = new Missile(mShotTex, mPlayer, 60, 3, true);
+			//m->SetSpriteAngleCorrection(DIR_UP);
+			//m->SetCenter(mPlayer->Center());
+			//m->SetAngle(mPlayer->Angle());
+			//m->SetSpeed(200);   // pixels per second
 
-			mMissiles.push_back(m);
+			//mMissiles.push_back(m);
 
 			SDL_Texture* fireball = ResourceManager::Acquire(PlayerConstants::BLAST, mGameRenderer);
 			SDL_Texture* fireball2 = ResourceManager::Acquire(PlayerConstants::BLAST2, mGameRenderer);
 			Vec2 targ(mbe.x, mbe.y);
-			mGame->mScriptProcessor.AddAction(new aAction_BigBang(mPlayer, targ, fireball, fireball2,NULL, mGameRenderer, mCamera, mSound));
+
+			//change passing animations to chants then set inside the script processor :) 
+			SDL_Texture* chantTex = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_CHANT, mGameRenderer);
+			Animation* chant = new Animation(chantTex, 2, 0.4, true);
+			SDL_Texture* castTex = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_SPELL_CAST, mGameRenderer);
+			Animation* cast = new Animation(castTex, 1, 0.4, false);
+
+			mGame->mScriptProcessor.AddAction(new aAction_BigBang(mPlayer, targ, fireball, fireball2, chant, cast, mGameRenderer, mCamera, mSound));
 
 		}
 		else if (mbe.button == SDL_BUTTON_RIGHT) {
