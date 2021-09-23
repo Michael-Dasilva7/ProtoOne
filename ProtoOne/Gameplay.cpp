@@ -112,15 +112,22 @@ void Gameplay::LoadLevel()
 	//ClearLevel();
 	//whatever the size of the background is the size of the world....
 	//SDL_QueryTexture(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), NULL, NULL, &mWorldWidth, &mWorldHeight);
-	//SDL_QueryTexture(mNarsheForeground, NULL, NULL, &mWorldWidth, &mWorldHeight);
 
-	//size of background:
-	mWorldWidth = 4096;
-	mWorldHeight = 3465;
+	//mWorldWidth = 4096;
+	//mWorldHeight = 3465;
 
 	//std::cout << "World size is " << mWorldWidth  << "x" << mWorldHeight << std::endl;
-	mCurrentBackground = new Animation(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), 3, 0.2, true, SDL_FLIP_NONE, true);
 
+	//mCurrentBackground = new Animation(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), 3, 0.2, true, SDL_FLIP_NONE, true);
+	mCurrentBackground = new Animation(ResourceManager::Acquire(BackgroundConstants::NARSHE_FRONT, renderer), 1, 0.2, true, SDL_FLIP_NONE, true);
+
+	//set world size based on background:
+	SDL_QueryTexture(mCurrentBackground->GetCurrentTexture(), NULL, NULL, &mWorldWidth, &mWorldHeight);
+
+	mDistantBackground = new Animation(ResourceManager::Acquire(BackgroundConstants::NARSHE_BACK, renderer), 1, 0.2, true, SDL_FLIP_NONE, true);
+
+
+	//mforeground = new Animation(ResourceManager::Acquire(BackgroundConstants::NARSHE_BACK, renderer), 1, 0.2, true, SDL_FLIP_NONE, true);
 	//for the intro scene, we want to pan the camera through multiple screens. and have characters moving so here is the following actions:
 	//summon giga gaia.
 	//other abilities
@@ -208,32 +215,24 @@ void Gameplay::LoadLevel()
 	mPlayer = new Player(ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, mGameRenderer), 4, 1, true);
 
 	mPlayerTex = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
-	mPlayer->mWalkDownTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_DOWN, renderer);
-	mPlayer->mWalkUpTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
-	mPlayer->mWalkLeftTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_LEFT, renderer);
-	mPlayer->mWalkRightTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_RIGHT, renderer);
+	mPlayer->mWalkDownTexture = ResourceManager::Acquire(PlayerConstants::TIME_LORD + PlayerConstants::WALK_DOWN, renderer);
+	mPlayer->mWalkUpTexture = ResourceManager::Acquire(PlayerConstants::TIME_LORD + PlayerConstants::WALK_UP, renderer);
+	mPlayer->mWalkLeftTexture = ResourceManager::Acquire(PlayerConstants::TIME_LORD + PlayerConstants::WALK_LEFT, renderer);
+	mPlayer->mWalkRightTexture = ResourceManager::Acquire(PlayerConstants::TIME_LORD + PlayerConstants::WALK_LEFT, renderer); //this is just the left animation flipped. and its flipped in player update method
 	mPlayer->mRunDownTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_DOWN, renderer);
 	mPlayer->mRunUpTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, renderer);
 	mPlayer->mRunLeftTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_LEFT, renderer);
 	mPlayer->mRunRightTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_RIGHT, renderer);
 
-	mPlayer2 = new Player(ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_DOWN, mGameRenderer), 4, 1, true);
-	mPlayer2->SetCenter(mWorldWidth - 870, 0);
 
 	mPlayerTex = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
-	mPlayer2->mWalkDownTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_DOWN, renderer);
-	mPlayer2->mWalkUpTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
-	mPlayer2->mWalkLeftTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_LEFT, renderer);
-	mPlayer2->mWalkRightTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_RIGHT, renderer);
-	mPlayer2->mRunDownTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_DOWN, renderer);
-	mPlayer2->mRunUpTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, renderer);
-	mPlayer2->mRunLeftTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_LEFT, renderer);
-	mPlayer2->mRunRightTexture = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_RIGHT, renderer);
 
 	//mPlayer->SetCenter(mCamera->WorldToScreen(500, 500).x, mCamera->WorldToScreen(500, 500).y);//minus player height
-	mPlayer->SetCenter(mWorldWidth / 2.0, mWorldHeight);//minus player height
 
-	/*
+	//intro is walking up narsh cliff
+	mPlayer->SetCenter(mWorldWidth - 700, mWorldHeight - mPlayer->Top());//minus player height
+
+		/*
 		LOAD GIGA GAIA
 		*/
 		//Enemy* e = new Enemy(ResourceManager::Acquire(EnemyConstants::GIGA_GAIA_IDLE, renderer));
@@ -244,7 +243,7 @@ void Gameplay::LoadLevel()
 		//e->SetState(ENEMY_HOVER);
 		//e->SetSpeedScale(0);
 
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 50; i++) {
 		Enemy* greenDragon = new Enemy(ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer), 3, 0.5, true);
 		greenDragon->SetCenter(rand() % mWorldWidth, rand() % mWorldHeight);
 		greenDragon->SetLayer(1);
@@ -257,6 +256,11 @@ void Gameplay::LoadLevel()
 		greenDragon->mRunRightTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
 		mEnemies.push_back(greenDragon);
 	}
+
+
+	//draw him in the sky. maybe make an action to make something visible or unvisible.
+	Animation* sparkle = new Animation(ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer), 4, 3, true);
+
 	//Enemy* greenDragon = new Enemy(ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer), 3, 0.5, true);
 	//greenDragon->SetCenter(500, 500);
 	//greenDragon->SetLayer(1);
@@ -315,8 +319,73 @@ void Gameplay::LoadLevel()
 
 	int screenHeight = game->GetScreenWidth();
 	int screenWidth = game->GetScreenWidth();
+
+	Animation* nextBackground = new Animation(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), 3, 0.2, true, SDL_FLIP_NONE, true);
+
+	//mGame->mScriptProcessor.AddAction(new aAction_ChangeBackground(mCurrentBackground, nextBackground));
+	//Game->mScriptProcessor.AddAction(new aAction_FadeIn(screenWidth, screenHeight, 3, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 255, 255));
+	/*
+	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1900 }, { 1800,1900 }, mCamera, 5.0f));
+	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1800,1900 }, { 1800,2800 }, mCamera, 5.0f, true));*/
+
+	//pan the camera from right side of the screen to the left
+
+	//walk the character there as well
+	//mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ screenWidth,1200 }, { 1200,1200 }, mCamera, 5.0f));
+
+	// 
+	//aAction_FadeIn* fadeIn2 = new aAction_FadeIn(screenWidth, screenHeight, 3, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 0, 255);
+	//aAction_FadeIn* fadeOut2 = new aAction_FadeIn(screenWidth, screenHeight, 3, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 255, 0);
+	//
+	////fade to black then go back to the previous
+	//aAction_ChangeBackground* bkgd2 = new aAction_ChangeBackground(mCurrentBackground, nextBackground, &mWorldWidth, &mWorldHeight, mCamera);
+	//mGame->mScriptProcessor.AddAction(new aAction_ChangeLevel(fadeOut2, fadeIn2, bkgd2));
+
+	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, {x, y - 500}, 2.0f, true));
+	//x = x - 500;
 	bool mShowIntro = false;
 	if (mShowIntro) {
+		float x = mPlayer->Center().x;
+		float y = mPlayer->Center().y - 800;
+
+		//mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ x, y - 600 }, { x, y }, mCamera, 5.0f, true));
+		mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { x, y }, 2.0f));
+
+		x = x - 1000;
+		mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { x, y }, 2.0f));
+
+		y = y - 680;
+		mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { x, y }, 2.0f, true));
+
+		//mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1200 }, { 1200,1900 }, mCamera, 5.0f));
+		//fade out to black and then change scene to figaro, then fade in from black:
+		aAction_FadeIn* fadeIn = new aAction_FadeIn(screenWidth, screenHeight, 3, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 0, 255);
+		aAction_FadeIn* fadeOut = new aAction_FadeIn(screenWidth, screenHeight, 3, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 255, 0);
+		aAction_ChangeBackground* bkgd = new aAction_ChangeBackground(mCurrentBackground, nextBackground, &mWorldWidth, &mWorldHeight, mCamera);
+
+		aAction_ChangeLevel* chg1 = new aAction_ChangeLevel(fadeOut, fadeIn, bkgd);
+		chg1->startNextAction = true;
+		mScriptProcessor_CharacterMovements.AddAction(chg1);
+
+
+		aAction_PanCamera* a = new aAction_PanCamera({ x,y }, { x + 500,y }, mCamera, 5.0f, true);
+		//a->startNextAction = true;
+		mScriptProcessor_CharacterMovements.AddAction(a);
+
+
+		//welcome to my prototype.
+		//fade out
+		//center on player again
+
+
+
+		//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { x + 600, y }, 2.0f));
+
+		//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { x, y - 600 }, 3.0f));
+		//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { x - 600, y }, 3.0f, true));
+		//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { x - 600, y }, 3.0f));
+
+
 		mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 2200,1200 }, { 1200,1200 }, mCamera, 5.0f));
 		mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1200 }, { 1200,1900 }, mCamera, 5.0f));
 		mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1900 }, { 1800,1900 }, mCamera, 5.0f));
@@ -341,8 +410,6 @@ void Gameplay::LoadLevel()
 
 		// End cutscene on the last movement! (bool argument at the end)
 		// mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { mCamera->ViewLeft()+500, 3100 }, 2.0f));
-		mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1820, 2900 }, 2.0f));
-		mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, { 1820, 2650 }, 3.0f, true));
 
 
 		//std::cout << "World size is " << mWorldWidth  << "x" << mWorldHeight << std::endl;
@@ -392,11 +459,15 @@ void Gameplay::LoadLevel()
 		//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, Vec2(0, newplayerY), 6.0f));
 
 		//MUSIC!
-		mSound->playMusicFadeIn(SoundConstants::M_MP3_WA_ADELHYDE_CASTLE, -1, 1000);
+		mSound->playMusicFadeIn(SoundConstants::M_MP3_SUNCITY, -1, 1000);
 
 	}//end show intro
 
-	 // make camera follow the player
+
+	//MUSIC
+	mSound->playMusicFadeIn(SoundConstants::M_MP3_SUNCITY, -1, 1000);
+
+	// make camera follow the player
 	mCamera->SetTarget(mPlayer);
 
 
@@ -664,19 +735,75 @@ void Gameplay::Update(float dt)
 			//this logic makes the player slide along boundaries instead of "sticking" to the boundaries:
 			Vec2 distDifference = mPlayer->Center() - mPlayer->mPreviousPosition;
 
-			if (distDifference.x > 0 && distDifference.y > 0) {
-				mPlayer->SetCenter(mPlayer->mPreviousPosition.x, mPlayer->mPreviousPosition.y + distDifference.y);
+			//heading right an down
+			if (distDifference.x > 0.0f && distDifference.y > 0.0f) {
+
+				//player is above the boundary, so slide along it
+				if ((mPlayer->Bottom() - distDifference.y) < b->mBoundaryRect->y) {
+					//Move left and right
+					mPlayer->SetCenter(mPlayer->mPreviousPosition.x + abs(distDifference.x), mPlayer->mPreviousPosition.y);
+				}
+				//player is on the right side of the boundary, heading up:
+				else {
+					mPlayer->SetCenter(mPlayer->mPreviousPosition.x, mPlayer->mPreviousPosition.y + distDifference.y);
+				}
 			}
-			else if (distDifference.x < 0 && distDifference.y > 0) {
-				mPlayer->SetCenter(mPlayer->mPreviousPosition.x, mPlayer->mPreviousPosition.y - distDifference.y);
+			//heading left an down
+			else if (distDifference.x < 0.0f && distDifference.y > 0.0f) {
+
+				//player is above the boundary, so slide along it
+				if ((mPlayer->Bottom() - distDifference.y) < b->mBoundaryRect->y) {
+					//Move left and right
+					mPlayer->SetCenter(mPlayer->mPreviousPosition.x - abs(distDifference.x), mPlayer->mPreviousPosition.y);
+				}
+
+				else {
+					mPlayer->SetCenter(mPlayer->mPreviousPosition.x, mPlayer->mPreviousPosition.y + distDifference.y);
+				}
+
+			}
+			//heading right and up
+			else if (distDifference.x > 0.0f && distDifference.y < 0.0f) {
+
+				//player is below the boundary, heading up:
+				if (mPlayer->mPreviousPosition.y > (b->mBoundaryRect->y + b->mBoundaryRect->h) && (mPlayer->mPreviousPosition.x + mPlayer->Right()) > b->mBoundaryRect->x ) {
+					//Move right
+					mPlayer->SetCenter(mPlayer->mPreviousPosition.x + abs(distDifference.x), mPlayer->mPreviousPosition.y);
+				}
+				//player is on the right side of the boundary, heading up:
+				else {
+					mPlayer->SetCenter(mPlayer->mPreviousPosition.x, mPlayer->mPreviousPosition.y - abs(distDifference.y));
+				}
 			}
 
+			//heading left and up
+			else if (distDifference.x < 0.0f && distDifference.y < 0.0f) {
+				//now we need to see where player is relative to the boundary:
+				float playerWidth = (mPlayer->Right() - mPlayer->Left());
+				//player is below the boundary, heading up:
+				if (mPlayer->mPreviousPosition.y > (b->mBoundaryRect->y + b->mBoundaryRect->h) && mPlayer->mPreviousPosition.x < (b->mBoundaryRect->x + b->mBoundaryRect->w)) {
+					//Move left and right
+					mPlayer->SetCenter(mPlayer->mPreviousPosition.x - abs(distDifference.x), mPlayer->mPreviousPosition.y);
+				}
+				// player is on the right side of the boundary, heading up, and the next step 
+				// would bring the person inside the boundary, so keep outside the boundary, but slide along:
+				else if (mPlayer->Left() < (b->mBoundaryRect->x + b->mBoundaryRect->w) && mPlayer->Top() < (b->mBoundaryRect->y + b->mBoundaryRect->h)) {
+					mPlayer->SetCenter(mPlayer->mPreviousPosition.x, mPlayer->mPreviousPosition.y - abs(distDifference.y));
+				}
+				
+			}
 			else {
 				mPlayer->SetCenter(mPlayer->mPreviousPosition);
 			}
+			//  left or right?  if so, move up or down
 
+			//mPlayer->SetCenter(mPlayer->mPreviousPosition.x, mPlayer->mPreviousPosition.y - abs(distDifference.y));
+			//up or down
 		}
 
+		else {
+			//mPlayer->SetCenter(mPlayer->mPreviousPosition);
+		}
 	}
 
 	ClipToWorldBounds(mPlayer);
@@ -733,6 +860,8 @@ void Gameplay::Update(float dt)
 
 	//updateBackground
 	mCurrentBackground->AddTime(dt);
+	//parallax
+
 
 	// update camera
 	mCamera->Update(dt);
@@ -749,9 +878,21 @@ void Gameplay::Draw(float dt)
 
 	//mCamera->ScreenToWorld(0,0)
 	//{(float) mCamera->WorldToScreenX(0),(float)mCamera->WorldToScreenY(0) }
+
+	if (mDistantBackground != nullptr) {
+		//parallax scale factors:
+		float horizontalScale = 0.6f;
+		float verticalScale = 0.6f;
+
+		Vec2 pos(mCamera->WorldToScreenVec(0, 0).x * horizontalScale, mCamera->WorldToScreenVec(0, 0).y * verticalScale);
+		mDistantBackground->Draw(renderer, pos, mCamera);
+	}
+
+	//currently the foreground:
 	mCurrentBackground->Draw(renderer, mCamera->WorldToScreenVec(0, 0), mCamera);
 
-	if (mCounter % 100 == 0) {
+	//DEBUGGING SECTION START
+	/*if (mCounter % 100 == 0) {*/
 		//player center x : 1024
 		//	player center y : 1684
 		//	World To ScreenX(using 0 as position x and 4096) : -2231
@@ -783,19 +924,12 @@ void Gameplay::Draw(float dt)
 		//cout << "*********************************************************" << endl;
 		//cout << "camera left: " << mCamera->ScreenToWorld({ mPlayer->Center().x,mPlayer->Center().y }) << endl;
 
-	}
-	mCounter += 1;
-	//cout << "counter: " << mCounter << endl;
+	//}
+	//mCounter += 1;
+	//DEBUGGING SECTION END
 
-	//distantBackground.x = RoundToInt(mCamera->ViewLeft());
-	//distantBackground.y = RoundToInt(mCamera->ViewTop());
-	//distantBackground.w = mGame->GetScreenWidth();
-	//distantBackground.h = mGame->GetScreenHeight();
-	//SDL_RenderCopy(renderer, mCurrentBackground, &distantBackground, NULL);
-	//cout << "world width: " << mWorldWidth << endl;
 
 	//if collide with a box, do not draw that part of the sprite. so it will make it seem like layers
-
 	mPlayer->Draw(renderer, mCamera);
 	for (auto& e : mEffects) {
 		e->Draw(renderer, mCamera);
@@ -834,7 +968,7 @@ void Gameplay::Draw(float dt)
 		*/
 		//LAYER 2 (Main Level)
 
-	mPlayer2->Draw(renderer, mCamera);
+	//mPlayer2->Draw(renderer, mCamera);
 
 	for (auto& e : mEnemies) {
 		if (e->Entity::Layer() == 2) {
@@ -847,30 +981,13 @@ void Gameplay::Draw(float dt)
 			m->Draw(renderer, mCamera);
 		}
 	}
-	//create NPC, make him walk
-	//priority queue?
-	// make animation
-	//make giga gaia stay still and appear once i get to the top and slowly make an entrance
-	//add sound/music
 
-	//LAYER 3 (Foreground)
-	/*
 
-	Script documentation:
-	  - To have the character move while text is being drawn:
-			- add move action in character movements, then dialoge in dialogue actions
-
-	*/
-	//mScript.ProcessActions(dt);
 	//Layer 4(next foreground)
 	mScriptProcessor_CharacterMovements.ProcessActions(dt);
 
 	//Layer 5 (Effects)
 	//mCamera->LookAt(mPlayer->Center());
-
-	/*for (auto& e : mEffects) {
-		e->Draw(renderer, mCamera);
-	}*/
 
 	mScriptProcessor_Effects.ProcessActions(dt);
 }
@@ -1022,8 +1139,7 @@ void Gameplay::OnMouseDown(const SDL_MouseButtonEvent& mbe)
 			//m->SetAngle(mPlayer->Angle());
 			//m->SetSpeed(200);   // pixels per second
 
-			//mMissiles.push_back(m);
-
+			//mMissiles.push_back(m); 
 			SDL_Texture* fireball = ResourceManager::Acquire(PlayerConstants::BLAST, mGameRenderer);
 			SDL_Texture* fireball2 = ResourceManager::Acquire(PlayerConstants::BLAST2, mGameRenderer);
 			Vec2 targ(mbe.x, mbe.y);

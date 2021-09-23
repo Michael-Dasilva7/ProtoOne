@@ -94,6 +94,7 @@
     <ClCompile Include="BackgroundConstants.cpp">
       <Filter>Constants</Filter>
     </ClCompile>
+    <ClCompile Include="TeleportTile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h">
@@ -198,6 +199,7 @@
     <ClInclude Include="Boundary.h">
       <Filter>Base\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TeleportTile.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Gameplay">

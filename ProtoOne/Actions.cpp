@@ -24,23 +24,118 @@ void aScriptProcessor::ProcessActions(float fElapsedTime) {
 	//}
 	userControlEnabled = m_listActions.empty();
 
-	if (!m_listActions.empty()) {
-		if (!m_listActions.front()->isDone) {
-			if (!m_listActions.front()->isStarted) {
-				m_listActions.front()->Start();
-				m_listActions.front()->isStarted = true;
+	//if the action isnt done, start or update..
+	//so the problem is, we want to run more than one action at a time. soooooooooooo..... option time! :
+		//option 1: have an option and timeline to start the next action early? if a certain time has passed, start the next...could get tricky with multiple overlapping.
+		//option 2: make it a priority queue? instead of looking only at front, go through the list, and look at each one in priority order.  <-- BEST OPTION but couldget tricky if
+
+
+	//instead of looking just at the front, look at the front two, IF the current action says, "run next action"
+	//  question: what if we want more than one action ahead, will it keep looking? sounds like a recursive problem.
+
+	//whats the problem? running multiple actions at once:
+			//instead of update front....lets look at 
+
+
+	if (!m_currentlyRunningActions.empty())
+	{
+		std::list<Action*>::iterator it = m_currentlyRunningActions.begin();
+		while (it != m_currentlyRunningActions.end()) {
+			if (!(*it)->isDone) {
+				if (!(*it)->isStarted) {
+					(*it)->Start();
+					(*it)->isStarted = true;
+				}
+				else {
+					(*it)->Update(fElapsedTime);
+
+				}
+				++it;
 			}
-			else {
-				m_listActions.front()->Update(fElapsedTime);
+			else { 
+				it = m_currentlyRunningActions.erase(it);	 
 			}
-		}
-		else {
-			delete m_listActions.front();
-			m_listActions.pop_front();
 		}
 
 	}
+	else {
+		//check next action
+		if (!m_listActions.empty()) {
+			m_currentlyRunningActions.push_back(m_listActions.front());
+			
+			//will need to change this if we allow for more than 2 currently running actions
+			if (m_currentlyRunningActions.back()->startNextAction) {
+				m_listActions.pop_front();
+				m_currentlyRunningActions.push_back(m_listActions.front());
+				
+			}
+			else
+			{
+				m_listActions.pop_front();
+			}
+
+		}
+	}
+
 }
+
+
+void aScriptProcessor::CleanupActionList() {
+
+	if (!m_listActions.empty()) {
+		m_listActions.clear();
+	}
+}
+
+
+
+aAction_ChangeBackground::aAction_ChangeBackground(Animation* backgroundToChange, Animation* newBackground, int* wW, int* wH, Camera* camera)
+{
+	mBackgroundToChange = backgroundToChange;
+	mNewBackground = newBackground;
+	mW = wW;
+	mH = wH;
+	mCamera = camera;
+}
+
+
+void aAction_ChangeBackground::Start() {
+	//SDL_Texture* prev = mBackgroundToChange->GetCurrentTexture();
+
+	//We need an animation copy method!!
+	mBackgroundToChange->SetCurrentTexture(mNewBackground->GetCurrentTexture());
+	mBackgroundToChange->mCellHeight = mNewBackground->mCellHeight;
+	mBackgroundToChange->mCellWidth = mNewBackground->mCellWidth;
+
+	mBackgroundToChange->mIsBackground = mNewBackground->mIsBackground;
+	mBackgroundToChange->mIsLoopable = mNewBackground->mIsLoopable;
+
+	//mBackgroundToChange->m = mNewBackground->mCellWidth;
+
+	//set the old texture to what backgroound is overwritten so we can switch back if needed
+	//mNewBackground->SetCurrentTexture(prev);
+	//will need to update the animation dimensions cause each background has different dimensions
+
+	//mBackgroundToChange = mNewBackground;
+	//need to change the worldWidth and world height based on the new background
+	//set world size based on background:
+	SDL_QueryTexture(mBackgroundToChange->GetCurrentTexture(), NULL, NULL, mW, mH);
+
+	//update the camera's world view.
+	mCamera->mWorldWidth = (float)*mW;
+	mCamera->mWorldHeight = (float)*mH;
+
+
+	isDone = true;
+}
+
+void aAction_ChangeBackground::Update(float dt) {
+
+}
+
+
+
+
 aAction_ChangeAnimation::aAction_ChangeAnimation(Entity* object, SDL_Texture* t[], int delayInMilliseconds) {
 	//if we want to change the textre
 	mEntity = object;
@@ -78,7 +173,6 @@ void aAction_ChangeAnimation::Update(float dt) {
 !!!SPRITE MOVEMENT FOR CUTSCENE!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 */
-
 //int *ptr[MAX];
 //
 //for (int i = 0; i < MAX; i++) {
@@ -89,7 +183,7 @@ aAction_MoveTo::aAction_MoveTo(Entity* object, Vec2 end, float duration, bool en
 	mMoveableObject = object;
 	cout << "mMoveableObject x contructor: " << mMoveableObject->Center().x << endl;
 	cout << "mMoveableObject y contructor: " << mMoveableObject->Center().y << endl;
-	mMoveableObject->mInCutscene = true;
+	mMoveableObject->mInCutscene = endCutscene;
 	mEnd = end;
 	mTimeSoFar = 0.0f;
 	mDuration = max(duration, 0.001f);//prevent divide by zero later and to cap durations
@@ -144,11 +238,11 @@ void aAction_MoveTo::Update(float dt) {
 	mMoveableObject->mVelocity.x = (mEnd.x - mStart.x) / mDuration;
 	mMoveableObject->mVelocity.y = (mEnd.y - mStart.y) / mDuration;
 
+	//mMoveableObject->addTimeToAnimation(dt);
 	if (mTimeSoFar >= mDuration) {
 		mMoveableObject->SetCenter(mEnd);
 		mMoveableObject->mVelocity.x = 0.0f;
 		mMoveableObject->mVelocity.y = 0.0f;
-
 		isDone = true;
 		if (mEndCutscene) mMoveableObject->mInCutscene = false;
 	}
@@ -233,6 +327,44 @@ void aAction_FadeIn::Update(float fElapsedTime) {
 	}
 }
 
+
+aAction_ChangeLevel::aAction_ChangeLevel(aAction_FadeIn* in, aAction_FadeIn* out, aAction_ChangeBackground* bkrd) {
+
+	mFadeIn = in;
+	mFadeOut = out;
+	mBkrd = bkrd;
+}
+
+
+void aAction_ChangeLevel::Start() {
+	mFadeOut->Start();
+
+}
+void aAction_ChangeLevel::Update(float fElapsedTime) {
+
+	if (!mFadeOut->isDone) {
+		mFadeOut->Update(fElapsedTime);
+	}
+	else {
+
+
+		if (!mFadeIn->isDone) {
+			if (!mFadeIn->isStarted) {
+				mFadeIn->Start();
+				mBkrd->Start();
+			}
+			mFadeIn->Update(fElapsedTime);
+		}
+		else
+		{
+			isDone = true;
+		}
+
+	}
+
+}
+
+
 aAction_Delay::aAction_Delay(unsigned short int durationInMilliseconds) {
 	this->mOriginalDuration = durationInMilliseconds;
 	this->durationInMilliseconds = durationInMilliseconds;
@@ -257,10 +389,11 @@ void aAction_Delay::Restart() {
 /*
 1. Must specify the same # of movements in "panCameraFrom" and "panCameraTo"
 **************START WARNING******************
-2. if specifying multiple camera pan movements, need to specific "true" as the last boolean or the camera will not look at the user
+2. if specifying multiple camera pan movements, need to specific "true" as the lastCameraMovement parameter 
+   or the camera will not look at the user after the pan is complete
 ************** END  WARNING******************
 */
-aAction_PanCamera::aAction_PanCamera(Vec2 panCameraFrom, Vec2 panCameraTo, Camera* camera, float durationOfCameraPan, bool lastCameraMovement) {
+aAction_PanCamera::aAction_PanCamera(Vec2 panCameraFrom, Vec2 panCameraTo, Camera* camera, float durationOfCameraPan, bool lastCameraMovement, bool usePlayerLocationAsStartPoint) {
 	mStart = panCameraFrom;
 	//this->mOriginalEntity = camera->GetTarget();
 	//camera->SetTarget(NULL);
@@ -268,10 +401,19 @@ aAction_PanCamera::aAction_PanCamera(Vec2 panCameraFrom, Vec2 panCameraTo, Camer
 	mEnd = panCameraTo;
 	mTimeSoFar = 0.0f;
 	mLastCameraMovement = lastCameraMovement;
-	mCamera->mPauseCamera = true;
+	//mCamera->mPauseCamera = true;
+	//mPauseCamera = 
 	//duration is how long
 	mDuration = max(durationOfCameraPan, 0.001f);//prevent divide by zero later and to cap durations
 }
+
+
+void aAction_PanCamera::Start() {
+
+	mCamera->mPauseCamera = true;
+}
+
+
 void aAction_PanCamera::Update(float elapsedTime) {
 
 	mTimeSoFar += elapsedTime;
@@ -652,7 +794,7 @@ void aAction_BigBang::Update(float fElapsedTime) {
 		else {
 			mPhase1 = false;
 			mPhase2 = true;
-			mPlayer->setAnimation(mCast->GetCurrentTexture(), 1, 0.4, true);//set animation to cast
+			mPlayer->setAnimation(mCast->GetCurrentTexture(), 1, 0.3, true);//set animation to cast
 		}
 
 		SDL_RenderCopy(mRenderer, mFireball, NULL, &mFireballRect);
@@ -663,7 +805,7 @@ void aAction_BigBang::Update(float fElapsedTime) {
 		if (mCurrentLerp == nullptr) {//lerp the ball to the target
 			Vec2 start(mFireballRect.x, mFireballRect.y);
 			fireballPosition = Vec2(mFireballRect.x, mFireballRect.y);
-			mCurrentLerp = new Lerp(start, mTarget, fireballPosition, 1);
+			mCurrentLerp = new Lerp(start, mTarget, fireballPosition, 0.5);
 		}
 		else {
 			if (mCurrentLerp->update(fElapsedTime)) {
@@ -692,7 +834,7 @@ void aAction_BigBang::Update(float fElapsedTime) {
 		mFireball2Rect.w += 16;
 		mFireball2Rect.h += 16;
 
-		int fireballMaxSize = 1000;
+		int fireballMaxSize = 800;
 		if (mFireball2Rect.w <= fireballMaxSize) {
 
 			SDL_RenderCopy(mRenderer, mFireball2, NULL, &mFireball2Rect);

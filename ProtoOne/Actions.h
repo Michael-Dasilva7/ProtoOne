@@ -18,6 +18,7 @@ public:
 	virtual ~Action() {}
 	bool isDone = false;
 	bool isStarted = false;
+	bool startNextAction = false;
 	virtual void Start() {};
 	virtual void Start(int width, int height) {};
 	virtual void Update(float elapsedTime) {};
@@ -32,13 +33,20 @@ public:
 
 	bool userControlEnabled = false;
 
+	bool drawGame = true;
+
 	aScriptProcessor();
 
 	std::list<Action*> m_listActions;
+	std::list<Action*> m_currentlyRunningActions;
+
 
 	void AddAction(Action *action);
 
 	void ProcessActions(float fElapsedTime);
+
+	void CleanupActionList();
+
 
 };
 
@@ -157,6 +165,8 @@ private:
 
 };
 
+
+
 class aAction_FadeIn : public Action
 {
 
@@ -228,9 +238,13 @@ public:
 	float			mDuration;
 	bool			mLastCameraMovement;
 
-	aAction_PanCamera(Vec2 panCameraFrom, Vec2 panCameraTo, Camera* camera, float durationOfCameraPan, bool lastCameraMovement = false);
+	//unusued currently, but going to use it in the future possibly.
+	bool			mPauseCamera;
 
-	//void Start() override;
+
+	aAction_PanCamera(Vec2 panCameraFrom, Vec2 panCameraTo, Camera* camera, float durationOfCameraPan, bool lastCameraMovement = false, bool usePlayerLocationAsStartPoint = false);
+
+	void Start() override;
 
 	void Update(float elapsedTime) override;
 };
@@ -246,6 +260,21 @@ public:
 	Entity*  mEntity;
 	aAction_Delay* mDelayAfterFirstAnimation;
 	SDL_Texture* mTextures[];
+};
+
+
+class aAction_ChangeBackground : public Action
+{
+
+public:
+	int* mW;	
+	int* mH;
+	Camera* mCamera;
+	Animation* mBackgroundToChange;
+	Animation* mNewBackground;
+	aAction_ChangeBackground(Animation* backgroundToChange, Animation* newBackground, int* wW, int* wH, Camera* camera);
+	void Start() override;
+	void Update(float fElapsedTime) override;
 
 };
 
@@ -319,4 +348,40 @@ public:
 };
 
 
+
+//fades out, changes the background image/animation then fades back in
+//hardcoded fade out and in color at first and may add that ability later.
+class aAction_ChangeLevel : public Action
+{
+
+public:
+
+	aAction_ChangeLevel(aAction_FadeIn* in, aAction_FadeIn* out, aAction_ChangeBackground* bkrd);
+	void Start() override;
+	void Update(float fElapsedTime) override;
+
+
+	aAction_FadeIn* mFadeIn;
+	aAction_FadeIn* mFadeOut;
+	aAction_ChangeBackground* mBkrd;
+
+
+	//Animation*			mBackgroundToChange;
+	//Animation*			mNewBackground;
+ //
+	//SDL_Rect			mFadeRect;
+	//float				mDecrementer;
+	//float				mOpacity;
+
+	//float				exponent;
+	//SDL_Renderer*		mRenderer;
+
+	//int16_t				mW;
+	//int16_t				mH;
+
+
+	//aAction_ChangeBackground*    mChangeBackground;
+	//float			mTimeSoFar;
+	//float			mDuration;
+};
 

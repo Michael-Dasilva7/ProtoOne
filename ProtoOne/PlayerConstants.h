@@ -34,4 +34,13 @@ public:
 
 	const  static std::string PlayerConstants::BLAST;
 	const  static std::string PlayerConstants::BLAST2;
+	const  static std::string PlayerConstants::SPARKLE;
+
+	const static std::string PlayerConstants::CAST;
+	const static std::string PlayerConstants::WALK_UP;
+	const static std::string PlayerConstants::WALK_DOWN;
+	const static std::string PlayerConstants::WALK_LEFT;
+	const static std::string PlayerConstants::WALK_RIGHT;
+
+	const  static std::string PlayerConstants::TIME_LORD;
 };

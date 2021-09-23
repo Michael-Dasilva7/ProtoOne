@@ -38,7 +38,6 @@ void Player::ClearPlayerTextures()
 
 void Player::Update(float dt)
 {
-	if (!mInCutscene) {
 
 		Game* game = GetGame();
 
@@ -79,16 +78,16 @@ void Player::Update(float dt)
 				// 2.  isLoopable; Do we loop the animation or stop after one?
 				// 3.  isFlipped;  Do we flip the animation/texture?)
 				if (mDirection == UP) {
-					setAnimation(mRunUpTexture, 4, 0.4, true);
+					setAnimation(mRunUpTexture, 4.0f, 0.4f, true);
 				}
 				else if (mDirection == DOWN) {
-					setAnimation(mRunDownTexture, 4, 0.3, true);
+					setAnimation(mRunDownTexture, 4.0f, 0.3f, true);
 				}
 				else if (mDirection == LEFT) {
-					setAnimation(mRunLeftTexture, 3, 0.4, true);
+					setAnimation(mRunLeftTexture, 3.0f, 0.3f, true);
 				}
 				else if (mDirection == RIGHT) {
-					setAnimation(mRunRightTexture, 3, 0.3, true, SDL_FLIP_HORIZONTAL);
+					setAnimation(mRunRightTexture, 3.0f, 0.3f, true, SDL_FLIP_HORIZONTAL);
 				}
 			}
 			else {
@@ -104,16 +103,16 @@ void Player::Update(float dt)
 			// 2.  isLoopable; Do we loop the animation or stop after one?
 			// 3.  isFlipped;  Do we flip the animation/texture?)
 			if (mDirection == UP) {
-				setAnimation(mWalkUpTexture, 4, 0.6f, true);
+				setAnimation(mWalkUpTexture, 3, 0.6f, true);
 			}
 			else if (mDirection == DOWN) {
-				setAnimation(mWalkDownTexture, 4, 0.6f, true);
+				setAnimation(mWalkDownTexture, 4, 0.4f, true);
 			}
 			else if (mDirection == LEFT) {
-				setAnimation(mWalkLeftTexture, 4, 1.0f, true);
+				setAnimation(mWalkLeftTexture, 3, 0.5f, true);
 			}
 			else if (mDirection == RIGHT) {
-				setAnimation(mWalkRightTexture, 4, 1.0f, true, SDL_FLIP_HORIZONTAL);
+				setAnimation(mWalkRightTexture, 3, 0.5f, true, SDL_FLIP_HORIZONTAL);
 			}
 
 		}
@@ -138,7 +137,6 @@ void Player::Update(float dt)
  
 	
 	
-}
 
 
 

@@ -7,8 +7,7 @@
 
 class Camera
 {
-    float                       mWorldWidth;
-    float                       mWorldHeight;
+
 
     float                       mViewWidth;
     float                       mViewHeight;
@@ -19,6 +18,10 @@ class Camera
     Entity*                     mTarget;
 
 public:
+
+	float                       mWorldWidth;
+	float                       mWorldHeight;
+
                                 Camera(float viewWidth, float viewHeight, float worldWidth, float worldHeight);
 
     void                        LookAt(const Vec2& wpos);

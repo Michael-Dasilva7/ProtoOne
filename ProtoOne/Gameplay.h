@@ -54,8 +54,12 @@ public: // <-- HACK
 	SDL_Texture*        mDesertBackground;
 	//SDL_Texture*        mCurrentBackground;
 
+	Animation*			mDistantBackground;
 	Animation*			mCurrentBackground;
-	
+	Animation*			mForeground;
+	Animation*			mMidBackground;
+
+
 	/*
 	___________ END BACKGROUNDS __________
 	*/

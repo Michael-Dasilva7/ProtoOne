@@ -43,14 +43,14 @@ bool Game::Run()
 
 		Update(dt);
 
-		Draw(dt);
+		Draw(dt);	
 
 		mScriptProcessor.ProcessActions(dt);
-		
+
 		// tell the renderer to display everything we just drew
 		SDL_RenderPresent(mRenderer);
 
-		 prevTicks = ticks;
+		prevTicks = ticks;
 	}
 
 	// cleanup

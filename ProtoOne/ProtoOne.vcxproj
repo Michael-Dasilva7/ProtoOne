@@ -192,6 +192,7 @@
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="BackgroundConstants.cpp" />
     <ClCompile Include="StoryScriptConstants.cpp" />
+    <ClCompile Include="TeleportTile.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
@@ -227,6 +228,7 @@
     <ClInclude Include="SoundConstants.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="StoryScriptConstants.h" />
+    <ClInclude Include="TeleportTile.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="Weather.h" />
