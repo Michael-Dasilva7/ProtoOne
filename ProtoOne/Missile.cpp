@@ -8,7 +8,7 @@ Missile::Missile(SDL_Texture* tex, Entity* shooter, int numCells, float duration
     , mShooter(shooter)
 	
 {
-	SetLayer(2);
+	SetLayer(2.0f);
     if (mShooter) {
         ++mShooter->mRefCount;
     }

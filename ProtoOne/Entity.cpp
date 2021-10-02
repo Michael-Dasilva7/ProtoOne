@@ -8,7 +8,6 @@ Entity::Entity(SDL_Texture* tex)
     , mTexWidth(0)
     , mTexHeight(0)
     , mAngle(0)
-    , mRadius(0)
     , mHealth(100)
     , mRefCount(0)
 	, mLayer(1)
@@ -16,6 +15,11 @@ Entity::Entity(SDL_Texture* tex)
 {
 	mColorChange = new ColorChange(tex, 255);
 	SDL_QueryTexture(tex, NULL, NULL, &mTexWidth, &mTexHeight);
+
+	mHitbox = new SDL_Rect();
+	mHitbox->w = mTexWidth;
+	mHitbox->h = mTexHeight;
+
     // default radius is average of half width and half height
     //mRadius = 0.5f * (0.5f * mTexWidth + 0.5f * mTexHeight);
     mRadius = 0.25f * (mTexWidth + mTexHeight);
@@ -28,25 +32,72 @@ Entity::Entity(SDL_Texture* tex, int numCells, float duration, bool loopable)
 	, mTexWidth(0)
 	, mTexHeight(0)
 	, mAngle(0)
-	, mRadius(0)
 	, mHealth(100)
 	, mRefCount(0)
 	, mLayer(1)
 {
 	mColorChange = new ColorChange(tex, 0);
 	SDL_QueryTexture(tex, NULL, NULL, &mTexWidth, &mTexHeight);
-
-	// default radius is average of half width and half height
+	//so, i have to do something similar
+	  
 	//mRadius = 0.5f * (0.5f * mTexWidth + 0.5f * mTexHeight);
 	mRadius = 0.25f * ((mTexWidth / numCells) + mTexHeight);
+
+	mHitbox = new SDL_Rect();
+	mHitbox->w = mTexWidth;
+	mHitbox->h = mTexHeight;
+
+
+	//rect(hitboxX + (rectWidth / 2) / 2, hitboxY + (rectWidth / 2) / 2, rectWidth / 2, rectHeight / 2);
+	//by default the hitbox will be
+	 
 	//dedouple this later so we can have any type of animation later.
 	mCurrentAnimation = new Animation(tex, numCells, duration, loopable);
 	//setAnimation();
 	mInCutscene = false;
 };
 
+//Constructor for an Entity With an Animation and HITBOX
+Entity::Entity(SDL_Texture* tex, int numCells, float duration, bool loopable, int hitboxWidth, int hitboxHeight)
+	: mTex(tex)
+	, mTexWidth(0)
+	, mTexHeight(0)
+	, mAngle(0)
+	, mHealth(100)
+	, mRefCount(0)
+	, mLayer(1)
+{
+	mColorChange = new ColorChange(tex, 0);
+	SDL_QueryTexture(tex, NULL, NULL, &mTexWidth, &mTexHeight);
+	//so, i have to do something similar
+
+	// default radius is average of half width and half height
+	//mRadius = 0.5f * (0.5f * mTexWidth + 0.5f * mTexHeight);
+
+	//no radius because theyre rectangles not circles!!!
+	//mRadius = 0.25f * ((mTexWidth / numCells) + mTexHeight);
+	
+	//UPDATE ME TO JUST USE THE TEXT WIDTH AND HEIGHT INSTEAD OF RADIUS. need to update Left and top values. THIS IS WHY IM SEEING VISUAL GLITCHES AND CLIISION ISSUES
+	mRadius = 0.25f * ((mTexWidth / numCells) + mTexHeight);
+
+	//SET THE HITBOX AFTER YOU KNOW THE CENTER POS. OR JUST MAKE THE HITBOX VALUES RELATIVE TO THE CENTERPOS LIKE LEFT() AND RIGHT() functions are done
+	//(going with both for more customizability and it doenst take long (i.e. good value))
+	mHitbox = new SDL_Rect();
+	mHitbox->w = hitboxWidth;
+	mHitbox->h = hitboxHeight;
+		
+	//dedouple this later so we can have any type of animation later.
+	mCurrentAnimation = new Animation(tex, numCells, duration, loopable);
+	
+	//setAnimation();
+	mInCutscene = false;
+};
+
 Entity::~Entity()
 {
+	if (mCurrentAnimation != nullptr) {
+		mCurrentAnimation;
+	}
 }
 
 void Entity::Draw(SDL_Renderer* renderer, Camera* camera,  SDL_RendererFlip flipType) const

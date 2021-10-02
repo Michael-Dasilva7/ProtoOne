@@ -16,19 +16,23 @@ protected:
     SDL_Texture*            mTex;
     int                     mTexWidth;
     int                     mTexHeight;
+
     float                   mSpriteAngleOffset; // correction for sprites facing in different directions
 
     Vec2                    mCenterPos; // position of sprite center in world coordinates
     float                   mAngle;
-    float                   mRadius;
+	float                   mRadius;
+	
     float                   mHealth;	
 	float					mHoverPoint;
 
 	ColorChange* 			mColorChange;
-	unsigned short int      mLayer;
+	unsigned short int      mLayer;	
 	
-
 public:
+
+	SDL_Rect*				mHitbox;
+
 	bool					mInCutscene;
 	Vec2					mVelocity;
 	Vec2					mPreviousPosition;
@@ -40,7 +44,8 @@ public:
     int                     mRefCount;
 
 							Entity(SDL_Texture* tex);
-							Entity(SDL_Texture* tex, int numCells, float duration, bool loopable);
+							Entity(SDL_Texture* tex, int numCells, float duration, bool loopable);							
+							Entity(SDL_Texture* tex, int numCells, float duration, bool loopable, int hitboxWidth, int hitboxHeight);
 							//Entity::Entity(SDL_Texture* tex, int numCells, float duration, const Vec2& pos)
 
     virtual                 ~Entity();
@@ -53,7 +58,8 @@ public:
     virtual void            SetCenter(const Vec2& pos)  { mCenterPos = pos; }
     virtual void            SetCenter(float x, float y) { mCenterPos = Vec2(x, y); }
 
-    virtual float           Radius() const      { return mRadius; }
+	virtual float			Width() const { return mTexWidth; }
+	virtual float			Height() const { return mTexHeight; }
 
     virtual float           Health() const      { return mHealth; }
     virtual void            SetHealth(float h)  { mHealth = h; }
@@ -61,15 +67,32 @@ public:
     virtual bool            IsDead() const      { return mHealth <= 0; }
     virtual bool            IsAlive() const     { return mHealth > 0; }
 
-	virtual float			Left() const		{ return mCenterPos.x - mRadius; }
-	virtual float			Right() const		{ return mCenterPos.x + mRadius; }
-	virtual float			Top() const			{ return mCenterPos.y - mRadius; }
-	virtual float			Bottom() const		{ return mCenterPos.y + mRadius; }
+	virtual float           Radius() const { return mRadius; }
+	// x is half the texture width - half the hitbox width
+	//
+	// mCenterPos.x = 
+	//
+	//rect(hitboxX + (rectWidth / 2) / 2, hitboxY + (rectWidth / 2) / 2, rectWidth / 2, rectHeight / 2);
+	virtual float			HitBoxLeft() const  { return mCenterPos.x - (mHitbox->w / 2); }
+	virtual float			HitBoxRight() const { return mCenterPos.x + (mHitbox->w / 2); }
+	virtual float			HitBoxTop() const   { return mCenterPos.y - (mHitbox->y / 2); }
+	virtual float			HitBoxBottom() const{ return mCenterPos.y + (mHitbox->y / 2); }
 
-    virtual void            SetLeft(float x)    { mCenterPos.x = x + mRadius; }
-    virtual void            SetRight(float x)   { mCenterPos.x = x - mRadius; }
-    virtual void            SetTop(float y)     { mCenterPos.y = y + mRadius; }
-    virtual void            SetBottom(float y)  { mCenterPos.y = y - mRadius; }
+	virtual float			Left() const		{ return mCenterPos.x - (mTexWidth / 2); }
+	virtual float			Top() const			{ return mCenterPos.y - (mTexHeight / 2); }
+	virtual float			Bottom() const		{ return mCenterPos.y + (mTexHeight / 2); }
+	virtual float			Right() const		{ return mCenterPos.x + (mTexWidth / 2); }
+
+
+	virtual void            SetLeft(float x) { mCenterPos.x = x + (mTexWidth / 2); }
+	virtual void            SetRight(float x) { mCenterPos.x = x - (mTexWidth / 2); }
+	virtual void            SetTop(float y) { mCenterPos.y = y + (mTexHeight / 2); }
+	virtual void            SetBottom(float y) { mCenterPos.y = y - (mTexHeight / 2); }
+
+	// virtual void         SetLeft(float x)    { mCenterPos.x = x + (mTexWidth / 2); }
+    //virtual void          SetRight(float x)   { mCenterPos.x = x - (mTexWidth / 2); }
+    //virtual void          SetTop(float y)     { mCenterPos.y = y + (mTexHeight / 2); }
+    //virtual void          SetBottom(float y)  { mCenterPos.y = y - (mTexHeight / 2); }
 
     virtual float           Angle() const       { return mAngle; }
     virtual void            SetAngle(float deg) { mAngle = deg; }
@@ -77,7 +100,7 @@ public:
 	virtual unsigned short int      Layer() const { return mLayer; }
 	virtual void			SetLayer(unsigned short int layer) { mLayer = layer; }
 
-	virtual void            SetLAyer(float deg) { mAngle = deg; }
+	virtual void            SetLayer(float deg) { mAngle = deg; }
 
     virtual void            SetOrientation(CardinalDir dir) { this->SetAngle(CardinalAngle[dir]); }
 

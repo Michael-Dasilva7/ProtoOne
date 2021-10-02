@@ -2,7 +2,16 @@
 #define NPC_H_
 
 #include "Animation.h"
- 
+#include <string>
+
+//we REALLY need to add this to the entity..or a middle class if we need many more of these classes that use this...
+enum class  Direction {
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT
+};
+
 
 enum NPCState
 {
@@ -17,16 +26,23 @@ class NPC : public Entity
 
 public:
 	 
+	Direction					mDirection;
 
 	NPCState					mState;
+
 	NPC(SDL_Texture* tex);
+	
 	NPC(SDL_Texture* tex, int numCells, float duration, const Vec2& pos);
 	
 	void                        Update(float dt);	 
-
+	float						mPatrolThinkTime;
 	void                        Draw(SDL_Renderer* renderer, Camera* camera) const;
 
 	void						SetState(NPCState newState);
+	void						SetIdleDirection(Direction direction);
+
+	std::string					mDialogue;
+	std::string					mName;
 };
 
 #endif

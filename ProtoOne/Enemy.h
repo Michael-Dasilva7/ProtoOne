@@ -8,7 +8,7 @@
 
 class Missile;
 
-enum  mDirection {
+enum class mDirection {
 	UP,
 	DOWN,
 	LEFT,

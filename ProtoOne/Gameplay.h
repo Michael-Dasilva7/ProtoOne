@@ -10,6 +10,7 @@
 #include "Effect.h"
 #include "Actions.h"
 #include "Boundary.h"
+#include "NPC.h"
 
 #include "StoryScriptConstants.h"
 
@@ -29,14 +30,10 @@ public: // <-- HACK
 	Player*				mPlayer2;
 
     std::list<Missile*> mMissiles;
-
     std::list<Enemy*>   mEnemies;
-
-	//boundaries
-	std::list<Boundary*>   mBoundaries;
-	
+	std::list<NPC*>   mNPCs;
+	std::list<Boundary*>   mBoundaries;	
     std::list<Entity*>  mMorgue;        // where dead entities get parked until all references are released
-
     std::list<Effect*>  mEffects;       // temporary animated effects like explosions
 
     SDL_Texture*        mPlayerTex;
@@ -44,40 +41,29 @@ public: // <-- HACK
     SDL_Texture*        mEnemyTex;
 
 	int mCounter;
-	/*
-	___________ START BACKGROUNDS __________
-	*/
-	SDL_Texture*        mBgTexFront;
-	SDL_Texture*        mBgTexBack;
-	SDL_Texture*        mNarsheBackground;
-	SDL_Texture*        mNarsheForeground;
-	SDL_Texture*        mDesertBackground;
-	//SDL_Texture*        mCurrentBackground;
-
+	
+	//___________ START BACKGROUNDS __________
 	Animation*			mDistantBackground;
 	Animation*			mCurrentBackground;
 	Animation*			mForeground;
 	Animation*			mMidBackground;
 
+	SDL_Texture*        mBgTexFront;
+	SDL_Texture*        mBgTexBack;
+	SDL_Texture*        mNarsheBackground;
+	SDL_Texture*        mNarsheForeground;
+	SDL_Texture*        mDesertBackground;	
+	//___________ END BACKGROUNDS __________
 
-	/*
-	___________ END BACKGROUNDS __________
-	*/
-
-	/*
-	___________ START FIGARO EFFECTS __________
-	*/
-
+	//___________ START FIGARO EFFECTS __________
 	Effect*        mFigaroWindMill;
-	SDL_Texture*   mWindMillTex;
-	/*
-	___________ END FIGARO EFFECTS __________
-	*/
+	SDL_Texture*   mWindMillTex;	
+	//___________ END FIGARO EFFECTS __________
+	
 	int mTempBoundaryX;
 	int mTempBoundaryY;
 	int mTempBoundaryW;
 	int mTempBoundaryH;
-
 
     SDL_Texture*        mExplosionTex;
 	SDL_Texture*        mTextImage;
@@ -148,6 +134,9 @@ public:
     void                AddEffect(Effect* e)    { mEffects.push_back(e); }
 
 	void	            OnWindowResized(int w, int h) override;
+
+	void				CheckCollisionWithBoundary(Boundary* b, Entity* e);
+	void				CheckCollisionWithNPC(Entity* n, Entity* e);
 
 };
 

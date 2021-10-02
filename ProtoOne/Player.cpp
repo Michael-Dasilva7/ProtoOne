@@ -118,12 +118,11 @@ void Player::Update(float dt)
 		}
 
 
-
 		if (mCurrentState != STANDING) {
 			Entity::mCurrentAnimation->AddTime(dt);
 			if (!mInCutscene) {
-				std::cout << mVelocity.y << std::endl;
-				std::cout << mVelocity.x << std::endl;
+				//std::cout << "player Y velocity: "<< mVelocity.y << std::endl;
+				//std::cout << "player X velocity: " << mVelocity.x << std::endl;
 				mPreviousPosition = mCenterPos;
 				mCenterPos += mVelocity * mMoveSpeedScale;
 			}

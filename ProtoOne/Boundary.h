@@ -12,7 +12,9 @@ public:
 	SDL_Rect*						mBoundaryRect;
 	Vec2 mCenter;
 
-	Boundary(int x, int  y, int  w, int  h) {
+
+	Boundary(int x, int  y, int  w, int  h)
+	{
 
 		mBoundaryRect = new SDL_Rect();
 		mBoundaryRect->x = x;
