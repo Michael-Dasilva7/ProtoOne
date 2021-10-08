@@ -75,8 +75,8 @@ public:
 	//rect(hitboxX + (rectWidth / 2) / 2, hitboxY + (rectWidth / 2) / 2, rectWidth / 2, rectHeight / 2);
 	virtual float			HitBoxLeft() const  { return mCenterPos.x - (mHitbox->w / 2); }
 	virtual float			HitBoxRight() const { return mCenterPos.x + (mHitbox->w / 2); }
-	virtual float			HitBoxTop() const   { return mCenterPos.y - (mHitbox->y / 2); }
-	virtual float			HitBoxBottom() const{ return mCenterPos.y + (mHitbox->y / 2); }
+	virtual float			HitBoxTop() const   { return mCenterPos.y - (mHitbox->h / 2); }
+	virtual float			HitBoxBottom() const{ return mCenterPos.y + (mHitbox->h / 2); }
 
 	virtual float			Left() const		{ return mCenterPos.x - (mTexWidth / 2); }
 	virtual float			Top() const			{ return mCenterPos.y - (mTexHeight / 2); }

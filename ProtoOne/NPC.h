@@ -33,7 +33,8 @@ public:
 	NPC(SDL_Texture* tex);
 	
 	NPC(SDL_Texture* tex, int numCells, float duration, const Vec2& pos);
-	
+	NPC(SDL_Texture* tex, int numCells, float duration, bool loopable, int hitBoxW, int hitBoxH);
+
 	void                        Update(float dt);	 
 	float						mPatrolThinkTime;
 	void                        Draw(SDL_Renderer* renderer, Camera* camera) const;

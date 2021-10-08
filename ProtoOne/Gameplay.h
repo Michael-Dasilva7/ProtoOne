@@ -36,6 +36,9 @@ public: // <-- HACK
     std::list<Entity*>  mMorgue;        // where dead entities get parked until all references are released
     std::list<Effect*>  mEffects;       // temporary animated effects like explosions
 
+	//used to keep trace of global objects, and looped through to draw layers. when adding a new object, ADD TO THIS.
+	std::list<Entity*>  mDrawnObjects;
+
     SDL_Texture*        mPlayerTex;
     SDL_Texture*        mShotTex;
     SDL_Texture*        mEnemyTex;

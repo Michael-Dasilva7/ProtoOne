@@ -212,7 +212,7 @@ void Gameplay::LoadLevel()
 	//*******************************************************************************
 
 	//set the player in the world, then set the camera on the player
-	mPlayer = new Player(ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, mGameRenderer), 4, 1, true);
+	mPlayer = new Player(ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, mGameRenderer), 4, 1, true,40,50);
 
 	mPlayerTex = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
 	mPlayer->mWalkDownTexture = ResourceManager::Acquire(PlayerConstants::TIME_LORD + PlayerConstants::WALK_DOWN, renderer);
@@ -233,6 +233,11 @@ void Gameplay::LoadLevel()
 
 	//intro is walking up narsh cliff
 	mPlayer->SetCenter(playerStartingPos.x, playerStartingPos.y);//minus player height
+
+	std::cout << "player x and y: " << mPlayer->Center().x << " " << mPlayer->Center().y << " " << std::endl;
+
+	std::cout << "hitbox info: " << mPlayer->HitBoxBottom() << " "<< mPlayer->HitBoxLeft() <<  " " << mPlayer->HitBoxRight() << " " << mPlayer->HitBoxTop() << " "<< std::endl;
+
 
 		/*
 		LOAD GIGA GAIA
@@ -264,9 +269,12 @@ void Gameplay::LoadLevel()
 	Vec2 guardOneStartingPos(playerStartingPos.x -50, playerStartingPos.y - 500);
 	Vec2 guardTwoStartingPos(playerStartingPos.x + 50, playerStartingPos.y - 500);
 	
-	NPC* guardOne = new NPC(ResourceManager::Acquire("./media/characters/zozma/walkdown.png", renderer), 4, 1.2f, guardOneStartingPos);
-	NPC* guardTwo = new NPC(ResourceManager::Acquire("./media/characters/zozma/walkdown.png", renderer), 4, 1.2f, guardTwoStartingPos);
-	
+	NPC* guardOne = new NPC(ResourceManager::Acquire("./media/characters/zozma/walkdown.png", renderer), 4, 1.2f, true, 50, 50);
+	guardOne->SetCenter(guardOneStartingPos);
+	NPC* guardTwo = new NPC(ResourceManager::Acquire("./media/characters/zozma/walkdown.png", renderer), 4, 1.2f, true, 50, 50);
+	guardTwo->SetCenter(guardTwoStartingPos);
+
+	 
 	guardOne->mName = "Guard One";
 	guardTwo->mName = "Guard Two";
 	
@@ -619,9 +627,7 @@ void Gameplay::Update(float dt)
 		}
 
 	}
-	/*if (mPlayer->mInCutscene) {
-		mPlayer->SetState(mPlayer->WALKING);
-	}*/
+
 	mPlayer->Update(dt);
 
 	//mPlayer->SetCenter(mPlayer->Center() + 20 * mPlayer->mMoveSpeedScale * dt * moveVec);
@@ -747,6 +753,8 @@ void Gameplay::Update(float dt)
 	for (auto it3 = mNPCs.begin(); it3 != mNPCs.end(); ++it3) {
 		NPC* n = *it3;
 		CheckCollisionWithNPC(n, mPlayer);
+
+
 	}
 	
 
@@ -833,6 +841,12 @@ void Gameplay::Draw(float dt)
 	//currently the foreground:
 	mCurrentBackground->Draw(renderer, mCamera->WorldToScreenVec(0, 0), mCamera);
 
+
+	//entities have a layer property and we draw based on that. fkin simple
+
+
+
+
 	//DEBUGGING SECTION START
 	/*if (mCounter % 100 == 0) {*/
 		//player center x : 1024
@@ -870,31 +884,117 @@ void Gameplay::Draw(float dt)
 	//mCounter += 1;
 	//DEBUGGING SECTION END
 
-	for (auto& n : mNPCs) {
-		n->Draw(renderer, mCamera);
+	/*
+
+	backgrounds
+	player
+	npcs
+	missiles
+	enmies
+	broundaries
+	treses/treasure boxes
+
+	*/
+
+	//1. find max layer #. that is the upper bound
+	//2. loop through all layers between that, 
+	//3. fo
+
+	//calculate
+	//calculate layer order based on Y axis. 
+	//sometimes we will just want to display effects at the foreground or background, that will need to be drawn outside of this logic or given negative or # > max layer #
+	for (Entity* n : mDrawnObjects) {
+		//convert y axis to a layer by multiplying its y value by -100!!!!!! so objects closer to the screen will be drawn last
+		n->Layer() == ((int)n->Center().y) * 100;
 	}
 
-	//if collide with a box, do not draw that part of the sprite. so it will make it seem like layers
-	mPlayer->Draw(renderer, mCamera);
-	for (auto& e : mEffects) {
-		e->Draw(renderer, mCamera);
+
+	std::vector<Entity*> x;
+	int nextInteger = 0;
+
+
+	for (list<NPC*>::iterator i = mNPCs.begin();
+		i != mNPCs.end();
+		i++) {
+		int layerOrderNumber = i->Layer() == ((int)i->Center().y) * 100;
+		i->Layer() == layerOrderNumber;
+
+		for (Entity* n : mDrawnObjects) {
+			if (layerOrderNumber >= n->Layer()) {
+				//mDrawnObjects.splice at current position;
+
+			}
+		}
+
+	} 
+
+	for (Entity* n : mNPCs) {
+		int layerOrderNumber = ((int)n->Center().y) * 100;
+		n->Layer() == layerOrderNumber;
+		//loop through mrawnObjects, and insert at the correct position. 
+		for (Entity* n : mDrawnObjects) {
+			if (layerOrderNumber >= n->Layer()){
+				//mDrawnObjects.splice at current position;
+			}
+		}
+		
 	}
 
+	for (Entity* n : mEnemies) {
+		mDrawnObjects.push_back(n);
+	}
 
+	
+	//this is very slow! First place to turn when performance becomes an issue
+	for (Entity* n : mDrawnObjects) {
+		if (n->Layer() == 1) {
+			n->Draw(renderer, mCamera);
+		}	
+	}
 
-
-	//LAYER 1 (Second Background)
-	for (auto& e : mEnemies) {
-		if (e->Entity::Layer() == 1) {
-			e->Draw(renderer, mCamera);
+	for (Entity* n : mDrawnObjects) {
+		if (n->Layer() == 2) {
+			n->Draw(renderer, mCamera);
 		}
 	}
 
-	for (auto& m : mMissiles) {
-		if (m->Entity::Layer() == 1) {
-			m->Draw(renderer, mCamera);
+	for (Entity* n : mDrawnObjects) {
+		if (n->Layer() == 3) {
+			n->Draw(renderer, mCamera);
 		}
 	}
+
+	for (Entity* n : mDrawnObjects) {
+		if (n->Layer() == 4) {
+			n->Draw(renderer, mCamera);
+		}
+	}
+
+	//for (auto& n : mNPCs) {
+	//	n->Draw(renderer, mCamera);
+	//}
+
+	////if collide with a box, do not draw that part of the sprite. so it will make it seem like layers
+	//mPlayer->Draw(renderer, mCamera);
+	//for (auto& e : mEffects) {
+	//	e->Draw(renderer, mCamera);
+	//}
+
+
+
+
+	////LAYER 1 (Second Background)
+	//for (auto& e : mEnemies) {
+	//	if (e->Entity::Layer() == 1) {
+	//		e->Draw(renderer, mCamera);
+	//	}
+	//}
+
+	//for (auto& m : mMissiles) {
+	//	if (m->Entity::Layer() == 1) {
+	//		m->Draw(renderer, mCamera);
+	//	}
+	//}
 
 	if (mGame->mDebugMode) {
 		for (auto& m : mBoundaries) {
@@ -918,11 +1018,11 @@ void Gameplay::Draw(float dt)
 
 	//mPlayer2->Draw(renderer, mCamera);
 
-	for (auto& e : mEnemies) {
-		if (e->Entity::Layer() == 2) {
-			e->Draw(renderer, mCamera);
-		}
-	}
+	//for (auto& e : mEnemies) {
+	//	if (e->Entity::Layer() == 2) {
+	//		e->Draw(renderer, mCamera);
+	//	}
+	//}
 
 	for (auto& m : mMissiles) {
 		if (m->Entity::Layer() == 2) {
@@ -1159,10 +1259,10 @@ void Gameplay::ClipToWorldBounds(Entity* ent)
 void Gameplay::CheckCollisionWithBoundary(Boundary* b,Entity* e) {
 
 	//check for collisions with boundaries
-	if (b->mBoundaryRect->x < e->Right() &&
-		b->mBoundaryRect->x + b->mBoundaryRect->w > e->Left() &&
-		b->mBoundaryRect->y < e->Bottom() &&
-		b->mBoundaryRect->y + b->mBoundaryRect->h > e->Top())
+	if (b->mBoundaryRect->x < e->HitBoxRight() &&
+		b->mBoundaryRect->x + b->mBoundaryRect->w > e->HitBoxLeft() &&
+		b->mBoundaryRect->y < e->HitBoxBottom() &&
+		b->mBoundaryRect->y + b->mBoundaryRect->h > e->HitBoxTop())
 	{
 		//if we are moving right, and the x is + 1 and the y is + 1. then only plus 1 
 		//this logic makes the player slide along boundaries instead of "sticking" to the boundaries:
@@ -1172,7 +1272,7 @@ void Gameplay::CheckCollisionWithBoundary(Boundary* b,Entity* e) {
 		if (distDifference.x > 0.0f && distDifference.y > 0.0f) {
 
 			//player is above the boundary, so slide along it
-			if ((e->Bottom() - distDifference.y) < b->mBoundaryRect->y) {
+			if ((e->HitBoxBottom() - distDifference.y) < b->mBoundaryRect->y) {
 				//Move left and right
 				e->SetCenter(e->mPreviousPosition.x + abs(distDifference.x), e->mPreviousPosition.y);
 			}
@@ -1185,7 +1285,7 @@ void Gameplay::CheckCollisionWithBoundary(Boundary* b,Entity* e) {
 		else if (distDifference.x < 0.0f && distDifference.y > 0.0f) {
 
 			//player is above the boundary, so slide along it
-			if ((e->Bottom() - distDifference.y) < b->mBoundaryRect->y) {
+			if ((e->HitBoxBottom() - distDifference.y) < b->mBoundaryRect->y) {
 				//Move left and right
 				e->SetCenter(e->mPreviousPosition.x - abs(distDifference.x), e->mPreviousPosition.y);
 			}
@@ -1199,7 +1299,7 @@ void Gameplay::CheckCollisionWithBoundary(Boundary* b,Entity* e) {
 		else if (distDifference.x > 0.0f && distDifference.y < 0.0f) {
 
 			//player is below the boundary, heading up:
-			if (e->mPreviousPosition.y > (b->mBoundaryRect->y + b->mBoundaryRect->h) && (e->mPreviousPosition.x + e->Right()) > b->mBoundaryRect->x) {
+			if (e->mPreviousPosition.y > (b->mBoundaryRect->y + b->mBoundaryRect->h) && (e->mPreviousPosition.x + e->HitBoxRight()) > b->mBoundaryRect->x) {
 				//Move right
 				e->SetCenter(e->mPreviousPosition.x + abs(distDifference.x), e->mPreviousPosition.y);
 			}
@@ -1211,12 +1311,8 @@ void Gameplay::CheckCollisionWithBoundary(Boundary* b,Entity* e) {
 
 		//heading left and up
 		else if (distDifference.x < 0.0f && distDifference.y < 0.0f) {
-			//now we need to see where player is relative to the boundary:
-			float playerWidth = (e->Right() - e->Left());
-			//player is below the boundary, heading up:
 
 			//if you are both below and to the right of the boundary, just revert to same position
-
 			if (e->mPreviousPosition.y > (b->mBoundaryRect->y + b->mBoundaryRect->h) && e->mPreviousPosition.x > (b->mBoundaryRect->x + b->mBoundaryRect->w)) {
 				e->SetCenter(e->mPreviousPosition.x, e->mPreviousPosition.y);
 			}
@@ -1226,7 +1322,7 @@ void Gameplay::CheckCollisionWithBoundary(Boundary* b,Entity* e) {
 			}
 			// player is on the right side of the boundary, heading up, and the next step 
 			// would bring the person inside the boundary, so keep outside the boundary, but slide along:
-			else if (e->Left() < (b->mBoundaryRect->x + b->mBoundaryRect->w) && e->Top() < (b->mBoundaryRect->y + b->mBoundaryRect->h)) {
+			else if (e->HitBoxLeft() < (b->mBoundaryRect->x + b->mBoundaryRect->w) && e->HitBoxTop() < (b->mBoundaryRect->y + b->mBoundaryRect->h)) {
 				e->SetCenter(e->mPreviousPosition.x, e->mPreviousPosition.y - abs(distDifference.y));
 			}
 		}
@@ -1250,86 +1346,41 @@ void Gameplay::CheckCollisionWithNPC(Entity* n, Entity* e) {
 	//check for collisions with boundaries
 	// rectangle hit box collision detection
 	//if distance between is less than the
-
-	//Check collision with entities hitboxes, not their "texture radius" or sizes. 
-	if (n->mHitbox->x < e->Right() &&
-		n->mHitbox->x + n->mHitbox->w > e->Left() &&
-		n->mHitbox->y < e->Bottom() &&
-		n->mHitbox->y + n->mHitbox->h > e->Top())
+	cout << "test" << endl;
+ 	//Check collision with entities hitboxes, not their "texture radius" or sizes. 
+	if (n->HitBoxLeft() < e->HitBoxRight() &&
+		n->HitBoxRight() > e->HitBoxLeft() &&
+		n->HitBoxTop() < e->HitBoxBottom() &&
+		n->HitBoxBottom() > e->HitBoxTop())
 	{
-		//if we are moving right, and the x is + 1 and the y is + 1. then only plus 1 
-		//this logic makes the player slide along boundaries instead of "sticking" to the boundaries:
-		Vec2 distDifference = e->Center() - e->mPreviousPosition;
+		cout << "test2" << endl;
+		e->SetCenter(e->mPreviousPosition);
 
-		//heading right an down
-		if (distDifference.x > 0.0f && distDifference.y > 0.0f) {
+		////if we are moving right, and the x is + 1 and the y is + 1. then only plus 1 
+		////this logic makes the player slide along boundaries instead of "sticking" to the boundaries:
+		//Vec2 distDifference = e->Center() - e->mPreviousPosition;
 
-			//player is above the boundary, so slide along it
-			if ((e->Bottom() - distDifference.y) < n->mHitbox->y) {
-				//Move left and right
-				e->SetCenter(e->mPreviousPosition.x + abs(distDifference.x), e->mPreviousPosition.y);
-			}
-			//player is on the right side of the boundary, heading up:
-			else {
-				e->SetCenter(e->mPreviousPosition.x, e->mPreviousPosition.y + distDifference.y);
-			}
-		}
-		//heading left an down
-		else if (distDifference.x < 0.0f && distDifference.y > 0.0f) {
+		//bool collision = false;
+		////heading right an down
+		//if (distDifference.x > 0.0f && distDifference.y > 0.0f) {
+		//	collision = true;		
+		//}
+		////heading left an down
+		//else if (distDifference.x < 0.0f && distDifference.y > 0.0f) {		
+		//	collision = true;
+		//}
+		////heading right and up
+		//else if (distDifference.x > 0.0f && distDifference.y < 0.0f) {
+		//	collision = true;
+		//}
+		////heading left and up
+		//else if (distDifference.x < 0.0f && distDifference.y < 0.0f) {
+		//	collision = true;
+		//}		
 
-			//player is above the boundary, so slide along it
-			if ((e->Bottom() - distDifference.y) < n->mHitbox->y) {
-				//Move left and right
-				e->SetCenter(e->mPreviousPosition.x - abs(distDifference.x), e->mPreviousPosition.y);
-			}
-
-			else {
-				e->SetCenter(e->mPreviousPosition.x, e->mPreviousPosition.y + distDifference.y);
-			}
-
-		}
-		//heading right and up
-		else if (distDifference.x > 0.0f && distDifference.y < 0.0f) {
-
-			//player is below the boundary, heading up:
-			if (e->mPreviousPosition.y > (n->mHitbox->y + n->mHitbox->h) && (e->mPreviousPosition.x + e->Right()) > n->mHitbox->x) {
-				//Move right
-				e->SetCenter(e->mPreviousPosition.x + abs(distDifference.x), e->mPreviousPosition.y);
-			}
-			//player is on the right side of the boundary, heading up:
-			else {
-				e->SetCenter(e->mPreviousPosition.x, e->mPreviousPosition.y - abs(distDifference.y));
-			}
-		}
-
-		//heading left and up
-		else if (distDifference.x < 0.0f && distDifference.y < 0.0f) {
-			//now we need to see where player is relative to the boundary:
-			float playerWidth = (e->Right() - e->Left());
-			//player is below the boundary, heading up:
-
-			//if you are both below and to the right of the boundary, just revert to same position
-
-			if (e->mPreviousPosition.y > (n->mHitbox->y + n->mHitbox->h) && e->mPreviousPosition.x > (n->mHitbox->x + n->mHitbox->w)) {
-				e->SetCenter(e->mPreviousPosition.x, e->mPreviousPosition.y);
-			}
-			else if (e->mPreviousPosition.y > (n->mHitbox->y + n->mHitbox->h) && e->mPreviousPosition.x < (n->mHitbox->x + n->mHitbox->w)) {
-				//Move left and right
-				e->SetCenter(e->mPreviousPosition.x - abs(distDifference.x), e->mPreviousPosition.y);
-			}
-			// player is on the right side of the boundary, heading up, and the next step 
-			// would bring the person inside the boundary, so keep outside the boundary, but slide along:
-			else if (e->Left() < (n->mHitbox->x + n->mHitbox->w) && e->Top() < (n->mHitbox->y + n->mHitbox->h)) {
-				e->SetCenter(e->mPreviousPosition.x, e->mPreviousPosition.y - abs(distDifference.y));
-			}
-		}
-		else {
-			e->SetCenter(e->mPreviousPosition);
-		}
-		//  left or right?  if so, move up or down
-
-		//e->SetCenter(e->mPreviousPosition.x, e->mPreviousPosition.y - abs(distDifference.y));
-		//up or down
+		//if (collision == true) {
+		//	
+		//}
 	}
 
 	else {

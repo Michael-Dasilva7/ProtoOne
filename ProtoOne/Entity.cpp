@@ -44,9 +44,8 @@ Entity::Entity(SDL_Texture* tex, int numCells, float duration, bool loopable)
 	mRadius = 0.25f * ((mTexWidth / numCells) + mTexHeight);
 
 	mHitbox = new SDL_Rect();
-	mHitbox->w = mTexWidth;
+	mHitbox->w = (mTexWidth / numCells);
 	mHitbox->h = mTexHeight;
-
 
 	//rect(hitboxX + (rectWidth / 2) / 2, hitboxY + (rectWidth / 2) / 2, rectWidth / 2, rectHeight / 2);
 	//by default the hitbox will be

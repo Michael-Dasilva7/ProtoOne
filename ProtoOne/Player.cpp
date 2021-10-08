@@ -29,6 +29,15 @@ Player::Player(SDL_Texture* tex, int numCells, float duration, bool loopable)
 	mDirection = DOWN;
 }
 
+Player::Player(SDL_Texture* tex, int numCells, float duration, bool loopable, int hitBoxW, int hitBoxH)
+	: Entity(tex, numCells, duration, loopable, hitBoxW, hitBoxH)
+	, mMoveSpeed(4)   // pixels per second
+	, mMoveSpeedScale(1.0f)
+	, mPlayerHealth(PlayerConstants::STARTING_HEALTH)
+{
+	SetState(STANDING);
+	mDirection = DOWN;
+}
 void Player::InitializePlayerTextures() {
 }
 

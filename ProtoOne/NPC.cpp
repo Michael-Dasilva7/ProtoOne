@@ -22,6 +22,13 @@ NPC::NPC(SDL_Texture* tex, int numCells, float duration, const Vec2& pos)
 {
 }
 
+NPC::NPC(SDL_Texture* tex, int numCells, float duration, bool loopable, int hitBoxW, int hitBoxH)
+	: Entity(tex, numCells, duration, loopable, hitBoxW, hitBoxH),
+	mPatrolThinkTime(0.0f),
+	mState(NPC_IDLE)
+{
+}
+
 void NPC::Update(float dt)  
 {
 

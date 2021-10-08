@@ -32,6 +32,7 @@ public:
 	Player(SDL_Texture* tex);
 
 	Player(SDL_Texture* tex, int numCells, float duration, bool loopable);	//player w/ animation
+	Player(SDL_Texture* tex, int numCells, float duration, bool loopable, int hitBoxW, int hitBoxH);
 
 	void					SetState(mState newState);
 	bool					CheckAndSetDirection(mDirection dir);
