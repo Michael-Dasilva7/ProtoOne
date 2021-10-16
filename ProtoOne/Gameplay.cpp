@@ -237,6 +237,7 @@ void Gameplay::LoadLevel()
 	std::cout << "player x and y: " << mPlayer->Center().x << " " << mPlayer->Center().y << " " << std::endl;
 
 	std::cout << "hitbox info: " << mPlayer->HitBoxBottom() << " "<< mPlayer->HitBoxLeft() <<  " " << mPlayer->HitBoxRight() << " " << mPlayer->HitBoxTop() << " "<< std::endl;
+ 
 
 
 		/*
@@ -263,8 +264,6 @@ void Gameplay::LoadLevel()
 		greenDragon->mRunRightTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
 		mEnemies.push_back(greenDragon);
 	}
-
-
 
 	Vec2 guardOneStartingPos(playerStartingPos.x -50, playerStartingPos.y - 500);
 	Vec2 guardTwoStartingPos(playerStartingPos.x + 50, playerStartingPos.y - 500);
@@ -516,6 +515,9 @@ void Gameplay::ClearLevel()
 
 void Gameplay::Update(float dt)
 {
+	//flush the rendered object list
+	mDrawnObjects.clear();
+	mDrawnObjects.empty();
 	//std::cout << "World Width: "<< mWorldWidth << std::endl;
 	//std::cout << "World Height: " << mWorldHeight << std::endl;
 	const Uint8* keys = mGame->GetKeys();
@@ -631,15 +633,22 @@ void Gameplay::Update(float dt)
 	mPlayer->Update(dt);
 
 	//mPlayer->SetCenter(mPlayer->Center() + 20 * mPlayer->mMoveSpeedScale * dt * moveVec);
+	cout << mPlayer->Center().y << endl;
+
+	mDrawnObjects.insert(make_pair((int)mPlayer->HitBoxTop(), mPlayer));
 
 	for (auto& e : mEnemies) {
-		e->Update(dt);
+		e->Update(dt);		
+		mDrawnObjects.insert(make_pair((int)e->HitBoxTop(), e));
 	}
-
+	 
+	
 	for (auto& n : mNPCs) {
 		n->Update(dt);
+		mDrawnObjects.insert(make_pair((int)n->HitBoxTop(), n));
+		cout << (int)n->Center().y << endl;
 	}
- 
+	//mDrawnObjects.
 	//
 	// update missiles
 	//
@@ -685,6 +694,7 @@ void Gameplay::Update(float dt)
 		if ((*it)->IsDead()) {
 			mMorgue.push_back(*it);
 			it = mEnemies.erase(it);
+
 		}
 		else {
 			++it;
@@ -708,7 +718,6 @@ void Gameplay::Update(float dt)
 			Vec2 pos = e->Center() + depth * fromPlayer;
 			e->SetCenter(pos);
 		}
-
 
 
 		// check for collisions with other enemies
@@ -753,8 +762,6 @@ void Gameplay::Update(float dt)
 	for (auto it3 = mNPCs.begin(); it3 != mNPCs.end(); ++it3) {
 		NPC* n = *it3;
 		CheckCollisionWithNPC(n, mPlayer);
-
-
 	}
 	
 
@@ -766,10 +773,9 @@ void Gameplay::Update(float dt)
 		ClipToWorldBounds(e);
 	}
 
-	// **********************
-
-	// ******  CAMERA  ******
-	// **********************
+	// ****************
+	// ***  CAMERA  ***
+	// ****************
 
 	int mx, my;
 	SDL_GetMouseState(&mx, &my);
@@ -821,13 +827,7 @@ void Gameplay::Update(float dt)
 void Gameplay::Draw(float dt)
 {
 	SDL_Renderer* renderer = mGame->GetRenderer();
-
 	//mScriptProcessor_EffectsProcessActions(dt);
-	//LAYER 0 (BACKGROUND)
-	//SDL_Rect distantBackground;
-
-	//mCamera->ScreenToWorld(0,0)
-	//{(float) mCamera->WorldToScreenX(0),(float)mCamera->WorldToScreenY(0) }
 
 	if (mDistantBackground != nullptr) {
 		//parallax scale factors:
@@ -840,12 +840,6 @@ void Gameplay::Draw(float dt)
 
 	//currently the foreground:
 	mCurrentBackground->Draw(renderer, mCamera->WorldToScreenVec(0, 0), mCamera);
-
-
-	//entities have a layer property and we draw based on that. fkin simple
-
-
-
 
 	//DEBUGGING SECTION START
 	/*if (mCounter % 100 == 0) {*/
@@ -896,89 +890,86 @@ void Gameplay::Draw(float dt)
 
 	*/
 
-	//1. find max layer #. that is the upper bound
-	//2. loop through all layers between that, 
-	//3. fo
-
-	//calculate
-	//calculate layer order based on Y axis. 
 	//sometimes we will just want to display effects at the foreground or background, that will need to be drawn outside of this logic or given negative or # > max layer #
-	for (Entity* n : mDrawnObjects) {
-		//convert y axis to a layer by multiplying its y value by -100!!!!!! so objects closer to the screen will be drawn last
-		n->Layer() == ((int)n->Center().y) * 100;
-	}
+	//for (Entity* n : mDrawnObjects) {
+	//	//convert y axis to a layer by multiplying its y value by 10! so objects closer to the screen will be drawn last
+	//	n->Layer() == ((int)n->Center().y) * 100;
+	//}
+	 
+	//std::vector<Entity*> x;
+	//int nextInteger = 0;
 
 
-	std::vector<Entity*> x;
-	int nextInteger = 0;
+	//for (list<NPC*>::iterator i = mNPCs.begin();
+	//	i != mNPCs.end();
+	//	i++) {
+	//	int layerOrderNumber = i->Layer() == ((int)i->Center().y) * 100;
+	//	i->Layer() == layerOrderNumber;
+
+	//	for (Entity* n : mDrawnObjects) {
+	//		if (layerOrderNumber >= n->Layer()) {
+	//			//mDrawnObjects.splice at current position;
+
+	//		}
+	//	}
+
+	//} 
 
 
-	for (list<NPC*>::iterator i = mNPCs.begin();
-		i != mNPCs.end();
-		i++) {
-		int layerOrderNumber = i->Layer() == ((int)i->Center().y) * 100;
-		i->Layer() == layerOrderNumber;
 
-		for (Entity* n : mDrawnObjects) {
-			if (layerOrderNumber >= n->Layer()) {
-				//mDrawnObjects.splice at current position;
 
-			}
-		}
-
-	} 
-
-	for (Entity* n : mNPCs) {
-		int layerOrderNumber = ((int)n->Center().y) * 100;
-		n->Layer() == layerOrderNumber;
-		//loop through mrawnObjects, and insert at the correct position. 
-		for (Entity* n : mDrawnObjects) {
-			if (layerOrderNumber >= n->Layer()){
-				//mDrawnObjects.splice at current position;
-			}
-		}
-		
-	}
-
-	for (Entity* n : mEnemies) {
-		mDrawnObjects.push_back(n);
-	}
-
+	//for (Entity* n : mNPCs) {
+	//	int layerOrderNumber = ((int)n->Center().y) * 100;
+	//	n->Layer() == layerOrderNumber;
+	//	//loop through mrawnObjects, and insert at the correct position. 
+	//	for (Entity* n : mDrawnObjects) {
+	//		if (layerOrderNumber >= n->Layer()){
+	//			//mDrawnObjects.splice at current position;
+	//		}
+	//	}
+	//	
+	//}
+	 
 	
-	//this is very slow! First place to turn when performance becomes an issue
-	for (Entity* n : mDrawnObjects) {
-		if (n->Layer() == 1) {
-			n->Draw(renderer, mCamera);
-		}	
-	}
+	////this is very slow! First place to turn when performance becomes an issue
+	//for (Entity* n : mDrawnObjects) {
+	//	//if (n->Layer() == 1) {
+	//		n->Draw(renderer, mCamera);
+	///*	}	*/
+	//}
 
-	for (Entity* n : mDrawnObjects) {
-		if (n->Layer() == 2) {
-			n->Draw(renderer, mCamera);
-		}
-	}
+	//for (Entity* n : mDrawnObjects) {
+	//	if (n->Layer() == 2) {
+	//		n->Draw(renderer, mCamera);
+	//}
+	//}
 
-	for (Entity* n : mDrawnObjects) {
-		if (n->Layer() == 3) {
-			n->Draw(renderer, mCamera);
-		}
-	}
+	//for (Entity* n : mDrawnObjects) {
+	//	if (n->Layer() == 3) {
+	//		n->Draw(renderer, mCamera);
+	//	}
+	//}
 
-	for (Entity* n : mDrawnObjects) {
-		if (n->Layer() == 4) {
-			n->Draw(renderer, mCamera);
-		}
+	//for (Entity* n : mDrawnObjects) {
+	//	if (n->Layer() == 4) {
+	//		n->Draw(renderer, mCamera);
+	//	}
+	//}
+
+	map<int, Entity*>::iterator it;
+	for (it = mDrawnObjects.begin(); it != mDrawnObjects.end(); ++it) {
+		cout << it->first << endl;
+		it->second->Draw(renderer, mCamera);
 	}
 
 	//for (auto& n : mNPCs) {
 	//	n->Draw(renderer, mCamera);
 	//}
 
-	////if collide with a box, do not draw that part of the sprite. so it will make it seem like layers
 	//mPlayer->Draw(renderer, mCamera);
-	//for (auto& e : mEffects) {
-	//	e->Draw(renderer, mCamera);
-	//}
+	for (auto& e : mEffects) {
+		e->Draw(renderer, mCamera);
+	}
 
 
 
@@ -1029,7 +1020,6 @@ void Gameplay::Draw(float dt)
 			m->Draw(renderer, mCamera);
 		}
 	}
-
 
 	//Layer 4(next foreground)
 	mScriptProcessor_CharacterMovements.ProcessActions(dt);
@@ -1202,7 +1192,7 @@ void Gameplay::OnMouseDown(const SDL_MouseButtonEvent& mbe)
 			//m->SetAngle(mPlayer->Angle());
 			//m->SetSpeed(200);   // pixels per second
 
-			/*
+			 
 			//FOLLOWING CODE STARTS A FIREBALL ANIMATION :O
 
 			//mMissiles.push_back(m); 
@@ -1217,7 +1207,7 @@ void Gameplay::OnMouseDown(const SDL_MouseButtonEvent& mbe)
 			Animation* cast = new Animation(castTex, 1, 0.4, false);
 
 			mGame->mScriptProcessor.AddAction(new aAction_BigBang(mPlayer, targ, fireball, fireball2, chant, cast, mGameRenderer, mCamera, mSound));
-			*/
+		 
 		}
 		else if (mbe.button == SDL_BUTTON_RIGHT) {
 			//create a box
@@ -1386,4 +1376,14 @@ void Gameplay::CheckCollisionWithNPC(Entity* n, Entity* e) {
 	else {
 		//e->SetCenter(e->mPreviousPosition);
 	}
+}
+ 
+list<Entity*> Gameplay::MergeLists(list<Entity*> l1, list<Entity*> l2) {
+
+	//create a new list pointer
+
+	//double loop?
+	//
+
+	return l1;
 }

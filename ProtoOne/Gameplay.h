@@ -20,6 +20,7 @@
 #include <vector>
 
 #include <unordered_map>
+#include <map>
 class Texture;
 //class ResourceManager;
 
@@ -37,7 +38,7 @@ public: // <-- HACK
     std::list<Effect*>  mEffects;       // temporary animated effects like explosions
 
 	//used to keep trace of global objects, and looped through to draw layers. when adding a new object, ADD TO THIS.
-	std::list<Entity*>  mDrawnObjects;
+	std::map<int, Entity*>  mDrawnObjects;
 
     SDL_Texture*        mPlayerTex;
     SDL_Texture*        mShotTex;
@@ -141,6 +142,7 @@ public:
 	void				CheckCollisionWithBoundary(Boundary* b, Entity* e);
 	void				CheckCollisionWithNPC(Entity* n, Entity* e);
 
+	list<Entity*>       MergeLists(list<Entity*> l1, list<Entity*> l2);
 };
 
 #endif

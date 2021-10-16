@@ -10,11 +10,14 @@ c:\protoone\protoone\boundary.h(39): warning C4244: 'argument': conversion from 
 c:\protoone\protoone\gameplay.cpp(122): warning C4305: 'argument': truncation from 'double' to 'float'
 c:\protoone\protoone\gameplay.cpp(127): warning C4305: 'argument': truncation from 'double' to 'float'
 c:\protoone\protoone\gameplay.cpp(232): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(255): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(352): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\protoone\protoone\gameplay.cpp(256): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(351): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\protoone\protoone\gameplay.cpp(426): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 c:\protoone\protoone\gameplay.cpp(427): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(428): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(1005): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(1140): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\protoone\protoone\gameplay.cpp(1141): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\gameplay.cpp(1089): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(1201): warning C4244: 'argument': conversion from 'const Sint32' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(1205): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\protoone\protoone\gameplay.cpp(1207): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\protoone\protoone\gameplay.cpp(1224): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\gameplay.cpp(1225): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
   ProtoOne.vcxproj -> C:\ProtoOne\ProtoOne\Debug\ProtoOne.exe
