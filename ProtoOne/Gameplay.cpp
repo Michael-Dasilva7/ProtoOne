@@ -35,6 +35,9 @@ Gameplay::~Gameplay()
 {
 }
 
+bool comp(Entity* a, Entity* b) {
+	return (int)a->HitBoxTop() < (int)b->HitBoxTop();
+}
 void Gameplay::Initialize()
 {
 	SDL_Renderer* renderer = mGame->GetRenderer();
@@ -212,7 +215,7 @@ void Gameplay::LoadLevel()
 	//*******************************************************************************
 
 	//set the player in the world, then set the camera on the player
-	mPlayer = new Player(ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, mGameRenderer), 4, 1, true,40,50);
+	mPlayer = new Player(ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_RUN_UP, mGameRenderer), 4, 1, true, 40, 50);
 
 	mPlayerTex = ResourceManager::Acquire(PlayerConstants::ANIM_TEX_UNDINE_WALK_UP, renderer);
 	mPlayer->mWalkDownTexture = ResourceManager::Acquire(PlayerConstants::TIME_LORD + PlayerConstants::WALK_DOWN, renderer);
@@ -236,20 +239,20 @@ void Gameplay::LoadLevel()
 
 	std::cout << "player x and y: " << mPlayer->Center().x << " " << mPlayer->Center().y << " " << std::endl;
 
-	std::cout << "hitbox info: " << mPlayer->HitBoxBottom() << " "<< mPlayer->HitBoxLeft() <<  " " << mPlayer->HitBoxRight() << " " << mPlayer->HitBoxTop() << " "<< std::endl;
- 
+	std::cout << "hitbox info: " << mPlayer->HitBoxBottom() << " " << mPlayer->HitBoxLeft() << " " << mPlayer->HitBoxRight() << " " << mPlayer->HitBoxTop() << " " << std::endl;
 
 
-		/*
-		LOAD GIGA GAIA
-		*/
-		//Enemy* e = new Enemy(ResourceManager::Acquire(EnemyConstants::GIGA_GAIA_IDLE, renderer));
-		//float x = mCamera->ViewLeft();
-		//float y = mCamera->ViewBottom();
-		//e->SetCenter(x + 100, y + 300);
-		//e->SetLayer(1);
-		//e->SetState(ENEMY_HOVER);
-		//e->SetSpeedScale(0);
+
+	/*
+	LOAD GIGA GAIA
+	*/
+	//Enemy* e = new Enemy(ResourceManager::Acquire(EnemyConstants::GIGA_GAIA_IDLE, renderer));
+	//float x = mCamera->ViewLeft();
+	//float y = mCamera->ViewBottom();
+	//e->SetCenter(x + 100, y + 300);
+	//e->SetLayer(1);
+	//e->SetState(ENEMY_HOVER);
+	//e->SetSpeedScale(0);
 
 	for (int i = 0; i < 50; i++) {
 		Enemy* greenDragon = new Enemy(ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer), 3, 0.5, true);
@@ -265,18 +268,18 @@ void Gameplay::LoadLevel()
 		mEnemies.push_back(greenDragon);
 	}
 
-	Vec2 guardOneStartingPos(playerStartingPos.x -50, playerStartingPos.y - 500);
+	Vec2 guardOneStartingPos(playerStartingPos.x - 50, playerStartingPos.y - 500);
 	Vec2 guardTwoStartingPos(playerStartingPos.x + 50, playerStartingPos.y - 500);
-	
+
 	NPC* guardOne = new NPC(ResourceManager::Acquire("./media/characters/zozma/walkdown.png", renderer), 4, 1.2f, true, 50, 50);
 	guardOne->SetCenter(guardOneStartingPos);
 	NPC* guardTwo = new NPC(ResourceManager::Acquire("./media/characters/zozma/walkdown.png", renderer), 4, 1.2f, true, 50, 50);
 	guardTwo->SetCenter(guardTwoStartingPos);
 
-	 
+
 	guardOne->mName = "Guard One";
 	guardTwo->mName = "Guard Two";
-	
+
 	guardOne->SetCenter(guardOneStartingPos.x, guardOneStartingPos.y);
 	guardTwo->SetCenter(guardTwoStartingPos.x, guardTwoStartingPos.y);
 
@@ -515,19 +518,13 @@ void Gameplay::ClearLevel()
 
 void Gameplay::Update(float dt)
 {
-	//flush the rendered object list
-	mDrawnObjects.clear();
-	mDrawnObjects.empty();
 	//std::cout << "World Width: "<< mWorldWidth << std::endl;
 	//std::cout << "World Height: " << mWorldHeight << std::endl;
 	const Uint8* keys = mGame->GetKeys();
 	//const Uint8* keyState = mGame->GetGameplayState();	
-
 	//mScript.ProcessActions(dt);
 
-	// move along world axes
-	// get position of cursor (in screen space)
-	//MOUSE TRACKING :) 
+
 	/*
 	int mouseX, mouseY;
 	SDL_GetMouseState(&mouseX, &mouseY);
@@ -543,17 +540,7 @@ void Gameplay::Update(float dt)
 	mAngle = Rad2Deg(angle);
 	*/
 
-	//std::cout << "A state: " << mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_A) << std::endl;
-	//std::cout << "SHIFT state: " << mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_LSHIFT) << std::endl;
-
-	//if (mScript->userControlEnabled) {
-
 	if (mScriptProcessor_CharacterMovements.userControlEnabled && mGame->mScriptProcessor.userControlEnabled) {
-
-
-		/*else {
-			mPlayer->SetState(mPlayer->WALKING);
-		}*/
 
 		//priority order: u,left,right,down
 		if (mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_W)) {
@@ -630,25 +617,37 @@ void Gameplay::Update(float dt)
 
 	}
 
-	mPlayer->Update(dt);
-
+	//so i can loop and update the list
 	//mPlayer->SetCenter(mPlayer->Center() + 20 * mPlayer->mMoveSpeedScale * dt * moveVec);
-	cout << mPlayer->Center().y << endl;
-
-	mDrawnObjects.insert(make_pair((int)mPlayer->HitBoxTop(), mPlayer));
+	mPlayer->Update(dt);
+	mDrawnObjects.push_back(mPlayer);
 
 	for (auto& e : mEnemies) {
-		e->Update(dt);		
-		mDrawnObjects.insert(make_pair((int)e->HitBoxTop(), e));
+		e->Update(dt);
+		
+		
+
+		if (std::find(mDrawnObjects.begin(), mDrawnObjects.end(), e) != mDrawnObjects.end()) {}
+		else {
+			//only add the player if not added yet
+			//TODO: lets just add him on load instead?
+			mDrawnObjects.push_back(e);
+		}		 
+
 	}
-	 
-	
+
+
 	for (auto& n : mNPCs) {
-		n->Update(dt);
-		mDrawnObjects.insert(make_pair((int)n->HitBoxTop(), n));
-		cout << (int)n->Center().y << endl;
+		n->Update(dt);  
+
+		if (std::find(mDrawnObjects.begin(), mDrawnObjects.end(), n) != mDrawnObjects.end()) {}
+		else {
+			//only add the NPC if not added yet
+			//TODO: lets just add him when he is created? and remove when removed?
+			mDrawnObjects.push_back(n);
+		}
 	}
-	//mDrawnObjects.
+
 	//
 	// update missiles
 	//
@@ -677,7 +676,6 @@ void Gameplay::Update(float dt)
 			}
 		}
 
-		//Check for c
 		// remove missiles that leave world bounds or collide with stuff
 		if (m->Health() <= 0 || m->Bottom() < 0 || m->Top() > mWorldHeight || m->Right() < 0 || m->Left() > mWorldWidth) {
 			//delete *it;
@@ -752,18 +750,18 @@ void Gameplay::Update(float dt)
 		}
 	}
 
- 
+
 
 	for (auto it3 = mBoundaries.begin(); it3 != mBoundaries.end(); ++it3) {
 		Boundary* b = *it3;
-		CheckCollisionWithBoundary(b, mPlayer);		
+		CheckCollisionWithBoundary(b, mPlayer);
 	}
 
 	for (auto it3 = mNPCs.begin(); it3 != mNPCs.end(); ++it3) {
 		NPC* n = *it3;
 		CheckCollisionWithNPC(n, mPlayer);
 	}
-	
+
 
 	ClipToWorldBounds(mPlayer);
 	// ***************
@@ -816,10 +814,9 @@ void Gameplay::Update(float dt)
 
 	mIsActive = true;
 
-	//updateBackground
 	mCurrentBackground->AddTime(dt);
 
-	// update camera
+	// Update camera
 	mCamera->Update(dt);
 
 }
@@ -895,7 +892,7 @@ void Gameplay::Draw(float dt)
 	//	//convert y axis to a layer by multiplying its y value by 10! so objects closer to the screen will be drawn last
 	//	n->Layer() == ((int)n->Center().y) * 100;
 	//}
-	 
+
 	//std::vector<Entity*> x;
 	//int nextInteger = 0;
 
@@ -929,8 +926,8 @@ void Gameplay::Draw(float dt)
 	//	}
 	//	
 	//}
-	 
-	
+
+
 	////this is very slow! First place to turn when performance becomes an issue
 	//for (Entity* n : mDrawnObjects) {
 	//	//if (n->Layer() == 1) {
@@ -942,7 +939,7 @@ void Gameplay::Draw(float dt)
 	//	if (n->Layer() == 2) {
 	//		n->Draw(renderer, mCamera);
 	//}
-	//}
+	//}a
 
 	//for (Entity* n : mDrawnObjects) {
 	//	if (n->Layer() == 3) {
@@ -956,10 +953,10 @@ void Gameplay::Draw(float dt)
 	//	}
 	//}
 
-	map<int, Entity*>::iterator it;
-	for (it = mDrawnObjects.begin(); it != mDrawnObjects.end(); ++it) {
-		cout << it->first << endl;
-		it->second->Draw(renderer, mCamera);
+	std::sort(mDrawnObjects.begin(), mDrawnObjects.end(), &comp);
+  
+	for (auto& it : mDrawnObjects) {
+ 		it-> Draw(renderer, mCamera);
 	}
 
 	//for (auto& n : mNPCs) {
@@ -1075,18 +1072,20 @@ void Gameplay::OnKeyDown(const SDL_KeyboardEvent& kbe)
 
 			break;
 		case SDL_SCANCODE_SPACE:
+
 			//Action key!  Open chest / Talk to player
-			//
 			for (auto& n : mNPCs) {
-				Vec2 distDifference = mPlayer->Center() - n->Center();
+				
+				//changed check to see when to talk to NPC
+				//to an actionalable state on the entity as opposed to doin another
+				//check to proximity between sprites and directiion. this logic is now
+				//set during collision detection to save on processing. here we just check that state.
+				//might have to add a check in the future to see if were facing them too! check direction enum? is that on the entity?
 
-				//cout << n->mName << ": distDifference.x " << distDifference.x << endl;
-				//cout << n->mName << ": distDifference.y " << distDifference.y << endl;
-			
-				//
-
-				if (abs(distDifference.x) < 30 && abs(distDifference.y) < 30) {
+				//so we need to set a "talkable" state for an NPC.
+				if (n->mTalkable) {
 					mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, mGame->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), mGameRenderer, n->mDialogue, 5, mGame->mE, 2000, true));
+					break;
 				}
 			}
 
@@ -1192,7 +1191,7 @@ void Gameplay::OnMouseDown(const SDL_MouseButtonEvent& mbe)
 			//m->SetAngle(mPlayer->Angle());
 			//m->SetSpeed(200);   // pixels per second
 
-			 
+
 			//FOLLOWING CODE STARTS A FIREBALL ANIMATION :O
 
 			//mMissiles.push_back(m); 
@@ -1207,7 +1206,7 @@ void Gameplay::OnMouseDown(const SDL_MouseButtonEvent& mbe)
 			Animation* cast = new Animation(castTex, 1, 0.4, false);
 
 			mGame->mScriptProcessor.AddAction(new aAction_BigBang(mPlayer, targ, fireball, fireball2, chant, cast, mGameRenderer, mCamera, mSound));
-		 
+
 		}
 		else if (mbe.button == SDL_BUTTON_RIGHT) {
 			//create a box
@@ -1246,7 +1245,7 @@ void Gameplay::ClipToWorldBounds(Entity* ent)
 }
 
 
-void Gameplay::CheckCollisionWithBoundary(Boundary* b,Entity* e) {
+void Gameplay::CheckCollisionWithBoundary(Boundary* b, Entity* e) {
 
 	//check for collisions with boundaries
 	if (b->mBoundaryRect->x < e->HitBoxRight() &&
@@ -1332,20 +1331,20 @@ void Gameplay::CheckCollisionWithBoundary(Boundary* b,Entity* e) {
 
 
 //See if entities collide
+//!!the second entity passed in is the one whos previous position is changed!!
 void Gameplay::CheckCollisionWithNPC(Entity* n, Entity* e) {
 	//check for collisions with boundaries
 	// rectangle hit box collision detection
 	//if distance between is less than the
-	cout << "test" << endl;
- 	//Check collision with entities hitboxes, not their "texture radius" or sizes. 
+	//Check collision with entities hitboxes, not their "texture radius" or sizes. 
 	if (n->HitBoxLeft() < e->HitBoxRight() &&
 		n->HitBoxRight() > e->HitBoxLeft() &&
 		n->HitBoxTop() < e->HitBoxBottom() &&
 		n->HitBoxBottom() > e->HitBoxTop())
 	{
-		cout << "test2" << endl;
 		e->SetCenter(e->mPreviousPosition);
 
+ 		n->mActionable = true;
 		////if we are moving right, and the x is + 1 and the y is + 1. then only plus 1 
 		////this logic makes the player slide along boundaries instead of "sticking" to the boundaries:
 		//Vec2 distDifference = e->Center() - e->mPreviousPosition;
@@ -1374,10 +1373,10 @@ void Gameplay::CheckCollisionWithNPC(Entity* n, Entity* e) {
 	}
 
 	else {
-		//e->SetCenter(e->mPreviousPosition);
+		n->mActionable = false;
 	}
 }
- 
+
 list<Entity*> Gameplay::MergeLists(list<Entity*> l1, list<Entity*> l2) {
 
 	//create a new list pointer

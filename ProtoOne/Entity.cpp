@@ -11,6 +11,7 @@ Entity::Entity(SDL_Texture* tex)
     , mHealth(100)
     , mRefCount(0)
 	, mLayer(1)
+	, mActionable(false)
 	
 {
 	mColorChange = new ColorChange(tex, 255);
@@ -35,6 +36,7 @@ Entity::Entity(SDL_Texture* tex, int numCells, float duration, bool loopable)
 	, mHealth(100)
 	, mRefCount(0)
 	, mLayer(1)
+	, mActionable(false)
 {
 	mColorChange = new ColorChange(tex, 0);
 	SDL_QueryTexture(tex, NULL, NULL, &mTexWidth, &mTexHeight);
@@ -65,6 +67,7 @@ Entity::Entity(SDL_Texture* tex, int numCells, float duration, bool loopable, in
 	, mHealth(100)
 	, mRefCount(0)
 	, mLayer(1)
+	, mActionable(false)
 {
 	mColorChange = new ColorChange(tex, 0);
 	SDL_QueryTexture(tex, NULL, NULL, &mTexWidth, &mTexHeight);

@@ -34,6 +34,8 @@ public:
 	SDL_Rect*				mHitbox;
 
 	bool					mInCutscene;
+	bool					mActionable;
+
 	Vec2					mVelocity;
 	Vec2					mPreviousPosition;
 	//forward declaring class Animation to prevent circular dependency.

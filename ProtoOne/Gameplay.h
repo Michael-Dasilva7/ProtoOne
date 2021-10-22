@@ -38,7 +38,9 @@ public: // <-- HACK
     std::list<Effect*>  mEffects;       // temporary animated effects like explosions
 
 	//used to keep trace of global objects, and looped through to draw layers. when adding a new object, ADD TO THIS.
-	std::map<int, Entity*>  mDrawnObjects;
+	//std::map<Entity*, int>  mDrawnObjects;
+	std::vector<Entity*> mDrawnObjects;
+ 
 
     SDL_Texture*        mPlayerTex;
     SDL_Texture*        mShotTex;

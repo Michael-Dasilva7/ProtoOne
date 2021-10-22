@@ -44,6 +44,8 @@ public:
 
 	std::string					mDialogue;
 	std::string					mName;
+
+	bool						mTalkable;
 };
 
 #endif
