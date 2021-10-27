@@ -7,6 +7,7 @@ c:\protoone\protoone\debug\layermanager.obj
 c:\protoone\protoone\debug\layer.obj
 c:\protoone\protoone\debug\grasslandsgameplay.obj
 c:\protoone\protoone\debug\globalsarebad.obj
+c:\protoone\protoone\debug\gameplay.obj
 c:\protoone\protoone\debug\gameevents.obj
 c:\protoone\protoone\debug\game.obj
 c:\protoone\protoone\debug\effect.obj
@@ -31,10 +32,16 @@ c:\protoone\protoone\debug\playerconstants.obj
 c:\protoone\protoone\debug\main.obj
 c:\protoone\protoone\debug\player.obj
 c:\protoone\protoone\debug\npc.obj
-c:\protoone\protoone\debug\gameplay.obj
 c:\protoone\protoone\debug\protoone.exe
 c:\protoone\protoone\debug\protoone.ilk
 c:\protoone\protoone\debug\protoone.pdb
+c:\protoone\protoone\debug\enemy.obj.enc
+c:\protoone\protoone\debug\game.obj.enc
+c:\protoone\protoone\debug\gameevents.obj.enc
+c:\protoone\protoone\debug\gameplay.obj.enc
+c:\protoone\protoone\debug\grasslandsgameplay.obj.enc
+c:\protoone\protoone\debug\main.obj.enc
+c:\protoone\protoone\debug\player.obj.enc
 c:\protoone\protoone\debug\protoone.tlog\cl.command.1.tlog
 c:\protoone\protoone\debug\protoone.tlog\cl.read.1.tlog
 c:\protoone\protoone\debug\protoone.tlog\cl.write.1.tlog

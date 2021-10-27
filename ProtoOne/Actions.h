@@ -31,7 +31,7 @@ class aScriptProcessor
 {
 public:
 
-	bool userControlEnabled = false;
+	bool userControlEnabled;
 
 	bool drawGame = true;
 
@@ -339,7 +339,6 @@ public:
 		SDL_Event e,
 		unsigned short int delayToProgressDialogueMilliseconds = 0,//optional
 		bool forceSkipDialogueProgression = false //optional
-
 	);
 
 	void Update(float elapsedTime) override;

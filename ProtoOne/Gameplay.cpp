@@ -58,11 +58,7 @@ void Gameplay::Initialize()
 	//****************************************
 	//*********   Initial Background  ********
 	//****************************************
-	mBgTexBack = ResourceManager::Acquire("media/background/SnowCliff_Back.png", renderer);
-	mBgTexFront = ResourceManager::Acquire("media/background/SnowCliff_Front.png", renderer);
 
-	mNarsheBackground = ResourceManager::Acquire("media/background/SnowCliff_Back.png", renderer);
-	mNarsheForeground = ResourceManager::Acquire("media/background/SnowCliff_Front.png", renderer);
 	mDesertBackground = ResourceManager::Acquire("media/background/desert/desertX4.png", renderer);
 	//mCurrentBackground = ResourceManager::Acquire("media/background/desert/figaroCastleX4.png", renderer);
 
@@ -83,8 +79,6 @@ void Gameplay::Shutdown()
 
 	SDL_DestroyTexture(mPlayerTex);
 	SDL_DestroyTexture(mShotTex);
-	SDL_DestroyTexture(mNarsheForeground);
-	SDL_DestroyTexture(mNarsheBackground);
 	SDL_DestroyTexture(mEnemyTex);
 	SDL_DestroyTexture(mExplosionTex);
 	SDL_DestroyTexture(mTextBoxFF6);
@@ -93,7 +87,6 @@ void Gameplay::Shutdown()
 	SDL_DestroyTexture(mExplosionTex);
 	SDL_DestroyTexture(mTextImage);
 	SDL_DestroyTexture(Text);
-
 
 }
 
@@ -540,33 +533,8 @@ void Gameplay::Update(float dt)
 	mAngle = Rad2Deg(angle);
 	*/
 
-	if (mScriptProcessor_CharacterMovements.userControlEnabled && mGame->mScriptProcessor.userControlEnabled) {
 
-		//priority order: u,left,right,down
-		if (mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_W)) {
-			//SET IDLE LEFT TEXTURE so we dont have a frozen run animation, and it looks ok when we stop walking/running			
-			mPlayer->mVelocity.y = 0;
-			mGameplayKeyboardHandler.setIdleKeyState(SDL_SCANCODE_W);
-		}
-		else if (mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_A)) {
-			//SET IDLE LEFT TEXTURE so we dont have a frozen run animation, and it looks ok when we stop walking/running
-			//we want to swap between current chars with "R". so 						
-			//load texture returns a pointer...so what, were gonna have a pointer to a pointer? hmm probably a better way.			
-			mPlayer->mVelocity.x = 0;
-			mGameplayKeyboardHandler.setIdleKeyState(SDL_SCANCODE_A);
-		}
-		else if (mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_S)) {
-			//SET IDLE LEFT TEXTURE so we dont have a frozen run animation, and it looks ok when we stop walking/running			
-			//mPlayer->moveDown(moveVec, dt, false);
-			mPlayer->mVelocity.y = 0;
-			mGameplayKeyboardHandler.setIdleKeyState(SDL_SCANCODE_S);
-		}
-		else if (mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_D)) {
-			//SET IDLE LEFT TEXTURE so we dont have a frozen run animation, and it looks ok when we stop walking/running			
-			//mPlayer->moveRight(moveVec, dt, false);
-			mPlayer->mVelocity.x = 0;
-			mGameplayKeyboardHandler.setIdleKeyState(SDL_SCANCODE_D);
-		}
+	if (mScriptProcessor_CharacterMovements.userControlEnabled && mGame->mScriptProcessor.userControlEnabled) {
 
 		if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_W)) {
 			mPlayer->mVelocity.y = -2;
@@ -610,9 +578,35 @@ void Gameplay::Update(float dt)
 		}
 
 		if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_SPACE)) {
+		
 			int width = mGame->GetScreenWidth();
 			int height = mGame->GetScreenHeight();
 			mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_SPACE);
+		}
+		//priority order: u,left,right,down
+		if (mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_W)) {
+			//SET IDLE LEFT TEXTURE so we dont have a frozen run animation, and it looks ok when we stop walking/running			
+			mPlayer->mVelocity.y = 0;
+			mGameplayKeyboardHandler.setIdleKeyState(SDL_SCANCODE_W);
+		}
+		if (mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_A)) {
+			//SET IDLE LEFT TEXTURE so we dont have a frozen run animation, and it looks ok when we stop walking/running
+			//we want to swap between current chars with "R". so 						
+			//load texture returns a pointer...so what, were gonna have a pointer to a pointer? hmm probably a better way.			
+			mPlayer->mVelocity.x = 0;
+			mGameplayKeyboardHandler.setIdleKeyState(SDL_SCANCODE_A);
+		}
+		if (mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_S)) {
+			//SET IDLE LEFT TEXTURE so we dont have a frozen run animation, and it looks ok when we stop walking/running			
+			//mPlayer->moveDown(moveVec, dt, false);
+			mPlayer->mVelocity.y = 0;
+			mGameplayKeyboardHandler.setIdleKeyState(SDL_SCANCODE_S);
+		}
+		if (mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_D)) {
+			//SET IDLE LEFT TEXTURE so we dont have a frozen run animation, and it looks ok when we stop walking/running			
+			//mPlayer->moveRight(moveVec, dt, false);
+			mPlayer->mVelocity.x = 0;
+			mGameplayKeyboardHandler.setIdleKeyState(SDL_SCANCODE_D);
 		}
 
 	}
@@ -624,21 +618,19 @@ void Gameplay::Update(float dt)
 
 	for (auto& e : mEnemies) {
 		e->Update(dt);
-		
-		
 
 		if (std::find(mDrawnObjects.begin(), mDrawnObjects.end(), e) != mDrawnObjects.end()) {}
 		else {
 			//only add the player if not added yet
 			//TODO: lets just add him on load instead?
 			mDrawnObjects.push_back(e);
-		}		 
+		}
 
 	}
 
 
 	for (auto& n : mNPCs) {
-		n->Update(dt);  
+		n->Update(dt);
 
 		if (std::find(mDrawnObjects.begin(), mDrawnObjects.end(), n) != mDrawnObjects.end()) {}
 		else {
@@ -954,9 +946,9 @@ void Gameplay::Draw(float dt)
 	//}
 
 	std::sort(mDrawnObjects.begin(), mDrawnObjects.end(), &comp);
-  
+
 	for (auto& it : mDrawnObjects) {
- 		it-> Draw(renderer, mCamera);
+		it->Draw(renderer, mCamera);
 	}
 
 	//for (auto& n : mNPCs) {
@@ -1075,7 +1067,7 @@ void Gameplay::OnKeyDown(const SDL_KeyboardEvent& kbe)
 
 			//Action key!  Open chest / Talk to player
 			for (auto& n : mNPCs) {
-				
+
 				//changed check to see when to talk to NPC
 				//to an actionalable state on the entity as opposed to doin another
 				//check to proximity between sprites and directiion. this logic is now
@@ -1083,8 +1075,21 @@ void Gameplay::OnKeyDown(const SDL_KeyboardEvent& kbe)
 				//might have to add a check in the future to see if were facing them too! check direction enum? is that on the entity?
 
 				//so we need to set a "talkable" state for an NPC.
-				if (n->mTalkable) {
-					mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, mGame->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), mGameRenderer, n->mDialogue, 5, mGame->mE, 2000, true));
+				if (n->mActionable) {
+					
+					// revert player to idle
+					mPlayer->mVelocity.y = 0;
+					mPlayer->mVelocity.x = 0;
+					// clear pressed and released keys
+					mGameplayKeyboardHandler.clearButtons();
+					// flush all current events (i.e. mouse and keyboard clicks)
+					SDL_FlushEvents;
+
+					mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, mGame->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), mGameRenderer, n->mDialogue, 5, mGame->mE));					
+
+					
+					//mGame->ProcessEvents();
+				 
 					break;
 				}
 			}
@@ -1344,11 +1349,12 @@ void Gameplay::CheckCollisionWithNPC(Entity* n, Entity* e) {
 	{
 		e->SetCenter(e->mPreviousPosition);
 
- 		n->mActionable = true;
-		////if we are moving right, and the x is + 1 and the y is + 1. then only plus 1 
-		////this logic makes the player slide along boundaries instead of "sticking" to the boundaries:
-		//Vec2 distDifference = e->Center() - e->mPreviousPosition;
+		n->mActionable = true;
 
+		
+		//ALTERNATIVE LOGIC TO LOOK AT DISTANCE BETWEEN OBJECTS FOR HIT DETECTION
+
+		//Vec2 distDifference = e->Center() - e->mPreviousPosition;
 		//bool collision = false;
 		////heading right an down
 		//if (distDifference.x > 0.0f && distDifference.y > 0.0f) {
@@ -1366,12 +1372,18 @@ void Gameplay::CheckCollisionWithNPC(Entity* n, Entity* e) {
 		//else if (distDifference.x < 0.0f && distDifference.y < 0.0f) {
 		//	collision = true;
 		//}		
-
 		//if (collision == true) {
 		//	
 		//}
 	}
-
+	else if (n->HitBoxLeft()- 5 < e->HitBoxRight() &&
+		n->HitBoxRight() + 5 > e->HitBoxLeft() &&
+		n->HitBoxTop() - 5 < e->HitBoxBottom() &&
+		n->HitBoxBottom() + 5 > e->HitBoxTop()) 
+	{
+		//TODO: Also need to take into account direction and that we are FACING the NPC. then we can have the NPC to turn to the player on action(we can set action for both entities perhaps)
+		n->mActionable = true;
+	}
 	else {
 		n->mActionable = false;
 	}

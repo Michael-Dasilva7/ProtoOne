@@ -23,7 +23,7 @@
 #include <map>
 class Texture;
 //class ResourceManager;
-
+//implements playerstate
 class Gameplay : public GameState
 {
 public: // <-- HACK
@@ -55,9 +55,7 @@ public: // <-- HACK
 	Animation*			mMidBackground;
 
 	SDL_Texture*        mBgTexFront;
-	SDL_Texture*        mBgTexBack;
-	SDL_Texture*        mNarsheBackground;
-	SDL_Texture*        mNarsheForeground;
+	SDL_Texture*        mBgTexBack; 
 	SDL_Texture*        mDesertBackground;	
 	//___________ END BACKGROUNDS __________
 

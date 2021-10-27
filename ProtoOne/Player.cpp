@@ -59,7 +59,11 @@ void Player::Update(float dt)
 
 		if (abs(mVelocity.x) == 2 * PlayerConstants::RUN_SPEED_MODIFYER) this->SetState(RUNNING);
 		else if (abs(mVelocity.y) == 2 * PlayerConstants::RUN_SPEED_MODIFYER) this->SetState(RUNNING);
-		else this->SetState(WALKING);
+		
+		else if (abs(mVelocity.x) == PlayerConstants::WALK_SPEED_MODIFYER) this->SetState(WALKING);
+		else if (abs(mVelocity.y) == PlayerConstants::WALK_SPEED_MODIFYER) this->SetState(WALKING);
+
+		else this->SetState(STANDING);
 
 		if (mVelocity.x == 0.0f && mVelocity.y == 0.0f) this->SetState(STANDING);
 
@@ -82,7 +86,7 @@ void Player::Update(float dt)
 		if (mCurrentState == RUNNING) {
 			if (mRunUpTexture != nullptr) {
 				//mMoveSpeedScale = PlayerConstants::RUN_SPEED_MODIFYER;
-				//TODO: create asset constant files with actual values(i.e.
+				//TODO: create asset constant files with actual values
 				// 1.  Duration of Animation from start to finish in seconds
 				// 2.  isLoopable; Do we loop the animation or stop after one?
 				// 3.  isFlipped;  Do we flip the animation/texture?)

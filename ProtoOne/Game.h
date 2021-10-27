@@ -24,7 +24,6 @@ class Game
     MainMenu*           mMainMenuState;
     GameState*          mCurrentState;
 
-	LayerManager*       mLayerManager;
 	Sound*				mSound;
 
 public:
@@ -54,11 +53,13 @@ public:
 	aScriptProcessor    mScriptProcessor;
 
 	bool				mDebugMode;
+
+	void				ProcessEvents();
+
 private:
 	bool				Initialize();
 	void				Shutdown();
 
-	void				ProcessEvents();
 
 	void				OnQuit();
 

@@ -36,7 +36,7 @@ bool Game::Run()
         Uint32 ticks = SDL_GetTicks();
 
         float dt = 0.001f * (ticks - prevTicks);    // delta time (in seconds)        
-
+		
 		if(mScriptProcessor.userControlEnabled) {
 			ProcessEvents();
 		}

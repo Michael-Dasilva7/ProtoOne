@@ -10,7 +10,7 @@
 #include "SoundConstants.h"
 
 aScriptProcessor::aScriptProcessor() {
-	userControlEnabled = true;
+	//userControlEnabled = true;
 }
 
 void aScriptProcessor::AddAction(Action *action) {
@@ -22,20 +22,15 @@ void aScriptProcessor::ProcessActions(float fElapsedTime) {
 	//if (m_listActions.empty()) {
 	//	userControlEnabled = true;
 	//}
-	userControlEnabled = m_listActions.empty();
+	userControlEnabled = m_listActions.empty() && m_currentlyRunningActions.empty();
 
 	//if the action isnt done, start or update..
 	//so the problem is, we want to run more than one action at a time. soooooooooooo..... option time! :
-		//option 1: have an option and timeline to start the next action early? if a certain time has passed, start the next...could get tricky with multiple overlapping.
-		//option 2: make it a priority queue? instead of looking only at front, go through the list, and look at each one in priority order.  <-- BEST OPTION but couldget tricky if
-
+		//option 1: have an option and timeline to start the next action early? i.e. if a certain time has passed, start the next...could get tricky with multiple overlapping.
+		//option 2: make it a priority queue? instead of looking only at front, go through the list, and look at each one in priority order.  <-- BEST OPTION..think of more options...
 
 	//instead of looking just at the front, look at the front two, IF the current action says, "run next action"
 	//  question: what if we want more than one action ahead, will it keep looking? sounds like a recursive problem.
-
-	//whats the problem? running multiple actions at once:
-			//instead of update front....lets look at 
-
 
 	if (!m_currentlyRunningActions.empty())
 	{
@@ -48,12 +43,11 @@ void aScriptProcessor::ProcessActions(float fElapsedTime) {
 				}
 				else {
 					(*it)->Update(fElapsedTime);
-
 				}
 				++it;
 			}
-			else { 
-				it = m_currentlyRunningActions.erase(it);	 
+			else {
+				it = m_currentlyRunningActions.erase(it);
 			}
 		}
 
@@ -62,12 +56,11 @@ void aScriptProcessor::ProcessActions(float fElapsedTime) {
 		//check next action
 		if (!m_listActions.empty()) {
 			m_currentlyRunningActions.push_back(m_listActions.front());
-			
+
 			//will need to change this if we allow for more than 2 currently running actions
 			if (m_currentlyRunningActions.back()->startNextAction) {
 				m_listActions.pop_front();
 				m_currentlyRunningActions.push_back(m_listActions.front());
-				
 			}
 			else
 			{
@@ -173,11 +166,6 @@ void aAction_ChangeAnimation::Update(float dt) {
 !!!SPRITE MOVEMENT FOR CUTSCENE!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 */
-//int *ptr[MAX];
-//
-//for (int i = 0; i < MAX; i++) {
-//	ptr[i] = &var[i]; // assign the address of integer.
-//}
 aAction_MoveTo::aAction_MoveTo(Entity* object, Vec2 end, float duration, bool endCutscene, bool animate) {
 	mAnimate = animate;
 	mMoveableObject = object;
@@ -289,14 +277,8 @@ aAction_FadeIn::aAction_FadeIn(int w, int h, float duration, SDL_Renderer* rende
 	mTO = toOpacity;
 
 	mDuration = duration;
-	//mDecrementer = 1000 / duration;
 	mRenderer = renderer;
 	mTimeSoFar = 0.0f;
-	//mOpacity = 255;
-	//mFadeRect.x = 0;
-	//mFadeRect.y = 0;
-	//mFadeRect.w = mW;
-	//mFadeRect.h = mH;
 
 }
 
@@ -389,7 +371,7 @@ void aAction_Delay::Restart() {
 /*
 1. Must specify the same # of movements in "panCameraFrom" and "panCameraTo"
 **************START WARNING******************
-2. if specifying multiple camera pan movements, need to specific "true" as the lastCameraMovement parameter 
+2. if specifying multiple camera pan movements, need to specific "true" as the lastCameraMovement parameter
    or the camera will not look at the user after the pan is complete
 ************** END  WARNING******************
 */
@@ -588,7 +570,7 @@ void aAction_Dialogue::Update(float elapsedTime) {
 		//if its past width, start new line
 		//if its not, draw it. so i can draw as is, line by line but instead i can see if instead th
 
-		//mWordTokens
+//mWordTokens
 
 
 		int v = (int)mWrittenDialogue[x];
@@ -656,6 +638,7 @@ void aAction_Dialogue::Update(float elapsedTime) {
 			}
 		}
 	}
+
 	//we draw the text above, so set line number to 0 for the next Action call to this Update function.
 	mLineNumber = 0;
 	if (!mTextDelayForNextCharacter->isDone) {
@@ -668,38 +651,35 @@ void aAction_Dialogue::Update(float elapsedTime) {
 		// which is AFTER 4 lines have been drawn. if this occurs then we have a full text box, and i want to:
 
 		//1. first we need a linenumber that will increment when a new line is created
-
 		//2. then we need to check if its divisible by 4 OR, if we are at the end of the written dialogue:
-				//****************************************************************************************** 
-// if divisible by 4 and not end of dialogue, we are DONE when the user hits enter
+		
+			//****************************************************************************************** 
+			// if divisible by 4 and not end of dialogue, we are DONE when the user hits enter
 
-// if we are divisible by 4 and not end of dialogue, 
+			// if we are divisible by 4 and not end of dialogue, 
 
-// if we are not dibislbe by 4 and not end of idalogue, keep going
+			// if we are not dibislbe by 4 and not end of idalogue, keep going
 
-// if we are not dibible by 4 any at end of dialogue, poll for user input and done when enter
- //****************************************************************************************** 
+			// if we are not dibible by 4 any at end of dialogue, poll for user input and done when enter
+			//****************************************************************************************** 
 
-//3. set the next start/end loop accordinly based on the next section of text
+		//3. set the next start/end loop accordinly based on the next section of text
 
-//if the next character is past the dialogue text passed into the action, poll for "is done" button
+		//if the next character is past the dialogue text passed into the action, poll for "is done" button
 		if (mCurrentDialogueCharacter + 1 > mWrittenDialogue.length()) {
+
 			//We are now at the end of the provided dialogue
 			//make the polling logic a reusuable method:
 			//The below buttons are valid "progression" confirmation buttons
-
-			SDL_PollEvent(&mE);
-
-			if (mE.type == SDL_KEYDOWN) {
-				if (mE.key.keysym.scancode == SDL_SCANCODE_RETURN) {
-					mCheckForProgressDelay = true;
-					//e.key.keysym.scancode = NULL;
-					SDL_FlushEvent(mE.type);
-				}
+			if (SDL_PollEvent(&mE) == 1) {
+				//mCheckForProgressDelay = true;
+				isDone = true;
 			}
 			else if (mForceSkipDialogueProgression) {
-				mCheckForProgressDelay = true;
+				//mCheckForProgressDelay = true;
+				isDone = true;
 			}
+
 		}
 
 		else {
