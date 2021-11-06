@@ -31,6 +31,22 @@ void aScriptProcessor::ProcessActions(float fElapsedTime) {
 
 	//instead of looking just at the front, look at the front two, IF the current action says, "run next action"
 	//  question: what if we want more than one action ahead, will it keep looking? sounds like a recursive problem.
+	
+	//check next action
+	if (!m_listActions.empty()) {
+		m_currentlyRunningActions.push_back(m_listActions.front());
+
+		//will need to change this if we allow for more than 2 currently running actions
+		if (m_currentlyRunningActions.back()->startNextAction) {
+			m_listActions.pop_front();
+			m_currentlyRunningActions.push_back(m_listActions.front());
+		}
+		else
+		{
+			m_listActions.pop_front();
+		}
+
+	}
 
 	if (!m_currentlyRunningActions.empty())
 	{
@@ -52,23 +68,7 @@ void aScriptProcessor::ProcessActions(float fElapsedTime) {
 		}
 
 	}
-	else {
-		//check next action
-		if (!m_listActions.empty()) {
-			m_currentlyRunningActions.push_back(m_listActions.front());
 
-			//will need to change this if we allow for more than 2 currently running actions
-			if (m_currentlyRunningActions.back()->startNextAction) {
-				m_listActions.pop_front();
-				m_currentlyRunningActions.push_back(m_listActions.front());
-			}
-			else
-			{
-				m_listActions.pop_front();
-			}
-
-		}
-	}
 
 }
 
@@ -279,6 +279,10 @@ aAction_FadeIn::aAction_FadeIn(int w, int h, float duration, SDL_Renderer* rende
 	mDuration = duration;
 	mRenderer = renderer;
 	mTimeSoFar = 0.0f;
+	mFadeRect.x = 0;
+	mFadeRect.y = 0;
+	mFadeRect.w = mW;
+	mFadeRect.h = mH;
 
 }
 
@@ -288,6 +292,15 @@ void aAction_FadeIn::Start() {
 	mFadeRect.y = 0;
 	mFadeRect.w = mW;
 	mFadeRect.h = mH;
+ 
+	SDL_Rect mFadeRect;
+	mFadeRect.x = 0;
+	mFadeRect.y = 0;
+	mFadeRect.w = 5000;
+	mFadeRect.h = 5000;
+	SDL_SetRenderDrawBlendMode(mRenderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
+	SDL_RenderFillRect(mRenderer, &mFadeRect);
 }
 
 void aAction_FadeIn::Update(float fElapsedTime) {
@@ -652,7 +665,7 @@ void aAction_Dialogue::Update(float elapsedTime) {
 
 		//1. first we need a linenumber that will increment when a new line is created
 		//2. then we need to check if its divisible by 4 OR, if we are at the end of the written dialogue:
-		
+
 			//****************************************************************************************** 
 			// if divisible by 4 and not end of dialogue, we are DONE when the user hits enter
 
@@ -671,17 +684,23 @@ void aAction_Dialogue::Update(float elapsedTime) {
 			//We are now at the end of the provided dialogue
 			//make the polling logic a reusuable method:
 			//The below buttons are valid "progression" confirmation buttons
-			if (SDL_PollEvent(&mE) == 1) {
-				//mCheckForProgressDelay = true;
-				isDone = true;
+			while (SDL_PollEvent(&mE)) {
+				switch (mE.type) {
+				case SDL_KEYDOWN:
+					if (mE.key.keysym.scancode == SDL_SCANCODE_SPACE) {
+						isDone = true;
+					}
+					break;
+				default:
+					break;
+				}
 			}
-			else if (mForceSkipDialogueProgression) {
-				//mCheckForProgressDelay = true;
-				isDone = true;
-			}
-
 		}
 
+		else if (mForceSkipDialogueProgression) {
+			//mCheckForProgressDelay = true;
+			isDone = true;
+		}
 		else {
 			mCurrentDialogueCharacter += 1;
 			mTextDelayForNextCharacter->Restart();

@@ -42,7 +42,7 @@ bool Game::Run()
 		}
 
 		Update(dt);
-
+		
 		Draw(dt);	
 
 		mScriptProcessor.ProcessActions(dt);

@@ -10,15 +10,14 @@ c:\protoone\protoone\boundary.h(39): warning C4244: 'argument': conversion from 
 c:\protoone\protoone\gameplay.cpp(118): warning C4305: 'argument': truncation from 'double' to 'float'
 c:\protoone\protoone\gameplay.cpp(123): warning C4305: 'argument': truncation from 'double' to 'float'
 c:\protoone\protoone\gameplay.cpp(228): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(252): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(347): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\protoone\protoone\gameplay.cpp(422): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(423): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(1086): warning C4551: function call missing argument list
-c:\protoone\protoone\gameplay.cpp(1088): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(1205): warning C4244: 'argument': conversion from 'const Sint32' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(1209): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\protoone\protoone\gameplay.cpp(1211): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\protoone\protoone\gameplay.cpp(1228): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\protoone\protoone\gameplay.cpp(1229): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\gameplay.cpp(349): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\protoone\protoone\gameplay.cpp(434): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(435): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(1092): warning C4551: function call missing argument list
+c:\protoone\protoone\gameplay.cpp(1094): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(1211): warning C4244: 'argument': conversion from 'const Sint32' to 'float', possible loss of data
+c:\protoone\protoone\gameplay.cpp(1215): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\protoone\protoone\gameplay.cpp(1217): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\protoone\protoone\gameplay.cpp(1234): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\protoone\protoone\gameplay.cpp(1235): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
   ProtoOne.vcxproj -> C:\ProtoOne\ProtoOne\Debug\ProtoOne.exe

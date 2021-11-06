@@ -247,6 +247,8 @@ void Gameplay::LoadLevel()
 	//e->SetState(ENEMY_HOVER);
 	//e->SetSpeedScale(0);
 
+	//uncomment the following code to put in lots of drags in wander mode :)
+	/*
 	for (int i = 0; i < 50; i++) {
 		Enemy* greenDragon = new Enemy(ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer), 3, 0.5, true);
 		greenDragon->SetCenter(rand() % mWorldWidth, rand() % mWorldHeight);
@@ -260,9 +262,9 @@ void Gameplay::LoadLevel()
 		greenDragon->mRunRightTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
 		mEnemies.push_back(greenDragon);
 	}
-
-	Vec2 guardOneStartingPos(playerStartingPos.x - 50, playerStartingPos.y - 500);
-	Vec2 guardTwoStartingPos(playerStartingPos.x + 50, playerStartingPos.y - 500);
+	*/
+	Vec2 guardOneStartingPos(playerStartingPos.x - 500, playerStartingPos.y - 1500);
+	Vec2 guardTwoStartingPos(playerStartingPos.x + 500, playerStartingPos.y - 1500);
 
 	NPC* guardOne = new NPC(ResourceManager::Acquire("./media/characters/zozma/walkdown.png", renderer), 4, 1.2f, true, 50, 50);
 	guardOne->SetCenter(guardOneStartingPos);
@@ -276,8 +278,8 @@ void Gameplay::LoadLevel()
 	guardOne->SetCenter(guardOneStartingPos.x, guardOneStartingPos.y);
 	guardTwo->SetCenter(guardTwoStartingPos.x, guardTwoStartingPos.y);
 
-	guardOne->mDialogue = "Hi! I'm Guard One. Pleasure is mine!";
-	guardTwo->mDialogue = "Guard two reporting for duty, SIR!!";
+	guardOne->mDialogue = "Hi! I'm Guard One... its fkin cold up here! ......and I really could use a spliff.";
+	guardTwo->mDialogue = "Hey Andrew... isn't this kickstarter starting to look nice? What would you add to this?";
 
 	mNPCs.push_back(guardOne);
 	mNPCs.push_back(guardTwo);
@@ -345,26 +347,40 @@ void Gameplay::LoadLevel()
 	int screenWidth = game->GetScreenWidth();
 
 	Animation* nextBackground = new Animation(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), 3, 0.2, true, SDL_FLIP_NONE, true);
+	 
+	
+	mPlayer->SetCenter(playerStartingPos.x, playerStartingPos.y);//minus player height
 
-	//mGame->mScriptProcessor.AddAction(new aAction_ChangeBackground(mCurrentBackground, nextBackground));
-	//Game->mScriptProcessor.AddAction(new aAction_FadeIn(screenWidth, screenHeight, 3, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 255, 255));
+	aAction_FadeIn* fadeIn = new aAction_FadeIn(screenWidth, screenHeight, 5, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 255, 10);
+	fadeIn->startNextAction = true;
+	mGame->mScriptProcessor.AddAction(fadeIn); 
+
+	aAction_PanCamera* a = new aAction_PanCamera({ 1000, 0 }, { 1000, 500}, mCamera, 10.0f, false, false);
+	mGame->mScriptProcessor.AddAction(a);
+
+	//aAction_FadeIn* fadeOut = new aAction_FadeIn(screenWidth, screenHeight, 5, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 0, 255);
+	////fadeOut->startNextAction = true;
+	//mGame->mScriptProcessor.AddAction(fadeOut);
+
+	//aAction_Dialogue* d1 =  new aAction_Dialogue(0, 0, mGame->GetScreenWidth(), 10, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), mGameRenderer, "this is story", 5, mGame->mE,5000,true);
+	//d1->startNextAction = true;
+	//mGame->mScriptProcessor.AddAction(d1);
+
+	//aAction_PanCamera* p2 = new aAction_PanCamera( { mPlayer->Center().x, mPlayer->Center().x } ,{ 0, 0 }  , mCamera, 6.0f,true);
+	//mGame->mScriptProcessor.AddAction(p2);
+
 	/*
 	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1900 }, { 1800,1900 }, mCamera, 5.0f));
 	mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1800,1900 }, { 1800,2800 }, mCamera, 5.0f, true));*/
 
 	//pan the camera from right side of the screen to the left
-
 	//walk the character there as well
 	//mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ screenWidth,1200 }, { 1200,1200 }, mCamera, 5.0f));
-
-	// 
 	//aAction_FadeIn* fadeIn2 = new aAction_FadeIn(screenWidth, screenHeight, 3, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 0, 255);
 	//aAction_FadeIn* fadeOut2 = new aAction_FadeIn(screenWidth, screenHeight, 3, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 255, 0);
-	//
 	////fade to black then go back to the previous
 	//aAction_ChangeBackground* bkgd2 = new aAction_ChangeBackground(mCurrentBackground, nextBackground, &mWorldWidth, &mWorldHeight, mCamera);
 	//mGame->mScriptProcessor.AddAction(new aAction_ChangeLevel(fadeOut2, fadeIn2, bkgd2));
-
 	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, {x, y - 500}, 2.0f, true));
 	//x = x - 500;
 	bool mShowIntro = false;
@@ -395,10 +411,6 @@ void Gameplay::LoadLevel()
 		//a->startNextAction = true;
 		mScriptProcessor_CharacterMovements.AddAction(a);
 
-		//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { x + 600, y }, 2.0f));
-		//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { x, y - 600 }, 3.0f));
-		//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { x - 600, y }, 3.0f, true));
-		//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { x - 600, y }, 3.0f));
 
 		mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 2200,1200 }, { 1200,1200 }, mCamera, 5.0f));
 		mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1200 }, { 1200,1900 }, mCamera, 5.0f));
@@ -471,15 +483,13 @@ void Gameplay::LoadLevel()
 
 		//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 2.5f));
 		//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, Vec2(0, newplayerY), 6.0f));
-
-		//MUSIC!
-		mSound->playMusicFadeIn(SoundConstants::M_MP3_SUNCITY, -1, 1000);
+ 
 
 	}//end show intro
 
 
 	//MUSIC
-	mSound->playMusicFadeIn(SoundConstants::M_MP3_SUNCITY, -1, 1000);
+	mSound->playMusicFadeIn(SoundConstants::M_MP3_MOONLIT_CITY, -1, 1000);
 
 	// make camera follow the player
 	mCamera->SetTarget(mPlayer);
@@ -627,7 +637,6 @@ void Gameplay::Update(float dt)
 		}
 
 	}
-
 
 	for (auto& n : mNPCs) {
 		n->Update(dt);
@@ -951,11 +960,6 @@ void Gameplay::Draw(float dt)
 		it->Draw(renderer, mCamera);
 	}
 
-	//for (auto& n : mNPCs) {
-	//	n->Draw(renderer, mCamera);
-	//}
-
-	//mPlayer->Draw(renderer, mCamera);
 	for (auto& e : mEffects) {
 		e->Draw(renderer, mCamera);
 	}
@@ -1014,9 +1018,11 @@ void Gameplay::Draw(float dt)
 	mScriptProcessor_CharacterMovements.ProcessActions(dt);
 
 	//Layer 5 (Effects)
-	//mCamera->LookAt(mPlayer->Center());
+	mCamera->LookAt(mPlayer->Center());
 
 	mScriptProcessor_Effects.ProcessActions(dt);
+
+	
 }
 
 void Gameplay::OnKeyDown(const SDL_KeyboardEvent& kbe)
