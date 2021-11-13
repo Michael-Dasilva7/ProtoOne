@@ -1,25 +1,2 @@
-﻿  Gameplay.cpp
-c:\protoone\protoone\entity.h(63): warning C4244: 'return': conversion from 'const int' to 'float', possible loss of data
-c:\protoone\protoone\entity.h(64): warning C4244: 'return': conversion from 'const int' to 'float', possible loss of data
-c:\protoone\protoone\camera.h(121): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\camera.h(122): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\actions.h(284): warning C4200: nonstandard extension used: zero-sized array in struct/union
-  c:\protoone\protoone\actions.h(284): note: This member will be ignored by a defaulted constructor or copy/move assignment operator
-c:\protoone\protoone\boundary.h(38): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\boundary.h(39): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(118): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\protoone\protoone\gameplay.cpp(123): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\protoone\protoone\gameplay.cpp(228): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(349): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\protoone\protoone\gameplay.cpp(359): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(376): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(465): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(466): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(1123): warning C4551: function call missing argument list
-c:\protoone\protoone\gameplay.cpp(1125): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(1242): warning C4244: 'argument': conversion from 'const Sint32' to 'float', possible loss of data
-c:\protoone\protoone\gameplay.cpp(1246): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\protoone\protoone\gameplay.cpp(1248): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\protoone\protoone\gameplay.cpp(1265): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\protoone\protoone\gameplay.cpp(1266): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-  ProtoOne.vcxproj -> C:\ProtoOne\ProtoOne\Debug\ProtoOne.exe
+﻿  Actions.cpp
+c:\protoone\protoone\actions.cpp : fatal error C1041: cannot open program database 'C:\ProtoOne\ProtoOne\Debug\vc141.pdb'; if multiple CL.EXE write to the same .PDB file, please use /FS

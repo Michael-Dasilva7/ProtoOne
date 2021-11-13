@@ -36,21 +36,20 @@ void aScriptProcessor::ProcessActions(float fElapsedTime) {
 		if (m_currentlyRunningActions.empty()) {			
 			//loop until the current m_listAction->startNextAction = false
 			std::list<Action*>::iterator it = m_listActions.begin();
-			bool startNext = false;
+			bool startNext = true; //if we're here, we want to kick off starting an action
 			while (it != m_listActions.end()) {
-				if ((*it)->startNextAction ) {
+				if (startNext)
+				{
+					if ((*it)->startNextAction) {					
+						startNext = true;
+					}
+					else {
+						startNext = false;
+					}
 					++it;
 					m_currentlyRunningActions.push_back(m_listActions.front());
-					m_listActions.pop_front();
-					startNext = true;					
-				}
-				else if (startNext)
-				{		
-					++it;
-					m_currentlyRunningActions.push_back(m_listActions.front());
-					m_listActions.pop_front();
-					startNext = false;					
-				}
+					m_listActions.pop_front();				
+				}		
 				else {
 					break;
 				}				

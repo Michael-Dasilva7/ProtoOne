@@ -356,7 +356,7 @@ void Gameplay::LoadLevel()
 	fadeIn->startNextAction = true;
 	mGame->mScriptProcessor.AddAction(fadeIn);
 
-	aAction_Dialogue* d1 =  new aAction_Dialogue(0, 0, mGame->GetScreenWidth(), 10, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), mGameRenderer, "MIKE: Welcome to my story... The world is a fascinating place. but also a dangerous one", 5, mGame->mE );
+	aAction_Dialogue* d1 =  new aAction_Dialogue(0, 0, mGame->GetScreenWidth(), 10, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), mGameRenderer, "MIKE: Welcome to my story... The world is a fascinating place. but also a dangerous one", 5, mGame->mE,10000 );
 	mGame->mScriptProcessor.AddAction(d1);
 	d1->startNextAction = true;
 
