@@ -165,6 +165,28 @@ private:
 
 };
 
+class Action_MoveMultipleEntities : public Action
+{
+
+public:
+	Action_MoveMultipleEntities(vector<Entity*> object, vector<Vec2> movementLocations, float duration, bool endCutscene = false, bool animate = true);
+
+	void Start() override;
+	void Update(float fElapsedTime) override;
+
+	float mVel;
+	Vec2  mDir;
+	bool  mAnimate;
+	bool  mEndCutscene;
+private:
+	Entity*  mMoveableObject;
+	Vec2	 mStart;
+	Vec2	 mEnd;
+	float    mTimeSoFar;
+	float    mDuration;
+
+};
+
 
 
 class aAction_FadeIn : public Action

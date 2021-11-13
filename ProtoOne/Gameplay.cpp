@@ -225,7 +225,7 @@ void Gameplay::LoadLevel()
 
 	//mPlayer->SetCenter(mCamera->WorldToScreen(500, 500).x, mCamera->WorldToScreen(500, 500).y);//minus player height
 
-	Vec2 playerStartingPos(mWorldWidth - 700, mWorldHeight - mPlayer->Top());
+	Vec2 playerStartingPos(mWorldWidth - 600, mWorldHeight - mPlayer->Top());
 
 	//intro is walking up narsh cliff
 	mPlayer->SetCenter(playerStartingPos.x, playerStartingPos.y);//minus player height
@@ -351,12 +351,32 @@ void Gameplay::LoadLevel()
 	
 	mPlayer->SetCenter(playerStartingPos.x, playerStartingPos.y);//minus player height
 
-	aAction_FadeIn* fadeIn = new aAction_FadeIn(screenWidth, screenHeight, 5, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 255, 10);
-	fadeIn->startNextAction = true;
-	mGame->mScriptProcessor.AddAction(fadeIn); 
 
-	aAction_PanCamera* a = new aAction_PanCamera({ 1000, 0 }, { 1000, 500}, mCamera, 10.0f, false, false);
+	aAction_FadeIn* fadeIn = new aAction_FadeIn(screenWidth, screenHeight, 3, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 255, 10);
+	fadeIn->startNextAction = true;
+	mGame->mScriptProcessor.AddAction(fadeIn);
+
+	aAction_Dialogue* d1 =  new aAction_Dialogue(0, 0, mGame->GetScreenWidth(), 10, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), mGameRenderer, "MIKE: Welcome to my story... The world is a fascinating place. but also a dangerous one", 5, mGame->mE );
+	mGame->mScriptProcessor.AddAction(d1);
+	d1->startNextAction = true;
+
+	aAction_PanCamera* a = new aAction_PanCamera({ 0 , 0 }, { playerStartingPos.x, playerStartingPos.y }, mCamera, 10, true, false);
+	//a->startNextAction = true;
 	mGame->mScriptProcessor.AddAction(a);
+
+	aAction_PanCamera* a2 = new aAction_PanCamera({ playerStartingPos.x, playerStartingPos.y }, { playerStartingPos.x + 200, playerStartingPos.y -600}, mCamera, 10, true, false);
+	a2->startNextAction = true;
+	mGame->mScriptProcessor.AddAction(a2);
+
+	//aAction_PanCamera* a3 = new aAction_PanCamera({ playerStartingPos.x, playerStartingPos.y }, { playerStartingPos.x + 200, playerStartingPos.y - 600 }, mCamera, 10, true, false);
+	//mGame->mScriptProcessor.AddAction(a3);
+	//a->startNextAction = true;
+
+
+	aAction_Dialogue* d2 = new aAction_Dialogue(0, 0, mGame->GetScreenWidth(), 10, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), mGameRenderer, "MIKE: Case in point...the multiverse. follow ASseluss journey, as she follows her curiosity as the mystic lord", 5, mGame->mE);
+	mGame->mScriptProcessor.AddAction(d2);
+
+	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { playerStartingPos.x, playerStartingPos.y - 500}, 10.0f, true));
 
 	//aAction_FadeIn* fadeOut = new aAction_FadeIn(screenWidth, screenHeight, 5, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 0, 255);
 	////fadeOut->startNextAction = true;
@@ -383,6 +403,17 @@ void Gameplay::LoadLevel()
 	//mGame->mScriptProcessor.AddAction(new aAction_ChangeLevel(fadeOut2, fadeIn2, bkgd2));
 	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, {x, y - 500}, 2.0f, true));
 	//x = x - 500;
+	float x = mPlayer->Center().x;
+	float y = mPlayer->Center().y - 800;
+
+	//mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ x, y - 600 }, { x, y }, mCamera, 5.0f, true));
+	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { x, y }, 2.0f,true));
+
+	x = x - 1000;
+	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { x, y }, 2.0f));
+
+	y = y - 680;
+	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { x, y }, 2.0f, true));
 	bool mShowIntro = false;
 	if (mShowIntro) {
 		float x = mPlayer->Center().x;
@@ -432,7 +463,7 @@ void Gameplay::LoadLevel()
 
 		//mTextBoxFF6
 		mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE, 5, mGame->mE, 2000, true));
-		mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_4, 5, mGame->mE, 2000, true));
+		mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_3, 5, mGame->mE, 2000, true));
 
 		// End cutscene on the last movement! (bool argument at the end)
 		// mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { mCamera->ViewLeft()+500, 3100 }, 2.0f));

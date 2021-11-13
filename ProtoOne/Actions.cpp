@@ -9,41 +9,52 @@
 #include <iterator>
 #include "SoundConstants.h"
 
-aScriptProcessor::aScriptProcessor() {
-	//userControlEnabled = true;
-}
+aScriptProcessor::aScriptProcessor() {}
 
 void aScriptProcessor::AddAction(Action *action) {
 	m_listActions.push_back(action);
 }
 
 void aScriptProcessor::ProcessActions(float fElapsedTime) {
-	//now we must force actions to specify whether use control is enabled. or else itll spill into each other
-	//if (m_listActions.empty()) {
-	//	userControlEnabled = true;
-	//}
+
 	userControlEnabled = m_listActions.empty() && m_currentlyRunningActions.empty();
 
-	//if the action isnt done, start or update..
-	//so the problem is, we want to run more than one action at a time. soooooooooooo..... option time! :
-		//option 1: have an option and timeline to start the next action early? i.e. if a certain time has passed, start the next...could get tricky with multiple overlapping.
-		//option 2: make it a priority queue? instead of looking only at front, go through the list, and look at each one in priority order.  <-- BEST OPTION..think of more options...
-
-	//instead of looking just at the front, look at the front two, IF the current action says, "run next action"
-	//  question: what if we want more than one action ahead, will it keep looking? sounds like a recursive problem.
-	
-	//check next action
 	if (!m_listActions.empty()) {
-		m_currentlyRunningActions.push_back(m_listActions.front());
 
-		//will need to change this if we allow for more than 2 currently running actions
-		if (m_currentlyRunningActions.back()->startNextAction) {
-			m_listActions.pop_front();
-			m_currentlyRunningActions.push_back(m_listActions.front());
-		}
-		else
-		{
-			m_listActions.pop_front();
+		//a = start next action = false
+		//n = start next action = true		
+
+		//	 m_listActions:  n a a 
+		//  currentlyRunning:  n
+
+		//	 m_listActions:  n n a a 
+		//  currentlyRunning:  
+
+		//so if there are actions running, dont do anything.....we handle the running logic after this.
+		//now we just want to handle putting stuff in there if its empty
+
+		if (m_currentlyRunningActions.empty()) {			
+			//loop until the current m_listAction->startNextAction = false
+			std::list<Action*>::iterator it = m_listActions.begin();
+			bool startNext = false;
+			while (it != m_listActions.end()) {
+				if ((*it)->startNextAction ) {
+					++it;
+					m_currentlyRunningActions.push_back(m_listActions.front());
+					m_listActions.pop_front();
+					startNext = true;					
+				}
+				else if (startNext)
+				{		
+					++it;
+					m_currentlyRunningActions.push_back(m_listActions.front());
+					m_listActions.pop_front();
+					startNext = false;					
+				}
+				else {
+					break;
+				}				
+			}
 		}
 
 	}
@@ -238,6 +249,77 @@ void aAction_MoveTo::Update(float dt) {
 }
 
 
+Action_MoveMultipleEntities::Action_MoveMultipleEntities(vector<Entity*> object, vector<Vec2> movementLocations, float duration, bool endCutscene, bool animate) {
+	mAnimate = animate;
+	//mMoveableObject = object;
+	//cout << "mMoveableObject x contructor: " << mMoveableObject->Center().x << endl;
+	//cout << "mMoveableObject y contructor: " << mMoveableObject->Center().y << endl;
+	//mMoveableObject->mInCutscene = endCutscene;
+	//mEnd = end;
+	mTimeSoFar = 0.0f;
+	mDuration = max(duration, 0.001f);//prevent divide by zero later and to cap durations
+	//mVel = 2.0f;
+	mEndCutscene = endCutscene;
+}
+void Action_MoveMultipleEntities::Start() {
+
+	mStart = mMoveableObject->Center();
+	cout << "mMoveableObject x: " << mMoveableObject->Center().x << endl;
+	cout << "mMoveableObject y: " << mMoveableObject->Center().y << endl;
+	////check direction. if its up, move up. if its down , move down....etc...
+	//float degreeofDirection = Rad2Deg(atan2(mDir.y, mDir.x));
+	//degreeofDirection = abs(degreeofDirection);
+
+	////x +   >
+	////x -   <
+	////y +   V
+	////Y -   ^
+
+	////0    >
+	////90   ^
+	////180  <
+	////260  V
+
+	//if (degreeofDirection < 60 && degreeofDirection > 25)
+	//{
+	//	//set direction and change player or entity to move based on direction and update velocity
+	//	//mMoveableObject->mVel;
+	//}
+	//else if (degreeofDirection >= 60 && degreeofDirection <= 100)
+	//{
+	//	//mMoveableObject->moveUp(mStart, 0, false);
+	//}
+	//else if (degreeofDirection > 100 && degreeofDirection <= 220)
+	//{
+	//	//mMoveableObject->moveLeft(mStart, 0, false);
+	//}
+	//else if (degreeofDirection > 220 && degreeofDirection <= 320)
+	//{
+	//	//mMoveableObject->moveDown(mStart, 0, false);
+	//}
+
+}
+void Action_MoveMultipleEntities::Update(float dt) {
+	mTimeSoFar += dt;
+	float t = mTimeSoFar / mDuration;
+	if (t > 1.0f) t = 1.0f;
+
+	mMoveableObject->SetCenter((mEnd - mStart) * t + mStart);
+	mMoveableObject->mVelocity.x = (mEnd.x - mStart.x) / mDuration;
+	mMoveableObject->mVelocity.y = (mEnd.y - mStart.y) / mDuration;
+
+	//mMoveableObject->addTimeToAnimation(dt);
+	if (mTimeSoFar >= mDuration) {
+		mMoveableObject->SetCenter(mEnd);
+		mMoveableObject->mVelocity.x = 0.0f;
+		mMoveableObject->mVelocity.y = 0.0f;
+		isDone = true;
+		if (mEndCutscene) mMoveableObject->mInCutscene = false;
+	}
+
+}
+
+
 /*
 
 The higher the duration, the slower fade
@@ -292,7 +374,7 @@ void aAction_FadeIn::Start() {
 	mFadeRect.y = 0;
 	mFadeRect.w = mW;
 	mFadeRect.h = mH;
- 
+
 	SDL_Rect mFadeRect;
 	mFadeRect.x = 0;
 	mFadeRect.y = 0;
@@ -416,7 +498,14 @@ void aAction_PanCamera::Update(float elapsedTime) {
 	if (t > 1.0f) t = 1.0f;
 
 	mCamera->LookAt((mEnd - mStart) * t + mStart);
+	//debug throguh the values the camera has for view left and right and top bottom
+	// then see what it changes the x and y to based on those. then we can see why its moving so strangely
 
+	//mCamera->ViewLeft();
+	//mViewLeft = (wpos.x - 0.5f * mViewWidth);
+	//mViewTop = (wpos.y - 0.5f * mViewHeight);
+	//cout << "Y " << ((mEnd - mStart) * t + mStart).x  << endl;
+	//cout << "X " <<((mEnd - mStart) * t + mStart).y << endl;
 	//start with one
 	//mCamera->SetTarget(mOriginalEntity);
 	//start with another
@@ -469,6 +558,7 @@ aAction_Dialogue::aAction_Dialogue(
 {
 	mE = e;
 	mTextDelayForNextCharacter = new aAction_Delay(textDelayInMilliseconds);
+
 	mDelayToProgressDialogue = new aAction_Delay(delayToProgressDialogueMilliseconds);
 
 	mTextComplete = false;
@@ -501,7 +591,7 @@ aAction_Dialogue::aAction_Dialogue(
 	mNextStartingDialogueCharacter = 0;
 	mFlashingCounter = 0;
 	isDone = false;
-	mCheckForProgressDelay = false;
+	mCheckForProgressDelay = delayToProgressDialogueMilliseconds > 0;
 	//split(mWrittenDialogue, mWordTokens, ' ');
 	mForceSkipDialogueProgression = forceSkipDialogueProgression;
 }
@@ -680,21 +770,31 @@ void aAction_Dialogue::Update(float elapsedTime) {
 
 		//if the next character is past the dialogue text passed into the action, poll for "is done" button
 		if (mCurrentDialogueCharacter + 1 > mWrittenDialogue.length()) {
-
-			//We are now at the end of the provided dialogue
-			//make the polling logic a reusuable method:
-			//The below buttons are valid "progression" confirmation buttons
-			while (SDL_PollEvent(&mE)) {
-				switch (mE.type) {
-				case SDL_KEYDOWN:
-					if (mE.key.keysym.scancode == SDL_SCANCODE_SPACE) {
-						isDone = true;
-					}
-					break;
-				default:
-					break;
+			if (mCheckForProgressDelay) {
+				if (!mDelayToProgressDialogue->isDone) {
+					mDelayToProgressDialogue->Update(elapsedTime);
+				}
+				else {
+					isDone = true;
 				}
 			}
+			else {
+				//We are now at the end of the provided dialogue
+				//make the polling logic a reusuable method:
+				//The below buttons are valid "progression" confirmation buttons
+				while (SDL_PollEvent(&mE)) {
+					switch (mE.type) {
+					case SDL_KEYDOWN:
+						if (mE.key.keysym.scancode == SDL_SCANCODE_SPACE) {
+							isDone = true;
+						}
+						break;
+					default:
+						break;
+					}
+				}
+			}
+
 		}
 
 		else if (mForceSkipDialogueProgression) {
@@ -708,15 +808,6 @@ void aAction_Dialogue::Update(float elapsedTime) {
 
 	}
 
-	if (mCheckForProgressDelay) {
-		if (!mDelayToProgressDialogue->isDone) {
-			mDelayToProgressDialogue->Update(elapsedTime);
-		}
-		else {
-			isDone = true;
-		}
-
-	}
 
 
 }
