@@ -48,107 +48,107 @@ void Player::ClearPlayerTextures()
 void Player::Update(float dt)
 {
 
-		Game* game = GetGame();
+	Game* game = GetGame();
 
-		//determine direction based on velocity
-		//mDirection = UP;
-		if (mVelocity.y < -0.1f) mDirection = UP;
-		if (mVelocity.y > 0.1f) mDirection = DOWN;
-		if (mVelocity.x < -0.1f) mDirection = LEFT;
-		if (mVelocity.x > 0.1f) mDirection = RIGHT;
+	//determine direction based on velocity
+	//mDirection = UP;
+	if (mVelocity.y < -0.1f) mDirection = UP;
+	if (mVelocity.y > 0.1f) mDirection = DOWN;
+	if (mVelocity.x < -0.1f) mDirection = LEFT;
+	if (mVelocity.x > 0.1f) mDirection = RIGHT;
 
-		if (abs(mVelocity.x) == 2 * PlayerConstants::RUN_SPEED_MODIFYER) this->SetState(RUNNING);
-		else if (abs(mVelocity.y) == 2 * PlayerConstants::RUN_SPEED_MODIFYER) this->SetState(RUNNING);
-		
-		else if (abs(mVelocity.x) == PlayerConstants::WALK_SPEED_MODIFYER) this->SetState(WALKING);
-		else if (abs(mVelocity.y) == PlayerConstants::WALK_SPEED_MODIFYER) this->SetState(WALKING);
+	if (!mInCutscene) {
 
-		else this->SetState(STANDING);
+		if (abs(mVelocity.x) > PlayerConstants::WALK_SPEED_MODIFYER || abs(mVelocity.y) > PlayerConstants::WALK_SPEED_MODIFYER) Player::SetState(RUNNING);
+		else {
+			Player::SetState(WALKING);
+		}
+		//else if (abs(mVelocity.y) == PlayerConstants::WALK_SPEED_MODIFYER) this->SetState(WALKING);
+		//else  this->SetState(STANDING);
 
-		if (mVelocity.x == 0.0f && mVelocity.y == 0.0f) this->SetState(STANDING);
+		if (mVelocity.x == 0.0f && mVelocity.y == 0.0f) Player::SetState(STANDING);
 
 		//check if standing and thats how i can revert the sprite to a normal position!!!
 		//if absolute velocity == 0 then im on sprite 0 based on direction
+	}
 
-		if (mCurrentState == DAMAGED) {
-			Damaged(50);
-			//End game!  
-			if (mPlayerHealth <= 0) {
-				game->EnterMainMenu();
-			}
-		}
-		//if (mContinueColorChange) {
-		if (mColorChange->IncrementRedValue_WithLimit(5, 255)) {
-			mContinueColorChange = false;
-		}
-		//}
 
-		if (mCurrentState == RUNNING) {
-			if (mRunUpTexture != nullptr) {
-				//mMoveSpeedScale = PlayerConstants::RUN_SPEED_MODIFYER;
-				//TODO: create asset constant files with actual values
-				// 1.  Duration of Animation from start to finish in seconds
-				// 2.  isLoopable; Do we loop the animation or stop after one?
-				// 3.  isFlipped;  Do we flip the animation/texture?)
-				if (mDirection == UP) {
-					setAnimation(mRunUpTexture, 4.0f, 0.4f, true);
-				}
-				else if (mDirection == DOWN) {
-					setAnimation(mRunDownTexture, 4.0f, 0.3f, true);
-				}
-				else if (mDirection == LEFT) {
-					setAnimation(mRunLeftTexture, 3.0f, 0.3f, true);
-				}
-				else if (mDirection == RIGHT) {
-					setAnimation(mRunRightTexture, 3.0f, 0.3f, true, SDL_FLIP_HORIZONTAL);
-				}
-			}
-			else {
-				cout << "NO RUNNING UP TEXTURE FOUND! (err thrown from player.update)" << endl;
-			}
-
+	if (mCurrentState == DAMAGED) {
+		Damaged(50);
+		//End game!  
+		if (mPlayerHealth <= 0) {
+			game->EnterMainMenu();
 		}
-		else if (mCurrentState == WALKING) {
-			mMoveSpeedScale = PlayerConstants::WALK_SPEED_MODIFYER;
-			//mMoveSpeedScale = PlayerConstants::WALK_SPEED_MODIFYER;
-			//TODO: create asset constant files with actual values(i.e.
+	}
+	//if (mContinueColorChange) {
+	if (mColorChange->IncrementRedValue_WithLimit(5, 255)) {
+		mContinueColorChange = false;
+	}
+	//}
+
+	if (mCurrentState == RUNNING) {
+		if (mRunUpTexture != nullptr) {
+			//mMoveSpeedScale = PlayerConstants::RUN_SPEED_MODIFYER;
+			//TODO: create asset constant files with actual values
 			// 1.  Duration of Animation from start to finish in seconds
 			// 2.  isLoopable; Do we loop the animation or stop after one?
 			// 3.  isFlipped;  Do we flip the animation/texture?)
 			if (mDirection == UP) {
-				setAnimation(mWalkUpTexture, 3, 0.6f, true);
+				setAnimation(mRunUpTexture, 4.0f, 0.4f, true);
 			}
 			else if (mDirection == DOWN) {
-				setAnimation(mWalkDownTexture, 4, 0.4f, true);
+				setAnimation(mRunDownTexture, 4.0f, 0.3f, true);
 			}
 			else if (mDirection == LEFT) {
-				setAnimation(mWalkLeftTexture, 3, 0.5f, true);
+				setAnimation(mRunLeftTexture, 3.0f, 0.3f, true);
 			}
 			else if (mDirection == RIGHT) {
-				setAnimation(mWalkRightTexture, 3, 0.5f, true, SDL_FLIP_HORIZONTAL);
+				setAnimation(mRunRightTexture, 3.0f, 0.3f, true, SDL_FLIP_HORIZONTAL);
 			}
-
-		}
-
-
-		if (mCurrentState != STANDING) {
-			Entity::mCurrentAnimation->AddTime(dt);
-			if (!mInCutscene) {
-				//std::cout << "player Y velocity: "<< mVelocity.y << std::endl;
-				//std::cout << "player X velocity: " << mVelocity.x << std::endl;
-				mPreviousPosition = mCenterPos;
-				mCenterPos += mVelocity * mMoveSpeedScale;
-			}
-
 		}
 		else {
-			Entity::mCurrentAnimation->Reset();
+			cout << "NO RUNNING UP TEXTURE FOUND! (err thrown from player.update)" << endl;
 		}
 
 	}
- 
-	
-	
+	else if (mCurrentState == WALKING) {
+		mMoveSpeedScale = PlayerConstants::WALK_SPEED_MODIFYER;
+		//mMoveSpeedScale = PlayerConstants::WALK_SPEED_MODIFYER;
+		//TODO: create asset constant files with actual values(i.e.
+		// 1.  Duration of Animation from start to finish in seconds
+		// 2.  isLoopable; Do we loop the animation or stop after one?
+		// 3.  isFlipped;  Do we flip the animation/texture?)
+		if (mDirection == UP) {
+			setAnimation(mWalkUpTexture, 3, 0.6f, true);
+		}
+		else if (mDirection == DOWN) {
+			setAnimation(mWalkDownTexture, 4, 0.4f, true);
+		}
+		else if (mDirection == LEFT) {
+			setAnimation(mWalkLeftTexture, 3, 0.5f, true);
+		}
+		else if (mDirection == RIGHT) {
+			setAnimation(mWalkRightTexture, 3, 0.5f, true, SDL_FLIP_HORIZONTAL);
+		}
+	}
+
+	if (mCurrentState != STANDING) {
+		Entity::mCurrentAnimation->AddTime(dt);
+		if (!mInCutscene) {
+			//std::cout << "player Y velocity: "<< mVelocity.y << std::endl;
+			//std::cout << "player X velocity: " << mVelocity.x << std::endl;
+			mPreviousPosition = mCenterPos;
+			mCenterPos += mVelocity * mMoveSpeedScale;
+		}
+	}
+	else {
+		Entity::mCurrentAnimation->Reset();
+	}
+
+}
+
+
+
 
 
 
@@ -214,8 +214,7 @@ void Player::PlayerDamaged(float damageAmount) {
 
 void Player::SetState(mState newState)
 {
-	
-	
+
 	if (mCurrentState == newState) {
 		if (mCurrentState == Player::DAMAGED) {
 			//set damage counter to 0 cause we want to reset animation 

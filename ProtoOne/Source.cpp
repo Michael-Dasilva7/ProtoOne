@@ -20,7 +20,11 @@ bool Sound::Init()
 		printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
 		success = false;
 	}
- 
+	else {
+		Mix_Volume(-1, 1);
+		Mix_VolumeMusic(25);
+	}
+
 	return success;
 }
 
@@ -31,7 +35,7 @@ bool Sound::Init()
    Returns which channel was used to play the sound.
 */
 void Sound::playMusicFadeIn(string name, int loops, int fadeInMS)
-{
+{ 
 	Mix_FadeInMusic(SoundManager::AcquireMus(SoundConstants::FOLDER_MUS.c_str() + name), loops, fadeInMS);
 }
 
@@ -59,6 +63,7 @@ void Sound::PlaySFX(string name, int channel, int loops) {
 void Sound::increaseVolume()
 {
 	Mix_Volume(-1,mCurrentVolume++);
+
 }
 //void Sound::stopMusic()
 //{

@@ -235,7 +235,12 @@ void aAction_MoveTo::Update(float dt) {
 	mMoveableObject->SetCenter((mEnd - mStart) * t + mStart);
 	mMoveableObject->mVelocity.x = (mEnd.x - mStart.x) / mDuration;
 	mMoveableObject->mVelocity.y = (mEnd.y - mStart.y) / mDuration;
-
+	
+	//I NEED TO EITHER MAKE AN INTERMEDIATE INEHIRITANCE OBJECT BETWEEN PLAYER AND ENTITY AND SET THAT TO HAVE A STATE AND HAVE PLAYer/ENEMY /ET ALL INHEIR FROM THATO
+	// ---  OR ---
+	//I NEED TO SET STATE TO ENTITY ITSELF(then define the specific enum in the objects itself)
+	mMoveableObject->SetState(Entity::mState::WALKING);
+	//mMoveableObject->Update(dt);
 	//mMoveableObject->addTimeToAnimation(dt);
 	if (mTimeSoFar >= mDuration) {
 		mMoveableObject->SetCenter(mEnd);
@@ -382,6 +387,7 @@ void aAction_FadeIn::Start() {
 	SDL_SetRenderDrawBlendMode(mRenderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
 	SDL_RenderFillRect(mRenderer, &mFadeRect);
+	isStarted = true;
 }
 
 void aAction_FadeIn::Update(float fElapsedTime) {
@@ -399,7 +405,11 @@ void aAction_FadeIn::Update(float fElapsedTime) {
 
 	if (mTimeSoFar >= mDuration) {
 		isDone = true;
-		//delete &mFadeRect;
+
+		SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 0);
+		//TODO: make a change to increase or decrease the duration variably to speed up or slowdown the fade
+		//SDL_RenderFillRect(mRenderer, &mFadeRect);
+
 	}
 }
 
@@ -422,14 +432,15 @@ void aAction_ChangeLevel::Update(float fElapsedTime) {
 		mFadeOut->Update(fElapsedTime);
 	}
 	else {
-
-
+		
 		if (!mFadeIn->isDone) {
 			if (!mFadeIn->isStarted) {
 				mFadeIn->Start();
 				mBkrd->Start();
 			}
-			mFadeIn->Update(fElapsedTime);
+			else {
+				mFadeIn->Update(fElapsedTime);
+			}			
 		}
 		else
 		{
@@ -494,7 +505,7 @@ void aAction_PanCamera::Update(float elapsedTime) {
 
 	mTimeSoFar += elapsedTime;
 	float t = mTimeSoFar / mDuration;
-	if (t > 1.0f) t = 1.0f;
+	//if (t > 1.0f) t = 1.0f;
 
 	mCamera->LookAt((mEnd - mStart) * t + mStart);
 	//debug throguh the values the camera has for view left and right and top bottom

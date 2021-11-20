@@ -21,26 +21,18 @@ public:
 		RIGHT
 	};
 
-	enum  mState {
-		IDLE,
-		DAMAGED,
-		ATTACKING,
-		RUNNING,
-		WALKING,
-		STANDING
-	};
+
 	Player(SDL_Texture* tex);
 
 	Player(SDL_Texture* tex, int numCells, float duration, bool loopable);	//player w/ animation
 	Player(SDL_Texture* tex, int numCells, float duration, bool loopable, int hitBoxW, int hitBoxH);
 
-	void					SetState(mState newState);
 	bool					CheckAndSetDirection(mDirection dir);
 
 	mDirection				mDirection;
-
+/*
 	mState					mCurrentState;
-	mState					mPreviousState;
+	mState					mPreviousState;*/
 	 
 	SDL_Texture*			mWalkLeftTexture;
 	SDL_Texture*			mWalkUpTexture;
@@ -68,7 +60,7 @@ public:
 	bool					SetPlayerLeftDir();///Sets the player direction and animation up 
 	bool					SetPlayerRightDir();///Sets the player direction and animation up 
 
-	void					setState(mState x) { mCurrentState = x; }
+	void					SetState(Entity::mState x)  override;
 
 	float					mPlayerHealth;
 

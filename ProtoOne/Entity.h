@@ -30,6 +30,17 @@ protected:
 	unsigned short int      mLayer;	
 	
 public:
+	enum  mState {
+		IDLE,
+		DAMAGED,
+		ATTACKING,
+		RUNNING,
+		WALKING,
+		STANDING
+	};
+	
+	mState mCurrentState;
+	mState mPreviousState;
 
 	SDL_Rect*				mHitbox;
 
@@ -85,7 +96,7 @@ public:
 	virtual float			Bottom() const		{ return mCenterPos.y + (mTexHeight / 2); }
 	virtual float			Right() const		{ return mCenterPos.x + (mTexWidth / 2); }
 
-
+	virtual void			SetState(mState newState) { };//void Player::SetState(mState newState)
 	virtual void            SetLeft(float x) { mCenterPos.x = x + (mTexWidth / 2); }
 	virtual void            SetRight(float x) { mCenterPos.x = x - (mTexWidth / 2); }
 	virtual void            SetTop(float y) { mCenterPos.y = y + (mTexHeight / 2); }
@@ -118,7 +129,8 @@ public:
 	virtual void			setAnimationTexture(SDL_Texture* tex);
 
 	virtual void	        addTimeToAnimation(float dt);
-	 
+	virtual void			setState(mState x) {};
+
 };
 
 

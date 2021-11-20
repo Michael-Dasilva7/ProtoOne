@@ -156,3 +156,5 @@ void Entity::addTimeToAnimation(float dt)
 {
 	mCurrentAnimation->AddTime(dt);
 }
+
+

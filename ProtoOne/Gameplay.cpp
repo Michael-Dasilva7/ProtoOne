@@ -71,6 +71,8 @@ void Gameplay::Initialize()
 	/*mBgTex = LoadTexture("media/background/fieryBackground.png", renderer);*/
 	//mExplosionTex = LoadTexture("media/explosion.tga", renderer);
 
+
+	//foregroundStairs.png
 }
 
 void Gameplay::Shutdown()
@@ -248,7 +250,7 @@ void Gameplay::LoadLevel()
 	//e->SetSpeedScale(0);
 
 	//uncomment the following code to put in lots of drags in wander mode :)
-	/*
+	
 	for (int i = 0; i < 50; i++) {
 		Enemy* greenDragon = new Enemy(ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer), 3, 0.5, true);
 		greenDragon->SetCenter(rand() % mWorldWidth, rand() % mWorldHeight);
@@ -262,27 +264,8 @@ void Gameplay::LoadLevel()
 		greenDragon->mRunRightTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
 		mEnemies.push_back(greenDragon);
 	}
-	*/
-	Vec2 guardOneStartingPos(playerStartingPos.x - 500, playerStartingPos.y - 1500);
-	Vec2 guardTwoStartingPos(playerStartingPos.x + 500, playerStartingPos.y - 1500);
-
-	NPC* guardOne = new NPC(ResourceManager::Acquire("./media/characters/zozma/walkdown.png", renderer), 4, 1.2f, true, 50, 50);
-	guardOne->SetCenter(guardOneStartingPos);
-	NPC* guardTwo = new NPC(ResourceManager::Acquire("./media/characters/zozma/walkdown.png", renderer), 4, 1.2f, true, 50, 50);
-	guardTwo->SetCenter(guardTwoStartingPos);
-
-
-	guardOne->mName = "Guard One";
-	guardTwo->mName = "Guard Two";
-
-	guardOne->SetCenter(guardOneStartingPos.x, guardOneStartingPos.y);
-	guardTwo->SetCenter(guardTwoStartingPos.x, guardTwoStartingPos.y);
-
-	guardOne->mDialogue = "Hi! I'm Guard One... its fkin cold up here! ......and I really could use a spliff.";
-	guardTwo->mDialogue = "Hey Andrew... isn't this kickstarter starting to look nice? What would you add to this?";
-
-	mNPCs.push_back(guardOne);
-	mNPCs.push_back(guardTwo);
+	
+	
 
 	//draw him in the sky. maybe make an action to make something visible or unvisible.
 	Animation* sparkle = new Animation(ResourceManager::Acquire("./media/zozma/walkdown.png", renderer), 4, 3, true);
@@ -299,14 +282,6 @@ void Gameplay::LoadLevel()
 	//greenDragon->mRunRightTexture = ResourceManager::Acquire("./media/dragonFlyLeft.png", renderer);
 	//greenDragon->setAnimationTexture(greenDragon->mRunDownTexture);
 
-	/*
-	Load Dragon off screen
-	*/
-	//Enemy* ninjaBlue = new Enemy(ResourceManager::Acquire(EnemyConstants::NINJA_BLUE, renderer));
-	//ninjaBlue->SetCenter(500, 500);
-	//ninjaBlue->SetLayer(1);
-	//ninjaBlue->SetState(ENEMY_HOVER);
-	//ninjaBlue->SetSpeedScale(0);
 
 	Enemy* ninjaBlue2 = new Enemy(ResourceManager::Acquire(EnemyConstants::NINJA_BLUE, renderer));
 	ninjaBlue2->SetCenter(500, 700);
@@ -347,34 +322,88 @@ void Gameplay::LoadLevel()
 	int screenWidth = game->GetScreenWidth();
 
 	Animation* nextBackground = new Animation(ResourceManager::Acquire(BackgroundConstants::FIGARO_ANIMATION, renderer), 3, 0.2, true, SDL_FLIP_NONE, true);
-	 
-	
 	mPlayer->SetCenter(playerStartingPos.x, playerStartingPos.y);//minus player height
 
-
-	aAction_FadeIn* fadeIn = new aAction_FadeIn(screenWidth, screenHeight, 3, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 255, 10);
+	aAction_FadeIn* fadeIn = new aAction_FadeIn(screenWidth, screenHeight, 3.25f, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 255, 10.0f);
 	fadeIn->startNextAction = true;
 	mGame->mScriptProcessor.AddAction(fadeIn);
-
-	aAction_Dialogue* d1 =  new aAction_Dialogue(0, 0, mGame->GetScreenWidth(), 10, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), mGameRenderer, "MIKE: Welcome to my story... The world is a fascinating place. but also a dangerous one", 5, mGame->mE,10000 );
+	
+	aAction_Dialogue* d1 = new aAction_Dialogue(0.0f, 0.0f, mGame->GetScreenWidth(), 8.0f, NULL, mTextImage, ResourceManager::getTexturePtrList(), mGameRenderer, "Asellus....the mystic lord. ;terribly frigtening powers ; AND with the ability to cross realms..", 5, mGame->mE, 13000);
 	mGame->mScriptProcessor.AddAction(d1);
 	d1->startNextAction = true;
 
-	aAction_PanCamera* a = new aAction_PanCamera({ 0 , 0 }, { playerStartingPos.x, playerStartingPos.y }, mCamera, 10, true, false);
-	//a->startNextAction = true;
-	mGame->mScriptProcessor.AddAction(a);
+	aAction_MoveTo* walkUpMountain = new aAction_MoveTo(mPlayer, { playerStartingPos.x, playerStartingPos.y - 1000 }, 5.0f, false, true);
+	walkUpMountain->startNextAction = true;
+	mGame->mScriptProcessor.AddAction(walkUpMountain);
 
-	aAction_PanCamera* a2 = new aAction_PanCamera({ playerStartingPos.x, playerStartingPos.y }, { playerStartingPos.x + 200, playerStartingPos.y -600}, mCamera, 10, true, false);
-	a2->startNextAction = true;
+	aAction_PanCamera* a = new aAction_PanCamera({ 1000.0f,600.0f }, { 1500.0f, 1200.0f }, mCamera, 6.0f, false, false);
+	mGame->mScriptProcessor.AddAction(a);	
+
+	aAction_MoveTo* walkUpMountain2 = new aAction_MoveTo(mPlayer, { playerStartingPos.x - 1000, playerStartingPos.y - 1000 }, 10.0f, false, true);
+	walkUpMountain2->startNextAction = true;
+	mGame->mScriptProcessor.AddAction(walkUpMountain2);
+
+
+	aAction_FadeIn* fadeIn2 = new aAction_FadeIn(screenWidth, screenHeight, 8.0f, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 0, 255);
+	aAction_FadeIn* fadeOut2 = new aAction_FadeIn(screenWidth, screenHeight, 8.0f, mGame->GetRenderer(), 0, 0, 0, 0, 0, 0, 255, 10.0f);
+	aAction_ChangeBackground* bkgd = new aAction_ChangeBackground(mCurrentBackground, nextBackground, &mWorldWidth, &mWorldHeight, mCamera);
+	aAction_ChangeLevel* chg1 = new aAction_ChangeLevel(fadeOut2, fadeIn2, bkgd);
+	mGame->mScriptProcessor.AddAction(chg1);
+
+	aAction_Dialogue* d2 = new aAction_Dialogue(0, 0, mGame->GetScreenWidth(), 10, NULL, mTextImage, ResourceManager::getTexturePtrList(), mGameRenderer, "After ruthelessless domineering relams near hers; she decides to increase her grip upon more realms; Her desperate attempts have brought her upon her upon a curious dimsension... While exploring, she senses a fritening power not unlike her own", 5, mGame->mE, 3000);
+	d2->startNextAction = true;
+	mGame->mScriptProcessor.AddAction(d2);
+
+	aAction_PanCamera* a2 = new aAction_PanCamera({ playerStartingPos.x, playerStartingPos.y }, { playerStartingPos.x - 500, playerStartingPos.y }, mCamera, 13.0f, true, false);
 	mGame->mScriptProcessor.AddAction(a2);
 
-	//aAction_PanCamera* a3 = new aAction_PanCamera({ playerStartingPos.x, playerStartingPos.y }, { playerStartingPos.x + 200, playerStartingPos.y - 600 }, mCamera, 10, true, false);
-	//mGame->mScriptProcessor.AddAction(a3);
-	//a->startNextAction = true;
+	//create an action for character teleport animations ->fade to white, and black. we can use the same fade logic, but instead it changes a sprite color as opposed to the rect
+	Vec2 guardOneStartingPos(playerStartingPos.x - 500, playerStartingPos.y - 1500);
+	Vec2 guardTwoStartingPos(playerStartingPos.x + 500, playerStartingPos.y - 1500);
+
+	NPC* guardOne = new NPC(ResourceManager::Acquire("./media/characters/zozma/walkdown.png", renderer), 4, 1.2f, true, 50, 50);
+	guardOne->SetCenter(guardOneStartingPos);
+	NPC* guardTwo = new NPC(ResourceManager::Acquire("./media/characters/zozma/walkdown.png", renderer), 4, 1.2f, true, 50, 50);
+	guardTwo->SetCenter(guardTwoStartingPos);
 
 
-	aAction_Dialogue* d2 = new aAction_Dialogue(0, 0, mGame->GetScreenWidth(), 10, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), mGameRenderer, "MIKE: Case in point...the multiverse. follow ASseluss journey, as she follows her curiosity as the mystic lord", 5, mGame->mE);
-	mGame->mScriptProcessor.AddAction(d2);
+	guardOne->mName = "Guard One";
+	guardTwo->mName = "Guard Two";
+
+	guardOne->SetCenter(guardOneStartingPos.x, guardOneStartingPos.y);
+	guardTwo->SetCenter(guardTwoStartingPos.x, guardTwoStartingPos.y);
+
+	guardOne->mDialogue = "Hi! I'm Guard One... its fkin cold up here! ......and I really could use a spliff.";
+	guardTwo->mDialogue = "Heya! How's it goin? Say...I could really use a drink, but I can leave my post...please grab me that..soda over there?";
+
+	mNPCs.push_back(guardOne);
+	mNPCs.push_back(guardTwo);
+	/*
+
+	Assellus....the mystic lord. terribly frigtening powers with the ability to cross realms..
+
+	After ruthelessless domineering the relams most well known, she decided to spreach farther out, and has stumbled upon a curious dimsension... While exploring, she senses a fritening power not unlike her own
+
+	this leads her to the cold part of this familiar dimension.....
+
+
+	intro maps:
+		Huang city
+		teleport to the roof of the japanese building
+
+		then eventually narshe, then narshe mountain
+
+		intro. she walks in(she talks to herself. "ASELLUS: Hmm... I am sensing the power closeby...approaching at an incredible pace...but still faraway, like it is high above us...."  when i get to the bridge zozma appears. they talk. zozma is concerned, and says he will gladly tend to masters orders, and it is out of character for asellus to be going out on her own. this might develop into the change in asellus "ruthless" mystic lord image. but we will see how we want to handle this later...
+		then we walk to the top of the cliff..
+		and see the sparkle fly over...then xplosion. screen shakes..
+
+		we telport to see what it is. its the crystalline entity. we get attacked by a ff6 enemy with a sprite change. (ninjas?)
+
+		now at some point we are saved by a ff6 character(terra? locke? cyan? sabin? shadow perhaps, he is known to roam and might be. or locke could be vistiing his dude in narshe.
+
+
+	*/
+
 
 	//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { playerStartingPos.x, playerStartingPos.y - 500}, 10.0f, true));
 
@@ -443,10 +472,10 @@ void Gameplay::LoadLevel()
 		mScriptProcessor_CharacterMovements.AddAction(a);
 
 
-		mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 2200,1200 }, { 1200,1200 }, mCamera, 5.0f));
-		mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1200 }, { 1200,1900 }, mCamera, 5.0f));
-		mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1900 }, { 1800,1900 }, mCamera, 5.0f));
-		mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1800,1900 }, { 1800,2800 }, mCamera, 5.0f, true));
+		//mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 2200,1200 }, { 1200,1200 }, mCamera, 5.0f));
+		//mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1200 }, { 1200,1900 }, mCamera, 5.0f));
+		//mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1200,1900 }, { 1800,1900 }, mCamera, 5.0f));
+		//mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1800,1900 }, { 1800,2800 }, mCamera, 5.0f, true));
 
 		//mScriptProcessor_Effects.AddAction(new aAction_PanCamera({ 1800,1900 }, { 1800,2800 }, mCamera, 5.0f, true));
 		//keep the screen blacked out for a period of time:
@@ -464,6 +493,8 @@ void Gameplay::LoadLevel()
 		//mTextBoxFF6
 		mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE, 5, mGame->mE, 2000, true));
 		mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, game->GetScreenWidth(), 300, NULL, mTextImage, ResourceManager::getTexturePtrList(), renderer, StoryScriptConstants::INTRO_SEQUENCE_3, 5, mGame->mE, 2000, true));
+
+
 
 		// End cutscene on the last movement! (bool argument at the end)
 		// mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, { mCamera->ViewLeft()+500, 3100 }, 2.0f));
@@ -514,7 +545,7 @@ void Gameplay::LoadLevel()
 
 		//mScriptProcessor_CharacterMovements.AddAction(new aAction_MoveTo(mPlayer, Vec2(newplayerX, newplayerY), 2.5f));
 		//mGame->mScriptProcessor.AddAction(new aAction_MoveTo(mPlayer, Vec2(0, newplayerY), 6.0f));
- 
+
 
 	}//end show intro
 
@@ -619,7 +650,7 @@ void Gameplay::Update(float dt)
 		}
 
 		if (mGameplayKeyboardHandler.isPressed(SDL_SCANCODE_SPACE)) {
-		
+
 			int width = mGame->GetScreenWidth();
 			int height = mGame->GetScreenHeight();
 			mGameplayKeyboardHandler.isReleased(SDL_SCANCODE_SPACE);
@@ -1053,7 +1084,7 @@ void Gameplay::Draw(float dt)
 
 	mScriptProcessor_Effects.ProcessActions(dt);
 
-	
+
 }
 
 void Gameplay::OnKeyDown(const SDL_KeyboardEvent& kbe)
@@ -1113,7 +1144,7 @@ void Gameplay::OnKeyDown(const SDL_KeyboardEvent& kbe)
 
 				//so we need to set a "talkable" state for an NPC.
 				if (n->mActionable) {
-					
+
 					// revert player to idle
 					mPlayer->mVelocity.y = 0;
 					mPlayer->mVelocity.x = 0;
@@ -1122,11 +1153,11 @@ void Gameplay::OnKeyDown(const SDL_KeyboardEvent& kbe)
 					// flush all current events (i.e. mouse and keyboard clicks)
 					SDL_FlushEvents;
 
-					mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, mGame->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), mGameRenderer, n->mDialogue, 5, mGame->mE));					
+					mGame->mScriptProcessor.AddAction(new aAction_Dialogue(0, 0, mGame->GetScreenWidth(), 300, mTextBoxFF6, mTextImage, ResourceManager::getTexturePtrList(), mGameRenderer, n->mDialogue, 5, mGame->mE));
 
-					
+
 					//mGame->ProcessEvents();
-				 
+
 					break;
 				}
 			}
@@ -1388,7 +1419,7 @@ void Gameplay::CheckCollisionWithNPC(Entity* n, Entity* e) {
 
 		n->mActionable = true;
 
-		
+
 		//ALTERNATIVE LOGIC TO LOOK AT DISTANCE BETWEEN OBJECTS FOR HIT DETECTION
 
 		//Vec2 distDifference = e->Center() - e->mPreviousPosition;
@@ -1413,10 +1444,10 @@ void Gameplay::CheckCollisionWithNPC(Entity* n, Entity* e) {
 		//	
 		//}
 	}
-	else if (n->HitBoxLeft()- 5 < e->HitBoxRight() &&
+	else if (n->HitBoxLeft() - 5 < e->HitBoxRight() &&
 		n->HitBoxRight() + 5 > e->HitBoxLeft() &&
 		n->HitBoxTop() - 5 < e->HitBoxBottom() &&
-		n->HitBoxBottom() + 5 > e->HitBoxTop()) 
+		n->HitBoxBottom() + 5 > e->HitBoxTop())
 	{
 		//TODO: Also need to take into account direction and that we are FACING the NPC. then we can have the NPC to turn to the player on action(we can set action for both entities perhaps)
 		n->mActionable = true;
